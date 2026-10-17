@@ -324,23 +324,28 @@ async fn process_request_batch(
             }
         }
         Ok(BrpBatch::Batch(requests)) => {
-            let mut responses = Vec::new();
-
+            // Hand every request to the app before waiting for any answer, so the app
+            // answers the whole batch in one frame instead of one frame per request.
+            let mut pending = Vec::with_capacity(requests.len());
             for request in requests {
-                let response = process_single_request(request, request_sender).await?;
-                match response {
-                    BrpHttpResponse::Complete(res) => responses.push(res),
-                    BrpHttpResponse::Stream(BrpStream { id, .. }) => {
-                        responses.push(BrpResponse::new(
-                            id,
-                            Err(BrpError {
-                                code: error_codes::INVALID_REQUEST,
-                                message: "Streaming can not be used in batch requests".to_string(),
-                                data: None,
-                            }),
-                        ));
+                pending.push(dispatch_request(request, request_sender, false).await);
+            }
+            let mut responses = Vec::with_capacity(pending.len());
+            for dispatched in pending {
+                responses.push(match dispatched {
+                    Dispatched::Answered(response) => response,
+                    Dispatched::Waiting { id, receiver } => {
+                        BrpResponse::new(id, receiver.recv().await?)
                     }
-                }
+                    Dispatched::Stream(BrpStream { id, .. }) => BrpResponse::new(
+                        id,
+                        Err(BrpError {
+                            code: error_codes::INVALID_REQUEST,
+                            message: "Streaming can not be used in batch requests".to_string(),
+                            data: None,
+                        }),
+                    ),
+                });
             }
 
             BrpHttpResponse::Complete(serde_json::to_string(&responses)?)
@@ -391,26 +396,65 @@ async fn process_single_request(
     request: Value,
     request_sender: &Sender<BrpMessage>,
 ) -> AnyhowResult<BrpHttpResponse<BrpResponse, BrpStream>> {
+    Ok(
+        match dispatch_request(request, request_sender, true).await {
+            Dispatched::Answered(response) => BrpHttpResponse::Complete(response),
+            Dispatched::Waiting { id, receiver } => {
+                BrpHttpResponse::Complete(BrpResponse::new(id, receiver.recv().await?))
+            }
+            Dispatched::Stream(stream) => BrpHttpResponse::Stream(stream),
+        },
+    )
+}
+
+/// A request handed to the app, or answered without it.
+enum Dispatched {
+    /// The request was answered without reaching the app.
+    Answered(BrpResponse),
+    /// The app will send the answer to `receiver`.
+    Waiting {
+        id: Option<Value>,
+        receiver: Receiver<BrpResult>,
+    },
+    /// A `+watch` request, whose answers stream.
+    Stream(BrpStream),
+}
+
+/// Parses a request and sends it to the app without waiting for the answer. A `+watch`
+/// request is only sent when `allow_watch` is set; otherwise it gets a [`Dispatched::Stream`]
+/// whose receiver never gets an answer.
+async fn dispatch_request(
+    request: Value,
+    request_sender: &Sender<BrpMessage>,
+    allow_watch: bool,
+) -> Dispatched {
     // Reach in and get the request ID early so that we can report it even when parsing fails.
     let id = request.as_object().and_then(|map| map.get("id")).cloned();
 
     let request: BrpRequest = match serde_json::from_value(request) {
         Ok(v) => v,
         Err(err) => {
-            return Ok(BrpHttpResponse::Complete(BrpResponse::new(
+            return Dispatched::Answered(BrpResponse::new(
                 id,
                 Err(BrpError {
                     code: error_codes::INVALID_REQUEST,
                     message: err.to_string(),
                     data: None,
                 }),
-            )));
+            ));
         }
     };
 
     let watch = request.method.contains("+watch");
     let size = if watch { 8 } else { 1 };
     let (result_sender, result_receiver) = async_channel::bounded(size);
+
+    if watch && !allow_watch {
+        return Dispatched::Stream(BrpStream {
+            id: request.id,
+            rx: Box::pin(result_receiver),
+        });
+    }
 
     let _ = request_sender
         .send(BrpMessage {
@@ -421,15 +465,15 @@ async fn process_single_request(
         .await;
 
     if watch {
-        Ok(BrpHttpResponse::Stream(BrpStream {
+        Dispatched::Stream(BrpStream {
             id: request.id,
             rx: Box::pin(result_receiver),
-        }))
+        })
     } else {
-        let result = result_receiver.recv().await?;
-        Ok(BrpHttpResponse::Complete(BrpResponse::new(
-            request.id, result,
-        )))
+        Dispatched::Waiting {
+            id: request.id,
+            receiver: result_receiver,
+        }
     }
 }
 

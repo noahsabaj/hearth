@@ -142,25 +142,68 @@ impl Ctx {
     /// The entities with a `Name`, fetched once.
     pub fn names(&mut self) -> Result<&[Named], CliError> {
         if self.names.is_none() {
-            let rows = self.call(
-                "world.query",
-                json!({ "data": { "components": [known::NAME] } }),
-            )?;
-            let names = rows
-                .as_array()
-                .map(Vec::as_slice)
-                .unwrap_or_default()
-                .iter()
-                .filter_map(|row| {
-                    Some(Named {
-                        entity: row.get("entity")?.clone(),
-                        name: name_text(row.get("components")?.get(known::NAME)?)?,
-                    })
-                })
-                .collect();
-            self.names = Some(names);
+            let (method, params) = names_call();
+            let rows = self.call(method, params)?;
+            self.names = Some(parse_names(&rows));
         }
         Ok(self.names.as_deref().unwrap_or_default())
+    }
+
+    /// Calls several methods in one request, which the app answers in one frame. Fails only
+    /// when the app can't be reached; each call's own error is in its slot.
+    pub fn batch(
+        &mut self,
+        calls: &[(&str, Value)],
+    ) -> Result<Vec<Result<Value, CliError>>, CliError> {
+        let calls: Vec<(&str, Option<Value>)> = calls
+            .iter()
+            .map(|(method, params)| (*method, (!params.is_null()).then(|| params.clone())))
+            .collect();
+        let client = self.client()?;
+        client.batch(&calls, client.timeout)
+    }
+
+    /// Fetches what a command is about to need in one round trip instead of one per thing.
+    /// What fails to arrive is left to be fetched, and to fail, where it is used.
+    pub fn prefetch(&mut self, want: Prefetch) -> Result<(), CliError> {
+        let mut calls = Vec::new();
+        let names = want.names && self.names.is_none();
+        if names {
+            calls.push(names_call());
+        }
+        let registry = want.registry && self.registry.is_none();
+        if registry {
+            calls.push(("registry.schema", Value::Null));
+        }
+        let methods = want.methods && !self.client()?.knows_methods();
+        if methods {
+            calls.push(("rpc.discover", Value::Null));
+        }
+        if calls.len() < 2 {
+            // One call gains nothing from a batch; it is made where it is used.
+            return Ok(());
+        }
+        let calls: Vec<(&str, Option<Value>)> = calls
+            .into_iter()
+            .map(|(method, params)| (method, (!params.is_null()).then_some(params)))
+            .collect();
+        let client = self.client()?;
+        let timeout = if registry {
+            client.timeout.max(Duration::from_secs(30))
+        } else {
+            client.timeout
+        };
+        let mut answers = client.batch(&calls, timeout)?.into_iter();
+        if names && let Some(Ok(rows)) = answers.next() {
+            self.names = Some(parse_names(&rows));
+        }
+        if registry && let Some(Ok(schema)) = answers.next() {
+            self.registry = Some(Registry::from_schema(schema));
+        }
+        if methods && let Some(Ok(discovered)) = answers.next() {
+            self.client()?.remember_methods(&discovered);
+        }
+        Ok(())
     }
 
     /// The name of an entity, if it has one and the names were fetched.
@@ -239,6 +282,78 @@ impl Ctx {
             _ => (count, duration),
         }
     }
+}
+
+/// What [`Ctx::prefetch`] fetches.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Prefetch {
+    /// The entities with a `Name`.
+    pub names: bool,
+    /// The type registry.
+    pub registry: bool,
+    /// The methods the app supports.
+    pub methods: bool,
+}
+
+impl Prefetch {
+    /// What resolving these entity arguments needs: the names for names, the methods for
+    /// bare indexes.
+    pub fn entities<'a>(texts: impl IntoIterator<Item = &'a str>) -> Self {
+        let mut want = Self::default();
+        for text in texts {
+            let text = text.trim();
+            if is_entity_id(text) {
+                continue;
+            }
+            if text.parse::<u64>().is_ok() {
+                want.methods = true;
+            } else {
+                want.names = true;
+            }
+        }
+        want
+    }
+
+    /// Also fetches the type registry when `yes`.
+    pub fn registry(mut self, yes: bool) -> Self {
+        self.registry |= yes;
+        self
+    }
+
+    /// Also fetches the method list when `yes`.
+    pub fn methods(mut self, yes: bool) -> Self {
+        self.methods |= yes;
+        self
+    }
+
+    /// Also fetches the names when `yes`.
+    pub fn names(mut self, yes: bool) -> Self {
+        self.names |= yes;
+        self
+    }
+}
+
+/// The query for every entity with a `Name`.
+fn names_call() -> (&'static str, Value) {
+    (
+        "world.query",
+        json!({ "data": { "components": [known::NAME] } }),
+    )
+}
+
+/// The named entities in a `world.query` result.
+fn parse_names(rows: &Value) -> Vec<Named> {
+    rows.as_array()
+        .map(Vec::as_slice)
+        .unwrap_or_default()
+        .iter()
+        .filter_map(|row| {
+            Some(Named {
+                entity: row.get("entity")?.clone(),
+                name: name_text(row.get("components")?.get(known::NAME)?)?,
+            })
+        })
+        .collect()
 }
 
 /// Whether `text` is an entity id written as `<index>v<generation>`.

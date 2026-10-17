@@ -26,6 +26,9 @@ bevy_reflect = { path = "../bevy_reflect", version = "0.20.0-dev" }
 bevy_remote = { path = "../bevy_remote", version = "0.20.0-dev", default-features = false, features = [
   "http",
 ] }
+bevy_tasks = { path = "../bevy_tasks", version = "0.20.0-dev", features = [
+  "multi_threaded",
+] }
 bevy_time = { path = "../bevy_time", version = "0.20.0-dev" }
 
 [lints]

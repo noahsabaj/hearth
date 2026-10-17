@@ -193,7 +193,7 @@ pub fn scan(ports: &[u16]) -> Vec<Found> {
         .map(|&port| {
             std::thread::spawn(move || {
                 let endpoint = Endpoint::localhost(port);
-                if !http::is_listening(&endpoint, Duration::from_millis(300)) {
+                if !http::is_listening(&endpoint, http::LOOPBACK_PROBE) {
                     return None;
                 }
                 let client = Client::new(endpoint.clone(), Duration::from_secs(2));

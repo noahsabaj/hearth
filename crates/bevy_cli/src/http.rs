@@ -132,6 +132,11 @@ fn connect(endpoint: &Endpoint, timeout: Duration) -> Result<TcpStream, HttpErro
     })))
 }
 
+/// How long to wait for a connection to a port on this machine while probing for apps. A
+/// listening port answers within a millisecond, but on Windows a closed one isn't refused
+/// until the connection attempt has been retried for seconds, so this bounds each probe.
+pub const LOOPBACK_PROBE: Duration = Duration::from_millis(100);
+
 /// Returns whether something accepts TCP connections at `endpoint`.
 pub fn is_listening(endpoint: &Endpoint, timeout: Duration) -> bool {
     connect(endpoint, timeout).is_ok()

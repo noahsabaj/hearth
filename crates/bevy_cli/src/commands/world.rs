@@ -10,7 +10,7 @@ use crate::cli::{
     DespawnArgs, FindArgs, GetArgs, InsertArgs, QueryArgs, RemoveArgs, ReparentArgs, SendArgs,
     SetArgs, SpawnArgs, TreeArgs, TriggerArgs,
 };
-use crate::context::{entity_text, name_text, Ctx};
+use crate::context::{entity_text, name_text, Ctx, Prefetch};
 use crate::known;
 use crate::output::{CliError, Exit, Outcome, Style};
 use crate::registry::Want;
@@ -38,15 +38,19 @@ impl Row {
 
 /// Runs `world.query`.
 pub fn run_query(ctx: &mut Ctx, params: Value) -> Result<Vec<Row>, CliError> {
-    let Value::Array(rows) = ctx.call("world.query", params)? else {
-        return Ok(Vec::new());
+    Ok(parse_rows(ctx.call("world.query", params)?))
+}
+
+/// The rows of a `world.query` result.
+fn parse_rows(rows: Value) -> Vec<Row> {
+    let Value::Array(rows) = rows else {
+        return Vec::new();
     };
     let take = |row: &mut Map<String, Value>, key: &str| match row.remove(key) {
         Some(Value::Object(map)) => map,
         _ => Map::new(),
     };
-    Ok(rows
-        .into_iter()
+    rows.into_iter()
         .filter_map(|row| {
             let Value::Object(mut row) = row else {
                 return None;
@@ -58,7 +62,7 @@ pub fn run_query(ctx: &mut Ctx, params: Value) -> Result<Vec<Row>, CliError> {
                 has: take(&mut row, "has"),
             })
         })
-        .collect())
+        .collect()
 }
 
 /// Resolves several type names.
@@ -66,15 +70,10 @@ pub fn resolve_all(ctx: &mut Ctx, names: &[String], want: Want) -> Result<Vec<St
     names.iter().map(|name| ctx.type_path(name, want)).collect()
 }
 
-/// How many entities hold resources, or 0 when the app doesn't store resources as entities.
-fn count_resources(ctx: &mut Ctx) -> usize {
-    ctx.call(
-        "world.query",
-        json!({ "data": {}, "filter": { "with": [known::IS_RESOURCE] }, "strict": true }),
-    )
-    .ok()
-    .and_then(|rows| rows.as_array().map(Vec::len))
-    .unwrap_or(0)
+/// The query for the entities that hold resources. It fails, or finds nothing, when the app
+/// doesn't store resources as entities.
+fn resources_query() -> Value {
+    json!({ "data": {}, "filter": { "with": [known::IS_RESOURCE] }, "strict": true })
 }
 
 /// Adds the type's schema to the hint of a value the app rejected.
@@ -299,11 +298,21 @@ pub fn tree(ctx: &mut Ctx, args: TreeArgs) -> Result<Outcome, CliError> {
     } else {
         json!({ "without": [known::IS_RESOURCE] })
     };
-    let rows = run_query(
-        ctx,
-        json!({ "data": { "option": "all" }, "filter": filter }),
-    )?;
-    let resources = if args.all { 0 } else { count_resources(ctx) };
+    // The entities and the resource count in one round trip.
+    let mut answers = ctx
+        .batch(&[
+            (
+                "world.query",
+                json!({ "data": { "option": "all" }, "filter": filter }),
+            ),
+            ("world.query", resources_query()),
+        ])?
+        .into_iter();
+    let rows = parse_rows(answers.next().expect("one answer per call")?);
+    let resources = match answers.next() {
+        Some(Ok(rows)) if !args.all => rows.as_array().map_or(0, Vec::len),
+        _ => 0,
+    };
     let forest = Forest::new(rows, args.components);
 
     let mut roots: Vec<usize> = match &root {
@@ -428,6 +437,11 @@ pub fn find(ctx: &mut Ctx, args: FindArgs) -> Result<Outcome, CliError> {
 
 /// `hearth get`.
 pub fn get(ctx: &mut Ctx, args: GetArgs) -> Result<Outcome, CliError> {
+    ctx.prefetch(
+        Prefetch::entities([args.entity.as_str()])
+            .registry(!args.components.is_empty())
+            .methods(args.components.is_empty()),
+    )?;
     let entity = ctx.entity(&args.entity)?;
     let mut components = Map::new();
     let mut unserializable = Map::new();
@@ -629,6 +643,7 @@ fn take_components(
 
 /// `hearth set`.
 pub fn set(ctx: &mut Ctx, args: SetArgs) -> Result<Outcome, CliError> {
+    ctx.prefetch(Prefetch::entities([args.entity.as_str()]).registry(true))?;
     let entity = ctx.entity(&args.entity)?;
     let (component, path) = split_path(&args.target);
     let component = ctx.type_path(component, Want::Component)?;
@@ -652,6 +667,7 @@ pub fn set(ctx: &mut Ctx, args: SetArgs) -> Result<Outcome, CliError> {
 
 /// `hearth insert`.
 pub fn insert(ctx: &mut Ctx, args: InsertArgs) -> Result<Outcome, CliError> {
+    ctx.prefetch(Prefetch::entities([args.entity.as_str()]).registry(true))?;
     let entity = ctx.entity(&args.entity)?;
     let component = ctx.type_path(&args.component, Want::Component)?;
     let value = match &args.value {
@@ -677,6 +693,7 @@ pub fn insert(ctx: &mut Ctx, args: InsertArgs) -> Result<Outcome, CliError> {
 
 /// `hearth remove`.
 pub fn remove(ctx: &mut Ctx, args: RemoveArgs) -> Result<Outcome, CliError> {
+    ctx.prefetch(Prefetch::entities([args.entity.as_str()]).registry(true))?;
     let entity = ctx.entity(&args.entity)?;
     let components = resolve_all(ctx, &args.components, Want::Component)?;
     ctx.call(
@@ -795,6 +812,21 @@ pub fn reparent(ctx: &mut Ctx, args: ReparentArgs) -> Result<Outcome, CliError> 
 
 /// `hearth query`.
 pub fn query(ctx: &mut Ctx, args: QueryArgs) -> Result<Outcome, CliError> {
+    // Names make the human output readable; they come in the same round trip as the registry.
+    let typed = [
+        &args.components,
+        &args.option,
+        &args.has,
+        &args.with,
+        &args.without,
+    ]
+    .iter()
+    .any(|names| !names.is_empty());
+    ctx.prefetch(
+        Prefetch::default()
+            .registry(typed)
+            .names(ctx.out.format == crate::output::Format::Human),
+    )?;
     let components = resolve_all(ctx, &args.components, Want::Component)?;
     let option = resolve_all(ctx, &args.option, Want::Component)?;
     let has = resolve_all(ctx, &args.has, Want::Component)?;
@@ -823,7 +855,6 @@ pub fn query(ctx: &mut Ctx, args: QueryArgs) -> Result<Outcome, CliError> {
         .iter()
         .map(|row| json!({ "entity": row.entity, "components": row.components, "has": row.has }))
         .collect();
-    // Names make the human output readable; fetching them is one more request.
     if ctx.out.format == crate::output::Format::Human && !rows.is_empty() {
         let _ = ctx.names();
     }

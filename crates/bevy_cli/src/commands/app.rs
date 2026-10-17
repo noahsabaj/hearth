@@ -17,8 +17,33 @@ pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
     let target = ctx.target()?.to_json();
     let session = ctx.target()?.session.clone();
     let endpoint = ctx.client()?.endpoint.to_string();
+    // One batch, which the app answers in one frame.
+    let count = |rows: Value| rows.as_array().map(Vec::len);
+    let mut answers = ctx
+        .batch(&[
+            ("rpc.discover", Value::Null),
+            ("app.info", Value::Null),
+            ("world.query", json!({ "data": {} })),
+            (
+                "world.query",
+                json!({ "data": {}, "filter": { "with": [known::IS_RESOURCE] }, "strict": true }),
+            ),
+            (
+                "world.query",
+                json!({ "data": {}, "filter": { "with": [known::NAME] } }),
+            ),
+            (
+                "world.get_resources",
+                json!({ "resource": known::TIME_VIRTUAL }),
+            ),
+            ("world.query", primary_window_query()),
+            ("diagnostics.get", json!({ "paths": ["fps"] })),
+        ])?
+        .into_iter();
+    let mut next = || answers.next().expect("one answer per call");
     // The first call shows whether the app is there at all.
-    let discover = ctx.call("rpc.discover", Value::Null)?;
+    let discover = next()?;
+    ctx.client()?.remember_methods(&discover);
     let methods = discover
         .get("methods")
         .and_then(Value::as_array)
@@ -27,41 +52,23 @@ pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
         .pointer("/info/version")
         .and_then(Value::as_str)
         .map(str::to_string);
-    let info = ctx.call("app.info", Value::Null).ok();
-
-    let entities = ctx
-        .call("world.query", json!({ "data": {} }))
-        .ok()
-        .and_then(|rows| rows.as_array().map(Vec::len));
-    let resources = ctx
-        .call(
-            "world.query",
-            json!({ "data": {}, "filter": { "with": [known::IS_RESOURCE] }, "strict": true }),
-        )
-        .ok()
-        .and_then(|rows| rows.as_array().map(Vec::len));
-    let named = ctx.names().ok().map(<[_]>::len);
-
-    let time = ctx
-        .call(
-            "world.get_resources",
-            json!({ "resource": known::TIME_VIRTUAL }),
-        )
+    let info = next().ok();
+    let entities = next().ok().and_then(count);
+    let resources = next().ok().and_then(count);
+    let named = next().ok().and_then(count);
+    let time = next()
         .ok()
         .and_then(|result| result.get("value").cloned())
         .map(|time| time_summary(&time));
-    let window = primary_window(ctx).ok().flatten();
-    let fps = ctx
-        .call("diagnostics.get", json!({ "paths": ["fps"] }))
-        .ok()
-        .and_then(|result| {
-            result
-                .get("diagnostics")?
-                .as_array()?
-                .first()?
-                .get("smoothed")?
-                .as_f64()
-        });
+    let window = next().ok().and_then(|rows| parse_primary_window(&rows));
+    let fps = next().ok().and_then(|result| {
+        result
+            .get("diagnostics")?
+            .as_array()?
+            .first()?
+            .get("smoothed")?
+            .as_f64()
+    });
 
     let bevy_version = info
         .as_ref()
@@ -151,16 +158,22 @@ pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
 
 /// The primary window: its entity and the parts of `Window` worth showing.
 pub fn primary_window(ctx: &mut Ctx) -> Result<Option<Value>, CliError> {
-    let rows = ctx.call(
-        "world.query",
-        json!({
-            "data": { "components": [known::WINDOW] },
-            "filter": { "with": [known::PRIMARY_WINDOW] },
-        }),
-    )?;
-    let Some(row) = rows.as_array().and_then(|rows| rows.first()) else {
-        return Ok(None);
-    };
+    Ok(parse_primary_window(
+        &ctx.call("world.query", primary_window_query())?,
+    ))
+}
+
+/// The query for the primary window.
+fn primary_window_query() -> Value {
+    json!({
+        "data": { "components": [known::WINDOW] },
+        "filter": { "with": [known::PRIMARY_WINDOW] },
+    })
+}
+
+/// The primary window in the result of [`primary_window_query`].
+fn parse_primary_window(rows: &Value) -> Option<Value> {
+    let row = rows.as_array()?.first()?;
     let window = &row["components"][known::WINDOW];
     let resolution = &window["resolution"];
     let scale = resolution["scale_factor_override"]
@@ -169,7 +182,7 @@ pub fn primary_window(ctx: &mut Ctx) -> Result<Option<Value>, CliError> {
         .unwrap_or(1.0);
     let physical_width = resolution["physical_width"].as_f64().unwrap_or(0.0);
     let physical_height = resolution["physical_height"].as_f64().unwrap_or(0.0);
-    Ok(Some(json!({
+    Some(json!({
         "entity": row["entity"],
         "title": window["title"],
         "width": (physical_width / scale).round(),
@@ -179,7 +192,7 @@ pub fn primary_window(ctx: &mut Ctx) -> Result<Option<Value>, CliError> {
         "scale_factor": scale,
         "mode": window["mode"],
         "focused": window["focused"],
-    })))
+    }))
 }
 
 fn describe_window(window: &Value) -> String {

@@ -366,8 +366,8 @@ fn free_port() -> u16 {
     (DEFAULT_PORT..DEFAULT_PORT.saturating_add(100))
         .filter(|&port| port != RENDER_PORT)
         .find(|&port| {
-            !taken.contains(&port)
-                && !http::is_listening(&Endpoint::localhost(port), Duration::from_millis(200))
+            // Binding is instant, where probing a free port waits out a timeout on Windows.
+            !taken.contains(&port) && std::net::TcpListener::bind(("127.0.0.1", port)).is_ok()
         })
         .unwrap_or(DEFAULT_PORT)
 }
@@ -745,11 +745,8 @@ pub fn ps(ctx: &mut Ctx, args: PsArgs) -> Result<Outcome, CliError> {
     let mut ports = Vec::new();
     for session in &sessions {
         let running = session.is_running();
-        let answering = running
-            && http::is_listening(
-                &Endpoint::localhost(session.port),
-                Duration::from_millis(300),
-            );
+        let answering =
+            running && http::is_listening(&Endpoint::localhost(session.port), http::LOOPBACK_PROBE);
         if running {
             ports.push(session.port);
         }

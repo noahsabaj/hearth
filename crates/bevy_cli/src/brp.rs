@@ -39,10 +39,11 @@ impl Client {
         }
     }
 
-    /// How long to wait for a connection: short on this machine, where an answer is immediate.
+    /// How long to wait for a connection: short on this machine, where a listening app accepts
+    /// within a millisecond however busy it is, since the OS accepts for it.
     fn connect_timeout(&self) -> Duration {
         if is_loopback(&self.endpoint.host) {
-            Duration::from_millis(500)
+            http::LOOPBACK_PROBE * 2
         } else {
             Duration::from_secs(3)
         }
@@ -72,8 +73,10 @@ impl Client {
     ) -> Result<Value, CliError> {
         let body = serde_json::to_vec(&self.request(method, params))
             .map_err(|error| CliError::internal(error.to_string()))?;
+        let started = Instant::now();
         let answer = http::post(&self.endpoint, &body, self.connect_timeout(), timeout)
             .map_err(|error| self.transport_error(error, method, timeout))?;
+        trace(method, body.len(), answer.len(), started);
         let response: Value = serde_json::from_slice(&answer).map_err(|error| {
             CliError::new(
                 "PROTOCOL_ERROR",
@@ -82,6 +85,77 @@ impl Client {
             )
         })?;
         response_result(method, response)
+    }
+
+    /// Calls several methods in one request, waiting at most `timeout`. Hearth answers a batch
+    /// in one frame instead of one frame per call. Fails only when the app can't be reached;
+    /// each call's own error is in its slot.
+    pub fn batch(
+        &self,
+        calls: &[(&str, Option<Value>)],
+        timeout: Duration,
+    ) -> Result<Vec<Result<Value, CliError>>, CliError> {
+        let first_id = self.next_id.get();
+        let requests: Vec<Value> = calls
+            .iter()
+            .map(|(method, params)| self.request(method, params.clone()))
+            .collect();
+        let body =
+            serde_json::to_vec(&requests).map_err(|error| CliError::internal(error.to_string()))?;
+        let label = calls
+            .iter()
+            .map(|(method, _)| *method)
+            .collect::<Vec<_>>()
+            .join(", ");
+        let started = Instant::now();
+        let answer = http::post(&self.endpoint, &body, self.connect_timeout(), timeout)
+            .map_err(|error| self.transport_error(error, &label, timeout))?;
+        trace(
+            &format!("batch [{label}]"),
+            body.len(),
+            answer.len(),
+            started,
+        );
+        let Ok(Value::Array(answers)) = serde_json::from_slice::<Value>(&answer) else {
+            // An app that can't take batches answers with a single error: call one at a time.
+            return Ok(calls
+                .iter()
+                .map(|(method, params)| self.call_with_timeout(method, params.clone(), timeout))
+                .collect());
+        };
+        let mut results: Vec<Option<Result<Value, CliError>>> =
+            calls.iter().map(|_| None).collect();
+        for answer in answers {
+            let index = answer
+                .get("id")
+                .and_then(Value::as_u64)
+                .and_then(|id| id.checked_sub(first_id))
+                .and_then(|index| usize::try_from(index).ok());
+            if let Some((slot, (method, _))) = index.and_then(|index| {
+                let call = calls.get(index)?;
+                Some((results.get_mut(index)?, call))
+            }) {
+                *slot = Some(response_result(method, answer));
+            }
+        }
+        Ok(results
+            .into_iter()
+            .zip(calls)
+            .map(|(result, (method, _))| {
+                result.unwrap_or_else(|| {
+                    Err(CliError::new(
+                        "PROTOCOL_ERROR",
+                        Exit::Unreachable,
+                        format!("The app didn't answer `{method}` in the batch"),
+                    ))
+                })
+            })
+            .collect())
+    }
+
+    /// Remembers the methods from an `rpc.discover` result, so `supports` needn't ask again.
+    pub fn remember_methods(&self, discovered: &Value) {
+        let _ = self.methods.set(method_names(discovered));
     }
 
     /// Opens a `+watch` stream.
@@ -104,18 +178,12 @@ impl Client {
             return Ok(methods);
         }
         let discovered = self.call("rpc.discover", None)?;
-        let methods = discovered
-            .get("methods")
-            .and_then(Value::as_array)
-            .map(|methods| {
-                methods
-                    .iter()
-                    .filter_map(|method| method.get("name").and_then(Value::as_str))
-                    .map(str::to_string)
-                    .collect()
-            })
-            .unwrap_or_default();
-        Ok(self.methods.get_or_init(|| methods))
+        Ok(self.methods.get_or_init(|| method_names(&discovered)))
+    }
+
+    /// Whether the method list was already fetched.
+    pub fn knows_methods(&self) -> bool {
+        self.methods.get().is_some()
     }
 
     /// Whether the app supports `method`.
@@ -195,6 +263,34 @@ impl Client {
             )
             .hint("Check that this address belongs to an app with `RemoteHttpPlugin`."),
         }
+    }
+}
+
+/// The method names in an `rpc.discover` result.
+fn method_names(discovered: &Value) -> Vec<String> {
+    discovered
+        .get("methods")
+        .and_then(Value::as_array)
+        .map(|methods| {
+            methods
+                .iter()
+                .filter_map(|method| method.get("name").and_then(Value::as_str))
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// With `HEARTH_TRACE` set, writes each call's method, sizes and time to stderr.
+fn trace(method: &str, sent: usize, received: usize, started: Instant) {
+    use std::io::Write;
+    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    if *ENABLED.get_or_init(|| std::env::var_os("HEARTH_TRACE").is_some()) {
+        let _ = writeln!(
+            std::io::stderr(),
+            "[trace] {method}: {sent} B sent, {received} B received, {:.1} ms",
+            started.elapsed().as_secs_f64() * 1000.0
+        );
     }
 }
 
