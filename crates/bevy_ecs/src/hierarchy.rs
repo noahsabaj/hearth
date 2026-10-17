@@ -104,6 +104,7 @@ use core::slice;
 )]
 #[relationship(relationship_target = Children)]
 #[doc(alias = "IsChild", alias = "Parent")]
+#[component(summary_tick)]
 pub struct ChildOf(#[entities] pub Entity);
 
 impl ChildOf {

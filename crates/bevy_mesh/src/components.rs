@@ -43,6 +43,7 @@ use derive_more::derive::From;
 )]
 #[reflect(Component, Default, Clone, PartialEq)]
 #[require(Transform)]
+#[component(summary_tick)]
 pub struct Mesh2d(pub Handle<Mesh>);
 
 impl From<Mesh2d> for AssetId<Mesh> {
@@ -100,6 +101,7 @@ impl AsAssetId for Mesh2d {
 )]
 #[reflect(Component, Default, Clone, PartialEq)]
 #[require(Transform)]
+#[component(summary_tick)]
 pub struct Mesh3d(pub Handle<Mesh>);
 
 impl From<Mesh3d> for AssetId<Mesh> {

@@ -83,6 +83,7 @@ fn assert_is_normalized(message: &str, length_squared: f32) {
     all(feature = "bevy_reflect", feature = "serialize"),
     reflect(Serialize, Deserialize)
 )]
+#[cfg_attr(feature = "bevy-support", component(summary_tick))]
 pub struct Transform {
     /// Position of the entity. In 2d, the last value of the `Vec3` is used for z-ordering.
     ///

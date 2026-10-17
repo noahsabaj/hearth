@@ -80,6 +80,7 @@ pub struct NoCpuCulling;
 #[derive(Component, Clone, Copy, Reflect, Debug, PartialEq, Eq, Default)]
 #[reflect(Component, Default, Debug, PartialEq, Clone)]
 #[require(InheritedVisibility, ViewVisibility)]
+#[component(summary_tick)]
 pub enum Visibility {
     /// An entity with `Visibility::Inherited` will inherit the Visibility of its [`ChildOf`] target.
     ///
@@ -161,6 +162,7 @@ impl PartialEq<&Visibility> for Visibility {
 /// [`VisibilityPropagate`]: VisibilitySystems::VisibilityPropagate
 #[derive(Component, Deref, Debug, Default, Clone, Copy, Reflect, PartialEq, Eq)]
 #[reflect(Component, Default, Debug, PartialEq, Clone)]
+#[component(summary_tick)]
 pub struct InheritedVisibility(bool);
 
 impl InheritedVisibility {
@@ -223,6 +225,7 @@ pub struct VisibilityClass(pub SmallVec<[TypeId; 1]>);
 /// [`CheckVisibility`]: VisibilitySystems::CheckVisibility
 #[derive(Component, Debug, Default, Clone, Copy, Reflect, PartialEq, Eq)]
 #[reflect(Component, Default, Debug, PartialEq, Clone)]
+#[component(summary_tick)]
 pub struct ViewVisibility(
     /// Bit packed booleans to track current and previous view visibility state.
     ///

@@ -214,6 +214,7 @@ pub trait Material2d: AsBindGroup + Asset + Clone + Sized {
 /// [`MeshMaterial2d`]: crate::MeshMaterial2d
 #[derive(Component, FromTemplate, Clone, Debug, Deref, DerefMut, Reflect, From)]
 #[reflect(Component, Default, Clone)]
+#[component(summary_tick)]
 pub struct MeshMaterial2d<M: Material2d>(pub Handle<M>);
 
 impl<M: Material2d> Default for MeshMaterial2d<M> {

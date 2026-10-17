@@ -57,6 +57,7 @@ use {
     all(feature = "bevy_reflect", feature = "serialize"),
     reflect(Serialize, Deserialize)
 )]
+#[cfg_attr(feature = "bevy-support", component(summary_tick))]
 pub struct GlobalTransform(Affine3A);
 
 macro_rules! impl_local_axis {
