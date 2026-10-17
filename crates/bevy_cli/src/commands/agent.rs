@@ -1,4 +1,4 @@
-//! For agents and scripts: the command manifest that `bevy commands` prints and the MCP server
+//! For agents and scripts: the command manifest that `hearth commands` prints and the MCP server
 //! turns into tools, and the agent skill.
 
 use clap::{ArgAction, CommandFactory};
@@ -74,13 +74,10 @@ pub const ERROR_CODES: &[(&str, &str)] = &[
         "TIMEOUT",
         "The app, an event or a capture didn't answer in time",
     ),
-    (
-        "PROTOCOL_ERROR",
-        "The address answered, but not as a Bevy app",
-    ),
+    ("PROTOCOL_ERROR", "The address answered, but not over BRP"),
     (
         "METHOD_NOT_FOUND",
-        "The app doesn't support the BRP method: an older Bevy, or a plugin is missing",
+        "The app doesn't support the BRP method: an older engine version, or a plugin is missing",
     ),
     (
         "INVALID_PARAMS",
@@ -176,7 +173,7 @@ pub const ERROR_CODES: &[(&str, &str)] = &[
     ("UNKNOWN_SESSION", "No session has this name"),
     (
         "NOT_A_SESSION",
-        "The app wasn't started with `bevy run --detach`",
+        "The app wasn't started with `hearth run --detach`",
     ),
     ("NO_SESSION", "There are no sessions"),
     ("AMBIGUOUS_SESSION", "Several sessions exist; name one"),
@@ -193,21 +190,21 @@ pub const ERROR_CODES: &[(&str, &str)] = &[
 
 /// Environment variables the CLI reads, or sets for the apps it runs.
 pub const ENVIRONMENT: &[(&str, &str)] = &[
-    ("BEVY_APP", "The app to talk to, like --app"),
-    ("BEVY_FORMAT", "The output format, like --format"),
+    ("HEARTH_APP", "The app to talk to, like --app"),
+    ("HEARTH_FORMAT", "The output format, like --format"),
     (
-        "BEVY_TIMEOUT",
+        "HEARTH_TIMEOUT",
         "Seconds to wait for the app, like --timeout",
     ),
     (
-        "BEVY_TOOLCHAIN",
+        "HEARTH_TOOLCHAIN",
         "The rustup toolchain to build with, like --toolchain",
     ),
-    ("BEVY_CLI_HOME", "Where sessions and their logs are kept"),
+    ("HEARTH_CLI_HOME", "Where sessions and their logs are kept"),
     ("NO_COLOR", "Disables colors"),
     (
-        "BEVY_REMOTE_PORT",
-        "Set by `bevy run` for the app: the port to answer BRP on",
+        "HEARTH_REMOTE_PORT",
+        "Set by `hearth run` for the app: the port to answer BRP on",
     ),
 ];
 
@@ -259,7 +256,7 @@ impl ArgInfo {
     }
 }
 
-/// A command, as `bevy commands` and the MCP server describe it.
+/// A command, as `hearth commands` and the MCP server describe it.
 #[derive(Clone, Debug)]
 pub struct CommandInfo {
     /// The words that name it, such as `["resource", "get"]`.
@@ -336,7 +333,7 @@ impl CommandInfo {
     pub fn to_json(&self) -> Value {
         json!({
             "name": self.name(),
-            "usage": format!("bevy {}", self.usage()),
+            "usage": format!("hearth {}", self.usage()),
             "group": self.group,
             "about": self.about,
             "long_about": self.long_about,
@@ -494,7 +491,7 @@ fn global_options() -> Vec<ArgInfo> {
         .collect()
 }
 
-/// `bevy commands`.
+/// `hearth commands`.
 pub fn commands(ctx: &mut Ctx, args: CommandsArgs) -> Result<Outcome, CliError> {
     let mut commands = manifest();
     if let Some(grep) = &args.grep {
@@ -531,14 +528,14 @@ pub fn commands(ctx: &mut Ctx, args: CommandsArgs) -> Result<Outcome, CliError> 
     }
     lines.push(String::new());
     lines.push(ctx.out.paint(
-        "`bevy <command> --help` explains a command; `bevy commands --json` lists every argument, exit code and error code.",
+        "`hearth <command> --help` explains a command; `hearth commands --json` lists every argument, exit code and error code.",
         Style::Dim,
     ));
     let data = json!({
-        "name": "bevy",
+        "name": "hearth",
         "version": env!("CARGO_PKG_VERSION"),
-        "about": "Build, run, inspect and drive Bevy apps. Live-app commands use the Bevy Remote Protocol.",
-        "usage": "bevy [OPTIONS] <COMMAND>",
+        "about": "Build, run, inspect and drive Hearth apps. Live-app commands use the Bevy Remote Protocol.",
+        "usage": "hearth [OPTIONS] <COMMAND>",
         "global_options": global_options().iter().map(ArgInfo::to_json).collect::<Vec<_>>(),
         "commands": commands.iter().map(CommandInfo::to_json).collect::<Vec<_>>(),
         "output": {
@@ -562,7 +559,7 @@ pub fn commands(ctx: &mut Ctx, args: CommandsArgs) -> Result<Outcome, CliError> 
     Ok(Outcome::new(data, lines.join("\n")))
 }
 
-/// `bevy skill`.
+/// `hearth skill`.
 pub fn skill(ctx: &mut Ctx, command: SkillCommand) -> Result<Outcome, CliError> {
     match command {
         SkillCommand::Show { topic, list } => crate::skill::show(ctx, topic.as_deref(), list),

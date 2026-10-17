@@ -12,7 +12,7 @@ use crate::output::{table, CliError, Exit, Outcome, Style};
 use crate::registry::shorten_path;
 use crate::value;
 
-/// `bevy status`.
+/// `hearth status`.
 pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
     let target = ctx.target()?.to_json();
     let session = ctx.target()?.session.clone();
@@ -75,7 +75,7 @@ pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
         .as_ref()
         .and_then(|info| info.get("app_name"))
         .and_then(Value::as_str)
-        .unwrap_or("Bevy app");
+        .unwrap_or("app");
     let sub_app = info
         .as_ref()
         .and_then(|info| info.get("sub_app"))
@@ -95,7 +95,7 @@ pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
         ),
     );
     if let Some(version) = &bevy_version {
-        row("Bevy", version.clone());
+        row("Engine", version.clone());
     }
     if let Some(entities) = entities {
         let mut details = Vec::new();
@@ -123,7 +123,7 @@ pub fn status(ctx: &mut Ctx) -> Result<Outcome, CliError> {
     }
     row(
         "BRP",
-        format!("{methods} methods (`bevy methods` lists them)"),
+        format!("{methods} methods (`hearth methods` lists them)"),
     );
 
     Ok(Outcome::new(
@@ -220,7 +220,7 @@ fn describe_time(time: &Value) -> String {
     )
 }
 
-/// `bevy time`.
+/// `hearth time`.
 pub fn time(ctx: &mut Ctx, args: TimeArgs) -> Result<Outcome, CliError> {
     let action = args.action.unwrap_or(TimeCommand::Status);
     let change = match action {
@@ -256,7 +256,7 @@ pub fn time(ctx: &mut Ctx, args: TimeArgs) -> Result<Outcome, CliError> {
     Ok(Outcome::new(summary, human))
 }
 
-/// `bevy schedules`.
+/// `hearth schedules`.
 pub fn schedules(ctx: &mut Ctx, args: SchedulesArgs) -> Result<Outcome, CliError> {
     let Some(label) = args.schedule else {
         let list = ctx.call("schedule.list", Value::Null)?;
@@ -344,7 +344,7 @@ pub fn schedules(ctx: &mut Ctx, args: SchedulesArgs) -> Result<Outcome, CliError
     ))
 }
 
-/// `bevy diagnostics`.
+/// `hearth diagnostics`.
 pub fn diagnostics(ctx: &mut Ctx, args: DiagnosticsArgs) -> Result<Outcome, CliError> {
     let result = ctx.call("diagnostics.get", Value::Null)?;
     let mut diagnostics: Vec<Value> = result
@@ -389,7 +389,7 @@ pub fn diagnostics(ctx: &mut Ctx, args: DiagnosticsArgs) -> Result<Outcome, CliE
     Ok(Outcome::new(Value::Array(diagnostics), human))
 }
 
-/// `bevy methods`.
+/// `hearth methods`.
 pub fn methods(ctx: &mut Ctx) -> Result<Outcome, CliError> {
     let mut methods = ctx.client()?.methods()?.to_vec();
     methods.sort();
@@ -397,7 +397,7 @@ pub fn methods(ctx: &mut Ctx) -> Result<Outcome, CliError> {
     Ok(Outcome::new(json!(methods), human))
 }
 
-/// `bevy call`.
+/// `hearth call`.
 pub fn call(ctx: &mut Ctx, args: CallArgs) -> Result<Outcome, CliError> {
     let params = args.params.as_deref().map(value::parse_json).transpose()?;
     if !args.method.contains("+watch") {
@@ -421,7 +421,7 @@ pub fn call(ctx: &mut Ctx, args: CallArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy exit`.
+/// `hearth exit`.
 pub fn exit(ctx: &mut Ctx, args: ExitArgs) -> Result<Outcome, CliError> {
     let value = match args.code {
         Some(code) => json!({ "Error": code }),
@@ -445,7 +445,7 @@ pub fn exit(ctx: &mut Ctx, args: ExitArgs) -> Result<Outcome, CliError> {
             Exit::Timeout,
             "The app was asked to exit, but it's still answering",
         )
-        .hint("Something may keep it alive, such as a system that ignores `AppExit`. `bevy stop` ends a session's process."));
+        .hint("Something may keep it alive, such as a system that ignores `AppExit`. `hearth stop` ends a session's process."));
     }
     Ok(Outcome::new(json!({ "exited": true }), "The app exited"))
 }

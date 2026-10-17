@@ -1,7 +1,7 @@
-//! Sessions: apps started with `bevy run --detach`, recorded on disk so later commands can find
+//! Sessions: apps started with `hearth run --detach`, recorded on disk so later commands can find
 //! them, read their logs and stop them.
 //!
-//! Records live in the CLI's state directory, which `BEVY_CLI_HOME` overrides.
+//! Records live in the CLI's state directory, which `HEARTH_CLI_HOME` overrides.
 
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::output::{CliError, Exit};
 
-/// An app started with `bevy run --detach`.
+/// An app started with `hearth run --detach`.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Session {
     /// The name other commands use for it.
@@ -83,7 +83,7 @@ impl Session {
 
 /// The CLI's state directory.
 pub fn home() -> PathBuf {
-    if let Some(dir) = std::env::var_os("BEVY_CLI_HOME").filter(|dir| !dir.is_empty()) {
+    if let Some(dir) = std::env::var_os("HEARTH_CLI_HOME").filter(|dir| !dir.is_empty()) {
         return PathBuf::from(dir);
     }
     let var = |name: &str| std::env::var_os(name).filter(|value| !value.is_empty());
@@ -100,7 +100,7 @@ pub fn home() -> PathBuf {
             .map(PathBuf::from)
             .or_else(|| var("HOME").map(|home| PathBuf::from(home).join(".local").join("state")))
     };
-    base.unwrap_or_else(std::env::temp_dir).join("bevy-cli")
+    base.unwrap_or_else(std::env::temp_dir).join("hearth-cli")
 }
 
 fn sessions_dir() -> PathBuf {

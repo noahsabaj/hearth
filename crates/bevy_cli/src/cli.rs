@@ -6,18 +6,18 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 
 use crate::output::{ColorChoice, Format};
 
-/// Build, run, inspect and drive Bevy apps.
+/// Build, run, inspect and drive Hearth apps.
 ///
 /// Live-app commands talk to a running app over the Bevy Remote Protocol (BRP): the app needs
-/// Bevy's `bevy_remote` feature with `RemotePlugin` and `RemoteHttpPlugin` added. Every command
-/// prints structured JSON with `--json`, and `bevy commands` lists them all for scripts and agents.
+/// the engine's `bevy_remote` feature with `RemotePlugin` and `RemoteHttpPlugin` added. Every command
+/// prints structured JSON with `--json`, and `hearth commands` lists them all for scripts and agents.
 #[derive(Parser, Debug)]
 #[command(
-    name = "bevy",
+    name = "hearth",
     version,
     propagate_version = true,
     max_term_width = 100,
-    after_help = "Run `bevy <command> --help` for details, `bevy commands --grep <pattern>` to search,\nand `bevy skill show` for the agent guide."
+    after_help = "Run `hearth <command> --help` for details, `hearth commands --grep <pattern>` to search,\nand `hearth skill show` for the agent guide."
 )]
 pub struct Cli {
     /// Options every command accepts.
@@ -34,11 +34,11 @@ pub struct Cli {
 #[command(next_help_heading = "Global options")]
 pub struct GlobalArgs {
     /// The app to talk to: a session name, a port, `host:port` or a URL. Defaults to the
-    /// session started from this project, else 127.0.0.1:15702. Also read from `BEVY_APP`.
+    /// session started from this project, else 127.0.0.1:15702. Also read from `HEARTH_APP`.
     #[arg(long, global = true, value_name = "APP")]
     pub app: Option<String>,
 
-    /// Output format. Also read from `BEVY_FORMAT`.
+    /// Output format. Also read from `HEARTH_FORMAT`.
     #[arg(long, global = true, value_enum, value_name = "FORMAT")]
     pub format: Option<Format>,
 
@@ -47,7 +47,7 @@ pub struct GlobalArgs {
     pub json: bool,
 
     /// Seconds to wait for the app to answer a request, 10 by default. Also read from
-    /// `BEVY_TIMEOUT`.
+    /// `HEARTH_TIMEOUT`.
     #[arg(long, global = true, value_name = "SECONDS")]
     pub timeout: Option<f64>,
 
@@ -67,114 +67,114 @@ pub struct GlobalArgs {
 /// All commands, grouped in the help by [`group_of`].
 #[derive(Subcommand, Debug)]
 pub enum Command {
-    /// Create a new Bevy project, ready for `bevy run`.
+    /// Create a new Hearth project, ready for `hearth run`.
     #[command(
-        after_help = "Examples:\n  bevy new my_game\n  bevy new my_game --template 2d --path ~/games\n  bevy new my_game --bevy-path ../bevy"
+        after_help = "Examples:\n  hearth new my_game\n  hearth new my_game --template 2d --path ~/games\n  hearth new my_game --engine-path ../hearth\n  hearth new my_game --bevy-version 0.19"
     )]
     New(NewArgs),
 
     /// Build the project with cargo and report diagnostics.
     #[command(
-        after_help = "Examples:\n  bevy build\n  bevy build --release --example breakout\n  bevy build --json   # errors and warnings as structured diagnostics"
+        after_help = "Examples:\n  hearth build\n  hearth build --release --example breakout\n  hearth build --json   # errors and warnings as structured diagnostics"
     )]
     Build(BuildArgs),
 
     /// Type-check the project with cargo and report diagnostics, without producing binaries.
-    #[command(after_help = "Examples:\n  bevy check\n  bevy check -F bevy_remote --json")]
+    #[command(after_help = "Examples:\n  hearth check\n  hearth check -F bevy_remote --json")]
     Check(BuildArgs),
 
     /// Build and run the app, attached to the terminal or detached as a session.
     #[command(
-        after_help = "Examples:\n  bevy run\n  bevy run --detach                       # returns once the app answers over BRP\n  bevy run --example server -F bevy_remote --detach\n  bevy run --release -- --my-app-flag     # arguments after -- go to the app"
+        after_help = "Examples:\n  hearth run\n  hearth run --detach                       # returns once the app answers over BRP\n  hearth run --example server -F bevy_remote --detach\n  hearth run --release -- --my-app-flag     # arguments after -- go to the app"
     )]
     Run(RunArgs),
 
-    /// List running apps: sessions started with `bevy run --detach` and other apps found on
+    /// List running apps: sessions started with `hearth run --detach` and other apps found on
     /// the usual ports.
     #[command(
         visible_alias = "sessions",
-        after_help = "Examples:\n  bevy ps\n  bevy ps --json"
+        after_help = "Examples:\n  hearth ps\n  hearth ps --json"
     )]
     Ps(PsArgs),
 
-    /// Show the log of a session started with `bevy run --detach`.
+    /// Show the log of a session started with `hearth run --detach`.
     #[command(
-        after_help = "Examples:\n  bevy logs\n  bevy logs --tail 50 --level warn\n  bevy logs --since 18234        # only what was logged after an earlier call's cursor\n  bevy logs --follow"
+        after_help = "Examples:\n  hearth logs\n  hearth logs --tail 50 --level warn\n  hearth logs --since 18234        # only what was logged after an earlier call's cursor\n  hearth logs --follow"
     )]
     Logs(LogsArgs),
 
     /// Stop a session: ask the app to exit, then end the process if it doesn't.
-    #[command(after_help = "Examples:\n  bevy stop\n  bevy stop my_game\n  bevy stop --all")]
+    #[command(after_help = "Examples:\n  hearth stop\n  hearth stop my_game\n  hearth stop --all")]
     Stop(StopArgs),
 
     /// List the project's examples.
     #[command(
-        after_help = "Examples:\n  bevy examples\n  bevy examples --grep ui\n  bevy examples --category \"3D Rendering\""
+        after_help = "Examples:\n  hearth examples\n  hearth examples --grep ui\n  hearth examples --category \"3D Rendering\""
     )]
     Examples(ExamplesArgs),
 
     /// Check the toolchain, the project and the connection to a running app.
     Doctor(DoctorArgs),
 
-    /// Show the app's name, Bevy version, entity counts, time and window.
+    /// Show the app's name, engine version, entity counts, time and window.
     #[command(
-        after_help = "Examples:\n  bevy status\n  bevy status --app 15703   # the render sub-app"
+        after_help = "Examples:\n  hearth status\n  hearth status --app 15703   # the render sub-app"
     )]
     Status,
 
     /// Show the entity hierarchy, with names and ids.
     #[command(
-        after_help = "Examples:\n  bevy tree\n  bevy tree Player --depth 2\n  bevy tree --components\n  bevy tree --all          # include observers, systems and resource entities"
+        after_help = "Examples:\n  hearth tree\n  hearth tree Player --depth 2\n  hearth tree --components\n  hearth tree --all          # include observers, systems and resource entities"
     )]
     Tree(TreeArgs),
 
     /// Find entities by name or by the components they have.
     #[command(
-        after_help = "Examples:\n  bevy find player\n  bevy find 'Enemy*'\n  bevy find --with Camera3d\n  bevy find --with Mesh3d --without Visibility"
+        after_help = "Examples:\n  hearth find player\n  hearth find 'Enemy*'\n  hearth find --with Camera3d\n  hearth find --with Mesh3d --without Visibility"
     )]
     Find(FindArgs),
 
     /// Show an entity's components and their values.
     #[command(
-        after_help = "Examples:\n  bevy get Player\n  bevy get 495v0 Transform\n  bevy get Player Transform.translation.y\n  bevy get Camera Transform Projection --json"
+        after_help = "Examples:\n  hearth get Player\n  hearth get 495v0 Transform\n  hearth get Player Transform.translation.y\n  hearth get Camera Transform Projection --json"
     )]
     Get(GetArgs),
 
     /// Change a component or one of its fields on an entity.
     #[command(
-        after_help = "Examples:\n  bevy set Player Transform.translation '[0, 2, 0]'\n  bevy set Player Transform.translation.y 2\n  bevy set Player Transform '{\"scale\": [2, 2, 2]}'   # fields not given keep their values\n  bevy set Player Name Bob\n  bevy set Player Transform @transform.json"
+        after_help = "Examples:\n  hearth set Player Transform.translation '[0, 2, 0]'\n  hearth set Player Transform.translation.y 2\n  hearth set Player Transform '{\"scale\": [2, 2, 2]}'   # fields not given keep their values\n  hearth set Player Name Bob\n  hearth set Player Transform @transform.json"
     )]
     Set(SetArgs),
 
     /// Add a component to an entity, or replace it.
     #[command(
-        after_help = "Examples:\n  bevy insert Player Visibility Hidden\n  bevy insert 495v0 my_game::Health '{\"current\": 10, \"max\": 10}'\n  bevy insert Player my_game::Frozen      # a marker: its default value"
+        after_help = "Examples:\n  hearth insert Player Visibility Hidden\n  hearth insert 495v0 my_game::Health '{\"current\": 10, \"max\": 10}'\n  hearth insert Player my_game::Frozen      # a marker: its default value"
     )]
     Insert(InsertArgs),
 
     /// Remove components from an entity.
-    #[command(after_help = "Examples:\n  bevy remove Player my_game::Frozen")]
+    #[command(after_help = "Examples:\n  hearth remove Player my_game::Frozen")]
     Remove(RemoveArgs),
 
     /// Spawn an entity.
     #[command(
-        after_help = "Examples:\n  bevy spawn --name Marker Transform\n  bevy spawn 'Transform={\"translation\": [0, 1, 0]}' Visibility --parent Player\n  bevy spawn --bundle '{\"bevy_ecs::name::Name\": \"Probe\"}'"
+        after_help = "Examples:\n  hearth spawn --name Marker Transform\n  hearth spawn 'Transform={\"translation\": [0, 1, 0]}' Visibility --parent Player\n  hearth spawn --bundle '{\"bevy_ecs::name::Name\": \"Probe\"}'"
     )]
     Spawn(SpawnArgs),
 
     /// Despawn entities and their descendants.
-    #[command(after_help = "Examples:\n  bevy despawn Enemy\n  bevy despawn 512v0 513v0")]
+    #[command(after_help = "Examples:\n  hearth despawn Enemy\n  hearth despawn 512v0 513v0")]
     Despawn(DespawnArgs),
 
     /// Change the parent of entities.
     #[command(
-        after_help = "Examples:\n  bevy reparent Sword --parent Player\n  bevy reparent Sword --root"
+        after_help = "Examples:\n  hearth reparent Sword --parent Player\n  hearth reparent Sword --root"
     )]
     Reparent(ReparentArgs),
 
     /// Query entities by components and print the component values.
     #[command(
-        after_help = "Examples:\n  bevy query Transform\n  bevy query Transform --with my_game::Enemy\n  bevy query Name --option Transform --without Camera\n  bevy query Transform --limit 5 --json"
+        after_help = "Examples:\n  hearth query Transform\n  hearth query Transform --with my_game::Enemy\n  hearth query Name --option Transform --without Camera\n  hearth query Transform --limit 5 --json"
     )]
     Query(QueryArgs),
 
@@ -184,39 +184,41 @@ pub enum Command {
 
     /// Search the types the app registered for reflection.
     #[command(
-        after_help = "Examples:\n  bevy types transform\n  bevy types --kind resource\n  bevy types --crate my_game"
+        after_help = "Examples:\n  hearth types transform\n  hearth types --kind resource\n  hearth types --crate my_game"
     )]
     Types(TypesArgs),
 
     /// Show a type's fields, variants and an example value to start from.
-    #[command(after_help = "Examples:\n  bevy schema Transform\n  bevy schema Visibility --json")]
+    #[command(
+        after_help = "Examples:\n  hearth schema Transform\n  hearth schema Visibility --json"
+    )]
     Schema(SchemaArgs),
 
     /// Stream changes to an entity's components.
     #[command(
-        after_help = "Examples:\n  bevy watch Player Transform --count 5\n  bevy watch Player --duration 10      # components added and removed\n  bevy watch Player Transform --format ndjson"
+        after_help = "Examples:\n  hearth watch Player Transform --count 5\n  hearth watch Player --duration 10      # components added and removed\n  hearth watch Player Transform --format ndjson"
     )]
     Watch(WatchArgs),
 
     /// Stream events triggered in the app.
     #[command(
-        after_help = "Examples:\n  bevy observe my_game::Scored --count 1\n  bevy observe Pointer<Click> --entity Button --duration 30"
+        after_help = "Examples:\n  hearth observe my_game::Scored --count 1\n  hearth observe Pointer<Click> --entity Button --duration 30"
     )]
     Observe(ObserveArgs),
 
     /// Trigger an event in the app.
-    #[command(after_help = "Examples:\n  bevy trigger my_game::Explode '{\"radius\": 4}'")]
+    #[command(after_help = "Examples:\n  hearth trigger my_game::Explode '{\"radius\": 4}'")]
     Trigger(TriggerArgs),
 
     /// Write a message for the app's systems to read.
     #[command(
-        after_help = "Examples:\n  bevy send AppExit Success\n  bevy send my_game::SpawnWave '{\"count\": 3}'"
+        after_help = "Examples:\n  hearth send AppExit Success\n  hearth send my_game::SpawnWave '{\"count\": 3}'"
     )]
     Send(SendArgs),
 
     /// Capture the app's window to a PNG file.
     #[command(
-        after_help = "Examples:\n  bevy screenshot\n  bevy screenshot --out shot.png\n  bevy screenshot --max-size 800"
+        after_help = "Examples:\n  hearth screenshot\n  hearth screenshot --out shot.png\n  hearth screenshot --max-size 800"
     )]
     Screenshot(ScreenshotArgs),
 
@@ -226,16 +228,16 @@ pub enum Command {
 
     /// Show, pause, resume or speed up the app's virtual time.
     #[command(
-        after_help = "Examples:\n  bevy time\n  bevy time pause\n  bevy time speed 0.25\n  bevy time resume"
+        after_help = "Examples:\n  hearth time\n  hearth time pause\n  hearth time speed 0.25\n  hearth time resume"
     )]
     Time(TimeArgs),
 
     /// List schedules, or show the systems of one.
-    #[command(after_help = "Examples:\n  bevy schedules\n  bevy schedules Update")]
+    #[command(after_help = "Examples:\n  hearth schedules\n  hearth schedules Update")]
     Schedules(SchedulesArgs),
 
     /// Show diagnostics such as frame time and entity count.
-    #[command(after_help = "Examples:\n  bevy diagnostics\n  bevy diagnostics fps")]
+    #[command(after_help = "Examples:\n  hearth diagnostics\n  hearth diagnostics fps")]
     Diagnostics(DiagnosticsArgs),
 
     /// List the BRP methods the app supports.
@@ -243,17 +245,17 @@ pub enum Command {
 
     /// Call any BRP method with raw JSON parameters.
     #[command(
-        after_help = "Examples:\n  bevy call world.list_resources\n  bevy call world.get_components '{\"entity\": \"495v0\", \"components\": [\"bevy_ecs::name::Name\"]}'\n  bevy call world.get_components+watch @params.json --count 3"
+        after_help = "Examples:\n  hearth call world.list_resources\n  hearth call world.get_components '{\"entity\": \"495v0\", \"components\": [\"bevy_ecs::name::Name\"]}'\n  hearth call world.get_components+watch @params.json --count 3"
     )]
     Call(CallArgs),
 
     /// Ask the app to exit.
-    #[command(after_help = "Examples:\n  bevy exit\n  bevy exit --code 3")]
+    #[command(after_help = "Examples:\n  hearth exit\n  hearth exit --code 3")]
     Exit(ExitArgs),
 
     /// List every command with its arguments, as text or as JSON for scripts and agents.
     #[command(
-        after_help = "Examples:\n  bevy commands\n  bevy commands --grep entity\n  bevy commands --json"
+        after_help = "Examples:\n  hearth commands\n  hearth commands --grep entity\n  hearth commands --json"
     )]
     Commands(CommandsArgs),
 
@@ -263,7 +265,7 @@ pub enum Command {
 
     /// Serve the commands as tools over the Model Context Protocol, on stdio.
     #[command(
-        after_help = "Examples:\n  claude mcp add bevy -- bevy mcp\n  claude mcp add bevy -- bevy mcp --app my_game"
+        after_help = "Examples:\n  claude mcp add hearth -- hearth mcp\n  claude mcp add hearth -- hearth mcp --app my_game"
     )]
     Mcp(McpArgs),
 }
@@ -282,7 +284,7 @@ pub fn group_of(command: &str) -> &'static str {
 /// The order of the help sections.
 pub const GROUPS: &[&str] = &["Project", "Live app (over BRP)", "Agents and scripting"];
 
-/// Templates for `bevy new`.
+/// Templates for `hearth new`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum Template {
     /// A 3D scene with a camera, a light and a cube.
@@ -295,7 +297,7 @@ pub enum Template {
     Minimal,
 }
 
-/// Arguments of `bevy new`.
+/// Arguments of `hearth new`.
 #[derive(Args, Debug)]
 pub struct NewArgs {
     /// The project name, which is also its directory name.
@@ -309,21 +311,21 @@ pub struct NewArgs {
     #[arg(long, value_enum, default_value_t = Template::ThreeD)]
     pub template: Template,
 
-    /// The Bevy version requirement for the dependency.
-    #[arg(long, value_name = "VERSION", default_value = crate::project::DEFAULT_BEVY_VERSION, conflicts_with_all = ["bevy_path", "bevy_git"])]
-    pub bevy_version: String,
+    /// Depend on a local checkout of the engine instead of Hearth's git repository.
+    #[arg(long, value_name = "PATH", conflicts_with_all = ["engine_git", "engine_branch", "bevy_version"])]
+    pub engine_path: Option<PathBuf>,
 
-    /// Depend on a local Bevy checkout instead of crates.io.
-    #[arg(long, value_name = "PATH", conflicts_with = "bevy_git")]
-    pub bevy_path: Option<PathBuf>,
+    /// Depend on another git repository of the engine, such as your own fork.
+    #[arg(long, value_name = "URL", conflicts_with = "bevy_version")]
+    pub engine_git: Option<String>,
 
-    /// Depend on a Bevy git repository instead of crates.io.
-    #[arg(long, value_name = "URL")]
-    pub bevy_git: Option<String>,
+    /// The branch of the engine's git repository.
+    #[arg(long, value_name = "BRANCH", conflicts_with = "bevy_version")]
+    pub engine_branch: Option<String>,
 
-    /// The git branch to use with `--bevy-git`.
-    #[arg(long, value_name = "BRANCH", requires = "bevy_git")]
-    pub bevy_branch: Option<String>,
+    /// Depend on upstream Bevy from crates.io at this version requirement instead of Hearth.
+    #[arg(long, value_name = "VERSION")]
+    pub bevy_version: Option<String>,
 
     /// Don't initialize a git repository.
     #[arg(long)]
@@ -373,7 +375,7 @@ pub struct CargoArgs {
     #[arg(long, value_name = "PATH")]
     pub manifest_path: Option<PathBuf>,
 
-    /// The rustup toolchain to build with, such as `nightly`. Also read from `BEVY_TOOLCHAIN`.
+    /// The rustup toolchain to build with, such as `nightly`. Also read from `HEARTH_TOOLCHAIN`.
     #[arg(long, value_name = "NAME")]
     pub toolchain: Option<String>,
 
@@ -382,7 +384,7 @@ pub struct CargoArgs {
     pub cargo_args: Vec<String>,
 }
 
-/// Arguments of `bevy build` and `bevy check`.
+/// Arguments of `hearth build` and `hearth check`.
 #[derive(Args, Debug)]
 pub struct BuildArgs {
     /// Cargo options.
@@ -390,14 +392,14 @@ pub struct BuildArgs {
     pub cargo: CargoArgs,
 }
 
-/// Arguments of `bevy run`.
+/// Arguments of `hearth run`.
 #[derive(Args, Debug)]
 pub struct RunArgs {
     /// Cargo options.
     #[command(flatten)]
     pub cargo: CargoArgs,
 
-    /// Run in the background as a session; logs go to a file you read with `bevy logs`.
+    /// Run in the background as a session; logs go to a file you read with `hearth logs`.
     #[arg(short, long)]
     pub detach: bool,
 
@@ -405,7 +407,7 @@ pub struct RunArgs {
     #[arg(long, value_name = "NAME", requires = "detach")]
     pub name: Option<String>,
 
-    /// The BRP port, passed to the app as `BEVY_REMOTE_PORT`. Defaults to 15702, or the next
+    /// The BRP port, passed to the app as `HEARTH_REMOTE_PORT`. Defaults to 15702, or the next
     /// free port when another app uses it.
     #[arg(long, value_name = "PORT")]
     pub port: Option<u16>,
@@ -423,10 +425,10 @@ pub struct RunArgs {
     pub args: Vec<String>,
 }
 
-/// Arguments of `bevy ps`.
+/// Arguments of `hearth ps`.
 #[derive(Args, Debug)]
 pub struct PsArgs {
-    /// Don't scan the usual ports for apps that weren't started with `bevy run --detach`.
+    /// Don't scan the usual ports for apps that weren't started with `hearth run --detach`.
     #[arg(long)]
     pub no_scan: bool,
 }
@@ -446,7 +448,7 @@ pub enum Level {
     Error,
 }
 
-/// Arguments of `bevy logs`.
+/// Arguments of `hearth logs`.
 #[derive(Args, Debug)]
 pub struct LogsArgs {
     /// The session. Defaults to the session of `--app` or of this project.
@@ -477,7 +479,7 @@ pub struct LogsArgs {
     pub duration: Option<f64>,
 }
 
-/// Arguments of `bevy stop`.
+/// Arguments of `hearth stop`.
 #[derive(Args, Debug)]
 pub struct StopArgs {
     /// The session. Defaults to the session of `--app` or of this project.
@@ -492,7 +494,7 @@ pub struct StopArgs {
     pub force: bool,
 }
 
-/// Arguments of `bevy examples`.
+/// Arguments of `hearth examples`.
 #[derive(Args, Debug)]
 pub struct ExamplesArgs {
     /// Show only examples whose name, category or description contains this text.
@@ -512,19 +514,19 @@ pub struct ExamplesArgs {
     pub manifest_path: Option<PathBuf>,
 }
 
-/// Arguments of `bevy doctor`.
+/// Arguments of `hearth doctor`.
 #[derive(Args, Debug)]
 pub struct DoctorArgs {
     /// The project's `Cargo.toml`, when not in the current directory.
     #[arg(long, value_name = "PATH")]
     pub manifest_path: Option<PathBuf>,
 
-    /// The rustup toolchain the project builds with. Also read from `BEVY_TOOLCHAIN`.
+    /// The rustup toolchain the project builds with. Also read from `HEARTH_TOOLCHAIN`.
     #[arg(long, value_name = "NAME")]
     pub toolchain: Option<String>,
 }
 
-/// Arguments of `bevy tree`.
+/// Arguments of `hearth tree`.
 #[derive(Args, Debug)]
 pub struct TreeArgs {
     /// Show only this entity and its descendants.
@@ -543,7 +545,7 @@ pub struct TreeArgs {
     pub all: bool,
 }
 
-/// Arguments of `bevy find`.
+/// Arguments of `hearth find`.
 #[derive(Args, Debug)]
 pub struct FindArgs {
     /// Text the name contains, case-insensitive; `*` and `?` match any text and any character.
@@ -566,7 +568,7 @@ pub struct FindArgs {
     pub limit: Option<usize>,
 }
 
-/// Arguments of `bevy get`.
+/// Arguments of `hearth get`.
 #[derive(Args, Debug)]
 pub struct GetArgs {
     /// The entity: an id such as `495v0`, or a name.
@@ -581,7 +583,7 @@ pub struct GetArgs {
     pub full: bool,
 }
 
-/// Arguments of `bevy set`.
+/// Arguments of `hearth set`.
 #[derive(Args, Debug)]
 pub struct SetArgs {
     /// The entity: an id such as `495v0`, or a name.
@@ -595,7 +597,7 @@ pub struct SetArgs {
     pub value: String,
 }
 
-/// Arguments of `bevy insert`.
+/// Arguments of `hearth insert`.
 #[derive(Args, Debug)]
 pub struct InsertArgs {
     /// The entity: an id such as `495v0`, or a name.
@@ -609,7 +611,7 @@ pub struct InsertArgs {
     pub value: Option<String>,
 }
 
-/// Arguments of `bevy remove`.
+/// Arguments of `hearth remove`.
 #[derive(Args, Debug)]
 pub struct RemoveArgs {
     /// The entity: an id such as `495v0`, or a name.
@@ -620,7 +622,7 @@ pub struct RemoveArgs {
     pub components: Vec<String>,
 }
 
-/// Arguments of `bevy spawn`.
+/// Arguments of `hearth spawn`.
 #[derive(Args, Debug)]
 pub struct SpawnArgs {
     /// Components as `Component` for the default value or `Component=VALUE`.
@@ -639,7 +641,7 @@ pub struct SpawnArgs {
     pub bundle: Option<String>,
 }
 
-/// Arguments of `bevy despawn`.
+/// Arguments of `hearth despawn`.
 #[derive(Args, Debug)]
 pub struct DespawnArgs {
     /// The entities: ids such as `495v0`, or names.
@@ -647,7 +649,7 @@ pub struct DespawnArgs {
     pub entities: Vec<String>,
 }
 
-/// Arguments of `bevy reparent`.
+/// Arguments of `hearth reparent`.
 #[derive(Args, Debug)]
 pub struct ReparentArgs {
     /// The entities to move.
@@ -668,7 +670,7 @@ pub struct ReparentArgs {
     pub root: bool,
 }
 
-/// Arguments of `bevy query`.
+/// Arguments of `hearth query`.
 #[derive(Args, Debug)]
 pub struct QueryArgs {
     /// Components every entity must have; their values are printed.
@@ -703,11 +705,13 @@ pub struct QueryArgs {
     pub full: bool,
 }
 
-/// The `bevy resource` commands.
+/// The `hearth resource` commands.
 #[derive(Subcommand, Debug)]
 pub enum ResourceCommand {
     /// List the resources in the app.
-    #[command(after_help = "Examples:\n  bevy resource list\n  bevy resource list --grep time")]
+    #[command(
+        after_help = "Examples:\n  hearth resource list\n  hearth resource list --grep time"
+    )]
     List {
         /// Show only resources whose type contains this text (case-insensitive).
         #[arg(short, long, value_name = "TEXT")]
@@ -715,7 +719,7 @@ pub enum ResourceCommand {
     },
     /// Show a resource's value.
     #[command(
-        after_help = "Examples:\n  bevy resource get Time<Virtual>\n  bevy resource get ClearColor --json"
+        after_help = "Examples:\n  hearth resource get Time<Virtual>\n  hearth resource get ClearColor --json"
     )]
     Get {
         /// The resource.
@@ -723,7 +727,7 @@ pub enum ResourceCommand {
     },
     /// Change a resource or one of its fields.
     #[command(
-        after_help = "Examples:\n  bevy resource set ClearColor '{\"Srgba\": {\"red\": 0.1, \"green\": 0.1, \"blue\": 0.2, \"alpha\": 1}}'\n  bevy resource set Time<Virtual>.context.relative_speed 0.5"
+        after_help = "Examples:\n  hearth resource set ClearColor '{\"Srgba\": {\"red\": 0.1, \"green\": 0.1, \"blue\": 0.2, \"alpha\": 1}}'\n  hearth resource set Time<Virtual>.context.relative_speed 0.5"
     )]
     Set {
         /// The resource, optionally followed by a field path.
@@ -733,7 +737,7 @@ pub enum ResourceCommand {
         value: String,
     },
     /// Add a resource, or replace it.
-    #[command(after_help = "Examples:\n  bevy resource insert my_game::Score '{\"value\": 0}'")]
+    #[command(after_help = "Examples:\n  hearth resource insert my_game::Score '{\"value\": 0}'")]
     Insert {
         /// The resource.
         resource: String,
@@ -742,27 +746,27 @@ pub enum ResourceCommand {
         value: Option<String>,
     },
     /// Remove a resource.
-    #[command(after_help = "Examples:\n  bevy resource remove my_game::Score")]
+    #[command(after_help = "Examples:\n  hearth resource remove my_game::Score")]
     Remove {
         /// The resource.
         resource: String,
     },
 }
 
-/// What kind of types `bevy types` lists.
+/// What kind of types `hearth types` lists.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum TypeKind {
     /// Components.
     Component,
     /// Resources.
     Resource,
-    /// Events, for `bevy trigger` and `bevy observe`.
+    /// Events, for `hearth trigger` and `hearth observe`.
     Event,
     /// Every reflected type.
     All,
 }
 
-/// Arguments of `bevy types`.
+/// Arguments of `hearth types`.
 #[derive(Args, Debug)]
 pub struct TypesArgs {
     /// Text the type path contains, case-insensitive.
@@ -781,7 +785,7 @@ pub struct TypesArgs {
     pub limit: Option<usize>,
 }
 
-/// Arguments of `bevy schema`.
+/// Arguments of `hearth schema`.
 #[derive(Args, Debug)]
 pub struct SchemaArgs {
     /// The type: a full type path or a short name such as `Transform`.
@@ -800,7 +804,7 @@ pub struct StreamArgs {
     pub duration: Option<f64>,
 }
 
-/// Arguments of `bevy watch`.
+/// Arguments of `hearth watch`.
 #[derive(Args, Debug)]
 pub struct WatchArgs {
     /// The entity: an id such as `495v0`, or a name.
@@ -814,7 +818,7 @@ pub struct WatchArgs {
     pub stream: StreamArgs,
 }
 
-/// Arguments of `bevy observe`.
+/// Arguments of `hearth observe`.
 #[derive(Args, Debug)]
 pub struct ObserveArgs {
     /// The event type.
@@ -829,7 +833,7 @@ pub struct ObserveArgs {
     pub stream: StreamArgs,
 }
 
-/// Arguments of `bevy trigger`.
+/// Arguments of `hearth trigger`.
 #[derive(Args, Debug)]
 pub struct TriggerArgs {
     /// The event type.
@@ -840,7 +844,7 @@ pub struct TriggerArgs {
     pub value: Option<String>,
 }
 
-/// Arguments of `bevy send`.
+/// Arguments of `hearth send`.
 #[derive(Args, Debug)]
 pub struct SendArgs {
     /// The message type.
@@ -851,7 +855,7 @@ pub struct SendArgs {
     pub value: Option<String>,
 }
 
-/// Arguments of `bevy screenshot`.
+/// Arguments of `hearth screenshot`.
 #[derive(Args, Debug)]
 pub struct ScreenshotArgs {
     /// Where to write the PNG. Defaults to a new file in the system's temporary directory.
@@ -882,12 +886,12 @@ pub enum Button {
     Forward,
 }
 
-/// The `bevy input` commands.
+/// The `hearth input` commands.
 #[derive(Subcommand, Debug)]
 pub enum InputCommand {
     /// Press and release keys, together as a chord.
     #[command(
-        after_help = "Examples:\n  bevy input key Space\n  bevy input key w --hold 2000\n  bevy input key ctrl+s\n  bevy input key Escape --json\n\nKeys are Bevy `KeyCode` names (KeyA, Digit1, ArrowUp, F5) or aliases: a-z, 0-9, space,\nenter, esc, tab, backspace, up, down, left, right, shift, ctrl, alt and super."
+        after_help = "Examples:\n  hearth input key Space\n  hearth input key w --hold 2000\n  hearth input key ctrl+s\n  hearth input key Escape --json\n\nKeys are `KeyCode` names (KeyA, Digit1, ArrowUp, F5) or aliases: a-z, 0-9, space,\nenter, esc, tab, backspace, up, down, left, right, shift, ctrl, alt and super."
     )]
     Key {
         /// The keys, pressed in order and released in reverse. `ctrl+s` is the same as `ctrl s`.
@@ -904,13 +908,13 @@ pub enum InputCommand {
         up: bool,
     },
     /// Type text, one key per character.
-    #[command(after_help = "Examples:\n  bevy input type 'hello world'")]
+    #[command(after_help = "Examples:\n  hearth input type 'hello world'")]
     Type {
         /// The text.
         text: String,
     },
     /// Move the cursor, in logical pixels from the window's top-left corner.
-    #[command(after_help = "Examples:\n  bevy input move 640 360")]
+    #[command(after_help = "Examples:\n  hearth input move 640 360")]
     Move {
         /// Pixels from the left edge.
         #[arg(allow_negative_numbers = true)]
@@ -921,7 +925,7 @@ pub enum InputCommand {
     },
     /// Click a mouse button, at a position or where the cursor is.
     #[command(
-        after_help = "Examples:\n  bevy input click 640 360\n  bevy input click --button right\n  bevy input click 100 40 --hold 500"
+        after_help = "Examples:\n  hearth input click 640 360\n  hearth input click --button right\n  hearth input click 100 40 --hold 500"
     )]
     Click {
         /// Pixels from the left edge.
@@ -941,7 +945,9 @@ pub enum InputCommand {
         double: bool,
     },
     /// Scroll the mouse wheel.
-    #[command(after_help = "Examples:\n  bevy input scroll -3\n  bevy input scroll 120 --pixels")]
+    #[command(
+        after_help = "Examples:\n  hearth input scroll -3\n  hearth input scroll 120 --pixels"
+    )]
     Scroll {
         /// Vertical lines (or pixels) to scroll; positive scrolls up.
         #[arg(allow_negative_numbers = true)]
@@ -955,7 +961,7 @@ pub enum InputCommand {
     },
 }
 
-/// Arguments of `bevy time`.
+/// Arguments of `hearth time`.
 #[derive(Args, Debug)]
 pub struct TimeArgs {
     /// What to do. Without one, shows the time.
@@ -963,7 +969,7 @@ pub struct TimeArgs {
     pub action: Option<TimeCommand>,
 }
 
-/// The `bevy time` commands.
+/// The `hearth time` commands.
 #[derive(Subcommand, Debug, Clone, Copy)]
 pub enum TimeCommand {
     /// Show the virtual time: whether it's paused, its speed and the time elapsed.
@@ -979,21 +985,21 @@ pub enum TimeCommand {
     },
 }
 
-/// Arguments of `bevy schedules`.
+/// Arguments of `hearth schedules`.
 #[derive(Args, Debug)]
 pub struct SchedulesArgs {
     /// The schedule whose systems to show.
     pub schedule: Option<String>,
 }
 
-/// Arguments of `bevy diagnostics`.
+/// Arguments of `hearth diagnostics`.
 #[derive(Args, Debug)]
 pub struct DiagnosticsArgs {
     /// Show only diagnostics whose path contains this text.
     pub pattern: Option<String>,
 }
 
-/// Arguments of `bevy call`.
+/// Arguments of `hearth call`.
 #[derive(Args, Debug)]
 pub struct CallArgs {
     /// The method, such as `world.query`.
@@ -1008,7 +1014,7 @@ pub struct CallArgs {
     pub stream: StreamArgs,
 }
 
-/// Arguments of `bevy exit`.
+/// Arguments of `hearth exit`.
 #[derive(Args, Debug)]
 pub struct ExitArgs {
     /// Exit with this error code instead of success.
@@ -1020,7 +1026,7 @@ pub struct ExitArgs {
     pub no_wait: bool,
 }
 
-/// Arguments of `bevy commands`.
+/// Arguments of `hearth commands`.
 #[derive(Args, Debug)]
 pub struct CommandsArgs {
     /// Show only commands whose name, description or arguments match this text (case-insensitive).
@@ -1028,7 +1034,7 @@ pub struct CommandsArgs {
     pub grep: Option<String>,
 }
 
-/// Agent clients `bevy skill install` knows where to install for.
+/// Agent clients `hearth skill install` knows where to install for.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum SkillClient {
     /// Claude Code: `~/.claude/skills`, or `.claude/skills` with `--project`.
@@ -1055,12 +1061,12 @@ pub struct SkillLocation {
     pub dir: Option<PathBuf>,
 }
 
-/// The `bevy skill` commands.
+/// The `hearth skill` commands.
 #[derive(Subcommand, Debug)]
 pub enum SkillCommand {
     /// Print the agent guide, or one of its reference topics.
     #[command(
-        after_help = "Examples:\n  bevy skill show\n  bevy skill show values\n  bevy skill show --list"
+        after_help = "Examples:\n  hearth skill show\n  hearth skill show values\n  hearth skill show --list"
     )]
     Show {
         /// The topic. Defaults to the main guide.
@@ -1069,10 +1075,10 @@ pub enum SkillCommand {
         #[arg(long)]
         list: bool,
     },
-    /// Install the skill so agents find it. The installed file points back to `bevy skill show`,
+    /// Install the skill so agents find it. The installed file points back to `hearth skill show`,
     /// so it stays current as the CLI updates.
     #[command(
-        after_help = "Examples:\n  bevy skill install\n  bevy skill install codex\n  bevy skill install --project\n  bevy skill install --full     # copy the whole guide instead of pointing to the CLI"
+        after_help = "Examples:\n  hearth skill install\n  hearth skill install codex\n  hearth skill install --project\n  hearth skill install --full     # copy the whole guide instead of pointing to the CLI"
     )]
     Install {
         /// Where to install.
@@ -1099,7 +1105,7 @@ pub enum SkillCommand {
     },
 }
 
-/// Arguments of `bevy mcp`.
+/// Arguments of `hearth mcp`.
 #[derive(Args, Debug)]
 pub struct McpArgs {
     /// Seconds a streaming tool (watch, observe, logs) runs when the call sets no limit.

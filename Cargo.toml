@@ -3,13 +3,13 @@ name = "bevy"
 version = "0.20.0-dev"
 edition = "2024"
 categories = ["game-engines", "graphics", "gui", "rendering"]
-description = "A refreshingly simple data-driven game engine and app framework"
+description = "Hearth: a data-driven game engine and app framework, forked from Bevy"
 exclude = ["assets/", "tools/", ".github/", "crates/", "examples/wasm/assets/"]
-homepage = "https://bevy.org"
-keywords = ["game", "engine", "gamedev", "graphics", "bevy"]
+homepage = "https://github.com/noahsabaj/bevy"
+keywords = ["game", "engine", "gamedev", "hearth", "bevy"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/bevyengine/bevy"
-documentation = "https://docs.rs/bevy"
+repository = "https://github.com/noahsabaj/bevy"
+documentation = "https://github.com/noahsabaj/bevy"
 rust-version = "1.97.1"
 
 [workspace]

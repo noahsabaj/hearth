@@ -200,7 +200,7 @@ impl Ctx {
                     format!("No entity is named `{name}`"),
                 )
                 .hint(if similar.is_empty() {
-                    "Pass an entity id such as 495v0, or a name from `bevy tree`."
+                    "Pass an entity id such as 495v0, or a name from `hearth tree`."
                 } else {
                     "Did you mean one of these?"
                 })

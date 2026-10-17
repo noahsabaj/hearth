@@ -174,7 +174,7 @@ impl Client {
             HttpError::Connect(reason) => CliError::new(
                 "APP_UNREACHABLE",
                 Exit::Unreachable,
-                format!("No Bevy app answered at {}", self.endpoint),
+                format!("No app answered at {}", self.endpoint),
             )
             .hint(self.unreachable_hint.clone())
             .data(json!({ "endpoint": self.endpoint.to_string(), "reason": reason.to_string() })),
@@ -193,7 +193,7 @@ impl Client {
                 Exit::Unreachable,
                 format!("Talking to {} failed: {message}", self.endpoint),
             )
-            .hint("Check that this address belongs to a Bevy app with `RemoteHttpPlugin`."),
+            .hint("Check that this address belongs to an app with `RemoteHttpPlugin`."),
         }
     }
 }
@@ -234,32 +234,32 @@ pub fn brp_error(method: &str, error: &Value) -> CliError {
         -32601 => (
             "METHOD_NOT_FOUND",
             Some(format!(
-                "This app doesn't support `{method}`: it may run an older Bevy, or lack the plugin that adds it. `bevy methods` lists what it supports."
+                "This app doesn't support `{method}`: it may run an older engine version, or lack the plugin that adds it. `hearth methods` lists what it supports."
             )),
         ),
         -32602 => ("INVALID_PARAMS", None),
         -32603 => ("APP_ERROR", None),
         -23401 => (
             "ENTITY_NOT_FOUND",
-            Some("Entity ids change between runs: find the current one with `bevy find` or `bevy tree`.".to_string()),
+            Some("Entity ids change between runs: find the current one with `hearth find` or `hearth tree`.".to_string()),
         ),
         -23402 => (
             "COMPONENT_ERROR",
-            Some("`bevy schema <component>` shows the fields and an example value.".to_string()),
+            Some("`hearth schema <component>` shows the fields and an example value.".to_string()),
         ),
         -23403 => (
             "COMPONENT_NOT_PRESENT",
-            Some("`bevy get <entity>` lists the entity's components.".to_string()),
+            Some("`hearth get <entity>` lists the entity's components.".to_string()),
         ),
         -23404 => ("SELF_REPARENT", None),
         -23405 => ("COMPONENT_NOT_IN_METADATA", None),
         -23501 => (
             "RESOURCE_ERROR",
-            Some("`bevy resource list` lists the resources and `bevy schema <resource>` shows their fields.".to_string()),
+            Some("`hearth resource list` lists the resources and `hearth schema <resource>` shows their fields.".to_string()),
         ),
         -23502 => (
             "RESOURCE_NOT_PRESENT",
-            Some("`bevy resource list` lists the resources in the app.".to_string()),
+            Some("`hearth resource list` lists the resources in the app.".to_string()),
         ),
         _ => ("BRP_ERROR", None),
     };

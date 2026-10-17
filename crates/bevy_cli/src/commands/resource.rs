@@ -1,4 +1,4 @@
-//! `bevy resource`: listing, reading and changing resources.
+//! `hearth resource`: listing, reading and changing resources.
 
 use serde_json::{json, Value};
 
@@ -10,7 +10,7 @@ use crate::output::{CliError, Outcome, Style};
 use crate::registry::Want;
 use crate::value;
 
-/// Runs a `bevy resource` command.
+/// Runs a `hearth resource` command.
 pub fn run(ctx: &mut Ctx, command: ResourceCommand) -> Result<Outcome, CliError> {
     match command {
         ResourceCommand::List { grep } => list(ctx, grep.as_deref()),

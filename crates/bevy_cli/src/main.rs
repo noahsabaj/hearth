@@ -1,9 +1,9 @@
-//! `bevy`: build, run, inspect and drive Bevy apps from the command line.
+//! `hearth`: build, run, inspect and drive Hearth apps from the command line.
 //!
 //! The commands that work on a running app talk to it over the Bevy Remote Protocol (BRP).
 //! Every command prints text for people by default and a JSON envelope with `--json`, exits
-//! with a documented code, and is listed by `bevy commands`, so scripts and agents can rely
-//! on it. `bevy mcp` serves the same commands as Model Context Protocol tools.
+//! with a documented code, and is listed by `hearth commands`, so scripts and agents can rely
+//! on it. `hearth mcp` serves the same commands as Model Context Protocol tools.
 
 extern crate alloc;
 
@@ -35,10 +35,10 @@ use crate::context::{Attachment, Ctx, McpLimits};
 use crate::output::{paint, CliError, ColorChoice, Exit, Format, Output, Style};
 use crate::target::Source;
 
-/// How long to wait for the app without `--timeout` or `BEVY_TIMEOUT`.
+/// How long to wait for the app without `--timeout` or `HEARTH_TIMEOUT`.
 const DEFAULT_TIMEOUT: f64 = 10.0;
 
-/// The output format: `--json`, `--format`, else `BEVY_FORMAT`, else text for people.
+/// The output format: `--json`, `--format`, else `HEARTH_FORMAT`, else text for people.
 fn format_of(global: &GlobalArgs) -> Result<Format, CliError> {
     if global.json {
         return Ok(Format::Json);
@@ -46,24 +46,24 @@ fn format_of(global: &GlobalArgs) -> Result<Format, CliError> {
     if let Some(format) = global.format {
         return Ok(format);
     }
-    match std::env::var("BEVY_FORMAT") {
+    match std::env::var("HEARTH_FORMAT") {
         Ok(text) if !text.trim().is_empty() => Format::from_str(text.trim(), true).map_err(|_| {
             CliError::usage(format!(
-                "BEVY_FORMAT must be human, json or ndjson, not `{text}`"
+                "HEARTH_FORMAT must be human, json or ndjson, not `{text}`"
             ))
         }),
         _ => Ok(Format::Human),
     }
 }
 
-/// How long to wait for the app: `--timeout`, else `BEVY_TIMEOUT`, else 10 seconds.
+/// How long to wait for the app: `--timeout`, else `HEARTH_TIMEOUT`, else 10 seconds.
 fn timeout_of(global: &GlobalArgs) -> Result<Duration, CliError> {
     let seconds = match global.timeout {
         Some(seconds) => seconds,
-        None => match std::env::var("BEVY_TIMEOUT") {
+        None => match std::env::var("HEARTH_TIMEOUT") {
             Ok(text) if !text.trim().is_empty() => text.trim().parse().map_err(|_| {
                 CliError::usage(format!(
-                    "BEVY_TIMEOUT must be a number of seconds, not `{text}`"
+                    "HEARTH_TIMEOUT must be a number of seconds, not `{text}`"
                 ))
             })?,
             _ => DEFAULT_TIMEOUT,
@@ -96,7 +96,7 @@ fn format_in(args: &[OsString]) -> Format {
     }
     format
         .or_else(|| {
-            std::env::var("BEVY_FORMAT")
+            std::env::var("HEARTH_FORMAT")
                 .ok()
                 .and_then(|text| Format::from_str(text.trim(), true).ok())
         })
@@ -131,8 +131,8 @@ fn help_color(args: &[OsString]) -> bool {
 
 /// The command line definition, with the commands grouped in the help.
 fn cli_command(color: bool) -> clap::Command {
-    // `bevy`, not the file name, which is `bevy.exe` on Windows.
-    let command = Cli::command().bin_name("bevy").color(if color {
+    // `hearth`, not the file name, which is `hearth.exe` on Windows.
+    let command = Cli::command().bin_name("hearth").color(if color {
         clap::ColorChoice::Always
     } else {
         clap::ColorChoice::Never
@@ -278,7 +278,7 @@ fn parse_error(error: &clap::Error) -> CliError {
         }
     }
     let error = CliError::new(code, Exit::Usage, message).hint(if rest.is_empty() {
-        "`bevy commands` lists the commands; `bevy <command> --help` explains one.".to_string()
+        "`hearth commands` lists the commands; `hearth <command> --help` explains one.".to_string()
     } else {
         rest.join("\n").trim().to_string()
     });
@@ -481,7 +481,7 @@ mod tests {
                         None => argv.push(word.to_string()),
                     }
                 }
-                if argv.first().map(String::as_str) != Some("bevy") {
+                if argv.first().map(String::as_str) != Some("hearth") {
                     continue;
                 }
                 let result = command.clone().try_get_matches_from(&argv);
@@ -496,19 +496,22 @@ mod tests {
 
     #[test]
     fn reads_the_format_from_raw_arguments() {
-        assert_eq!(format_in(&words("bevy get x --json")), Format::Json);
+        assert_eq!(format_in(&words("hearth get x --json")), Format::Json);
         assert_eq!(
-            format_in(&words("bevy get x --format ndjson")),
+            format_in(&words("hearth get x --format ndjson")),
             Format::Ndjson
         );
-        assert_eq!(format_in(&words("bevy get x --format=json")), Format::Json);
-        assert_eq!(format_in(&words("bevy run -- --json")), Format::Human);
+        assert_eq!(
+            format_in(&words("hearth get x --format=json")),
+            Format::Json
+        );
+        assert_eq!(format_in(&words("hearth run -- --json")), Format::Human);
     }
 
     #[test]
     fn reports_parse_errors_with_codes() {
         let error = cli_command(false)
-            .try_get_matches_from(words("bevy tre"))
+            .try_get_matches_from(words("hearth tre"))
             .unwrap_err();
         let error = parse_error(&error);
         assert_eq!(error.code, "UNKNOWN_COMMAND");
@@ -517,7 +520,7 @@ mod tests {
             .unwrap()
             .contains(&json!("tree")));
         let error = cli_command(false)
-            .try_get_matches_from(words("bevy get"))
+            .try_get_matches_from(words("hearth get"))
             .unwrap_err();
         let error = parse_error(&error);
         assert_eq!(error.code, "MISSING_ARGUMENT");
@@ -553,17 +556,17 @@ mod tests {
     #[test]
     fn finds_the_command_of_rejected_lines() {
         let command = cli_command(false);
-        assert_eq!(command_in(&command, &words("bevy get")), "get");
+        assert_eq!(command_in(&command, &words("hearth get")), "get");
         assert_eq!(
-            command_in(&command, &words("bevy --app tree resource get")),
+            command_in(&command, &words("hearth --app tree resource get")),
             "resource get"
         );
         assert_eq!(
-            command_in(&command, &words("bevy -q input key --hold 5")),
+            command_in(&command, &words("hearth -q input key --hold 5")),
             "input key"
         );
-        assert_eq!(command_in(&command, &words("bevy frobnicate")), "");
-        assert_eq!(command_in(&command, &words("bevy run -- tree")), "run");
+        assert_eq!(command_in(&command, &words("hearth frobnicate")), "");
+        assert_eq!(command_in(&command, &words("hearth run -- tree")), "run");
     }
 
     #[test]

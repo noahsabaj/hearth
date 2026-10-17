@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" width="360" height="96" role="img" aria-label="Hearth">
+  <defs>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#E8590C"/>
+      <stop offset="1" stop-color="#FFB347"/>
+    </linearGradient>
+  </defs>
+  <path d="M16 86V44C16 26 30 12 48 12S80 26 80 44V86" fill="none" stroke="#3B2F2A" stroke-width="7" stroke-linecap="round"/>
+  <path d="M8 86H88" stroke="#3B2F2A" stroke-width="7" stroke-linecap="round"/>
+  <path d="M48 24C58 37 65 45 65 58C65 70 57 78 48 78S31 70 31 58C31 50 36 44 40 38C41 46 44 50 48 52C46 42 44 33 48 24Z" fill="url(#flame)"/>
+  <path d="M48 52C53 58 56 62 56 67C56 72 52 76 48 76S40 72 40 67C40 62 43 58 48 52Z" fill="#FFE08A"/>
+  <text x="106" y="67" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#3B2F2A">Hearth</text>
+</svg>

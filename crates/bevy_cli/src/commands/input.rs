@@ -1,4 +1,4 @@
-//! `bevy input`: keyboard and mouse input for the app's window.
+//! `hearth input`: keyboard and mouse input for the app's window.
 //!
 //! Input is written as `WindowEvent` messages, which Bevy splits into the typed messages that
 //! `ButtonInput`, picking and UI read, and which also move the window's cursor. Bevy 0.19 and
@@ -368,7 +368,7 @@ fn sleep_ms(ms: u64) {
     std::thread::sleep(Duration::from_millis(ms));
 }
 
-/// Runs a `bevy input` command.
+/// Runs a `hearth input` command.
 pub fn run(ctx: &mut Ctx, command: InputCommand) -> Result<Outcome, CliError> {
     let Some(window) = primary_window(ctx)? else {
         return Err(CliError::new(

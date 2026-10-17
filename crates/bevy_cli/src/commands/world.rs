@@ -91,10 +91,10 @@ pub fn with_schema_hint(ctx: &mut Ctx, error: CliError, type_path: &str) -> CliE
         .unwrap_or(Value::Null);
     let short = ctx.short_name(type_path);
     let hint = if example.is_null() {
-        format!("`bevy schema {short}` shows its fields.")
+        format!("`hearth schema {short}` shows its fields.")
     } else {
         format!(
-            "`bevy schema {short}` shows its fields. A whole value looks like: {}",
+            "`hearth schema {short}` shows its fields. A whole value looks like: {}",
             value::compact(&example, 300)
         )
     };
@@ -108,7 +108,7 @@ fn default_value(ctx: &mut Ctx, type_path: &str) -> Result<Value, CliError> {
         let short = ctx.short_name(type_path);
         return Err(
             CliError::usage(format!("`{short}` has no default value, so pass one"))
-                .hint(format!("`bevy schema {short}` shows an example value.")),
+                .hint(format!("`hearth schema {short}` shows an example value.")),
         );
     }
     Ok(example)
@@ -288,7 +288,7 @@ impl Forest {
     }
 }
 
-/// `bevy tree`.
+/// `hearth tree`.
 pub fn tree(ctx: &mut Ctx, args: TreeArgs) -> Result<Outcome, CliError> {
     let root = match &args.root {
         Some(text) => Some(ctx.entity(text)?),
@@ -368,7 +368,7 @@ pub fn tree(ctx: &mut Ctx, args: TreeArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy find`.
+/// `hearth find`.
 pub fn find(ctx: &mut Ctx, args: FindArgs) -> Result<Outcome, CliError> {
     let with = resolve_all(ctx, &args.with, Want::Component)?;
     let mut without = resolve_all(ctx, &args.without, Want::Component)?;
@@ -426,7 +426,7 @@ pub fn find(ctx: &mut Ctx, args: FindArgs) -> Result<Outcome, CliError> {
     Ok(Outcome::new(Value::Array(items), human))
 }
 
-/// `bevy get`.
+/// `hearth get`.
 pub fn get(ctx: &mut Ctx, args: GetArgs) -> Result<Outcome, CliError> {
     let entity = ctx.entity(&args.entity)?;
     let mut components = Map::new();
@@ -513,7 +513,7 @@ pub fn get(ctx: &mut Ctx, args: GetArgs) -> Result<Outcome, CliError> {
                     Exit::Rejected,
                     format!("{short} has no field at `{path}`"),
                 )
-                .hint(format!("`bevy schema {short}` shows its fields."))
+                .hint(format!("`hearth schema {short}` shows its fields."))
             })?;
             fields.push((
                 format!("{}{path}", ctx.short_name(component)),
@@ -627,7 +627,7 @@ fn take_components(
     }
 }
 
-/// `bevy set`.
+/// `hearth set`.
 pub fn set(ctx: &mut Ctx, args: SetArgs) -> Result<Outcome, CliError> {
     let entity = ctx.entity(&args.entity)?;
     let (component, path) = split_path(&args.target);
@@ -650,7 +650,7 @@ pub fn set(ctx: &mut Ctx, args: SetArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy insert`.
+/// `hearth insert`.
 pub fn insert(ctx: &mut Ctx, args: InsertArgs) -> Result<Outcome, CliError> {
     let entity = ctx.entity(&args.entity)?;
     let component = ctx.type_path(&args.component, Want::Component)?;
@@ -675,7 +675,7 @@ pub fn insert(ctx: &mut Ctx, args: InsertArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy remove`.
+/// `hearth remove`.
 pub fn remove(ctx: &mut Ctx, args: RemoveArgs) -> Result<Outcome, CliError> {
     let entity = ctx.entity(&args.entity)?;
     let components = resolve_all(ctx, &args.components, Want::Component)?;
@@ -695,7 +695,7 @@ pub fn remove(ctx: &mut Ctx, args: RemoveArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy spawn`.
+/// `hearth spawn`.
 pub fn spawn(ctx: &mut Ctx, args: SpawnArgs) -> Result<Outcome, CliError> {
     let mut components = Map::new();
     if let Some(text) = &args.bundle {
@@ -741,7 +741,7 @@ pub fn spawn(ctx: &mut Ctx, args: SpawnArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy despawn`.
+/// `hearth despawn`.
 pub fn despawn(ctx: &mut Ctx, args: DespawnArgs) -> Result<Outcome, CliError> {
     let entities: Vec<Value> = args
         .entities
@@ -759,7 +759,7 @@ pub fn despawn(ctx: &mut Ctx, args: DespawnArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy reparent`.
+/// `hearth reparent`.
 pub fn reparent(ctx: &mut Ctx, args: ReparentArgs) -> Result<Outcome, CliError> {
     let entities: Vec<Value> = args
         .entities
@@ -793,7 +793,7 @@ pub fn reparent(ctx: &mut Ctx, args: ReparentArgs) -> Result<Outcome, CliError> 
     ))
 }
 
-/// `bevy query`.
+/// `hearth query`.
 pub fn query(ctx: &mut Ctx, args: QueryArgs) -> Result<Outcome, CliError> {
     let components = resolve_all(ctx, &args.components, Want::Component)?;
     let option = resolve_all(ctx, &args.option, Want::Component)?;
@@ -863,7 +863,7 @@ pub fn query(ctx: &mut Ctx, args: QueryArgs) -> Result<Outcome, CliError> {
     Ok(Outcome::new(Value::Array(items), lines.join("\n")))
 }
 
-/// `bevy trigger`.
+/// `hearth trigger`.
 pub fn trigger(ctx: &mut Ctx, args: TriggerArgs) -> Result<Outcome, CliError> {
     let event = ctx.type_path(&args.event, Want::Event)?;
     let mut params = json!({ "event": event });
@@ -877,7 +877,7 @@ pub fn trigger(ctx: &mut Ctx, args: TriggerArgs) -> Result<Outcome, CliError> {
     Ok(Outcome::new(params, human))
 }
 
-/// `bevy send`.
+/// `hearth send`.
 pub fn send(ctx: &mut Ctx, args: SendArgs) -> Result<Outcome, CliError> {
     let message = ctx.type_path(&args.message, Want::Message)?;
     let mut params = json!({ "message": message });

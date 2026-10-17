@@ -14,16 +14,16 @@ use crate::cli::CargoArgs;
 use crate::output::{strip_ansi, CliError, Exit, Format, Output};
 use crate::registry::edit_distance;
 
-/// The Bevy version `bevy new` depends on unless told otherwise: the one this CLI comes with.
-pub const DEFAULT_BEVY_VERSION: &str = "0.20";
+/// The engine repository `hearth new` depends on unless told otherwise.
+pub const HEARTH_GIT: &str = "https://github.com/noahsabaj/bevy";
 
 /// How many warnings a build reports in full. Errors are always reported.
 const MAX_WARNINGS: usize = 100;
 
-/// The toolchain to build with: the flag, else `BEVY_TOOLCHAIN`.
+/// The toolchain to build with: the flag, else `HEARTH_TOOLCHAIN`.
 pub fn toolchain(flag: Option<&str>) -> Option<String> {
     flag.map(str::to_string)
-        .or_else(|| std::env::var("BEVY_TOOLCHAIN").ok())
+        .or_else(|| std::env::var("HEARTH_TOOLCHAIN").ok())
         .map(|name| name.trim().trim_start_matches('+').to_string())
         .filter(|name| !name.is_empty())
 }
@@ -63,7 +63,7 @@ fn cargo_error(what: &str, toolchain: Option<&str>, stderr: &str) -> CliError {
     let stderr = strip_ansi(stderr);
     if stderr.contains("could not find `Cargo.toml`") {
         return CliError::new("NO_PROJECT", Exit::Error, "There's no Cargo project here")
-            .hint("Run this in a project directory, pass --manifest-path, or create a project with `bevy new <name>`.");
+            .hint("Run this in a project directory, pass --manifest-path, or create a project with `hearth new <name>`.");
     }
     if let Some(toolchain) = toolchain
         && (stderr.contains("is not installed") || stderr.contains("not a directory"))
@@ -311,7 +311,7 @@ pub fn select_package<'a>(
     }
 }
 
-/// What `bevy run` runs.
+/// What `hearth run` runs.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum RunTarget {
     /// A binary.
@@ -380,7 +380,7 @@ pub fn run_target<'a>(
                 format!("`{}` has no {kind} named `{name}`", package.name),
             )
             .hint(if kind == "example" {
-                "`bevy examples` lists the examples."
+                "`hearth examples` lists the examples."
             } else {
                 "Pass one of the package's binaries."
             })
@@ -401,7 +401,7 @@ pub fn run_target<'a>(
             Exit::Usage,
             format!("`{}` has no binary to run", package.name),
         )
-        .hint("Run an example with --example <name>; `bevy examples` lists them.")),
+        .hint("Run an example with --example <name>; `hearth examples` lists them.")),
         many => Err(CliError::new(
             "AMBIGUOUS_TARGET",
             Exit::Usage,
@@ -787,15 +787,6 @@ pub fn version_numbers(text: &str) -> Option<(u64, u64, u64)> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn default_bevy_version_matches_the_cli() {
-        let version = env!("CARGO_PKG_VERSION");
-        assert!(
-            version.starts_with(&format!("{DEFAULT_BEVY_VERSION}.")),
-            "DEFAULT_BEVY_VERSION ({DEFAULT_BEVY_VERSION}) should match the CLI's version ({version})"
-        );
-    }
 
     #[test]
     fn reads_package_ids() {

@@ -1,4 +1,4 @@
-//! `bevy watch` and `bevy observe`: streaming changes and events from the app.
+//! `hearth watch` and `hearth observe`: streaming changes and events from the app.
 //!
 //! Each event is printed as it arrives: a line of text, or with `--format ndjson` a JSON line,
 //! ending with a `result` frame. With `--format json` the events are collected into the result.
@@ -81,7 +81,7 @@ pub fn seconds(t: f64) -> f64 {
     (t * 1000.0).round() / 1000.0
 }
 
-/// `bevy watch`.
+/// `hearth watch`.
 pub fn watch(ctx: &mut Ctx, args: WatchArgs) -> Result<Outcome, CliError> {
     let entity = ctx.entity(&args.entity)?;
     let components = resolve_all(ctx, &args.components, Want::Component)?;
@@ -156,7 +156,7 @@ pub fn watch(ctx: &mut Ctx, args: WatchArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy observe`.
+/// `hearth observe`.
 pub fn observe(ctx: &mut Ctx, args: ObserveArgs) -> Result<Outcome, CliError> {
     let event = ctx.type_path(&args.event, Want::Event)?;
     let entity = match &args.entity {

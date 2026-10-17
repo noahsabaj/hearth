@@ -1,7 +1,7 @@
-//! `bevy mcp`: the commands as tools of a Model Context Protocol server, over stdio.
+//! `hearth mcp`: the commands as tools of a Model Context Protocol server, over stdio.
 //!
 //! Every command becomes a tool whose properties mirror its arguments, and a call runs the
-//! command as `bevy <command> --json` would, returning its JSON envelope. Screenshots also
+//! command as `hearth <command> --json` would, returning its JSON envelope. Screenshots also
 //! return the image. Streaming tools stop after `--stream-duration` when the call sets no limit.
 
 use std::io::{BufRead, Write};
@@ -49,7 +49,7 @@ const NUMERIC: &[&str] = &[
 const JSON_VALUES: &[&str] = &["value", "params"];
 
 /// What the server tells clients about using its tools.
-const INSTRUCTIONS: &str = "Tools to build, run, inspect and drive Bevy apps. Live tools talk to a running app over the Bevy Remote Protocol: start one with `run` (it runs detached as a session and returns once the app answers), then use `status`, `tree`, `find`, `get`, `set`, `screenshot`, `input_*` and the rest. Entities are names or ids such as \"495v0\"; types are short names such as \"Transform\" or full type paths; values are JSON. Every result is a JSON envelope: on failure `errors[0]` has a stable `code`, a `hint` and often `data.candidates` to retry with. Pass `count` or `duration` to streaming tools. `skill_show` has the full guide; `skill_show` with topic \"recipes\" has step-by-step recipes.";
+const INSTRUCTIONS: &str = "Tools to build, run, inspect and drive Hearth (and Bevy) apps. Live tools talk to a running app over the Bevy Remote Protocol: start one with `run` (it runs detached as a session and returns once the app answers), then use `status`, `tree`, `find`, `get`, `set`, `screenshot`, `input_*` and the rest. Entities are names or ids such as \"495v0\"; types are short names such as \"Transform\" or full type paths; values are JSON. Every result is a JSON envelope: on failure `errors[0]` has a stable `code`, a `hint` and often `data.candidates` to retry with. Pass `count` or `duration` to streaming tools. `skill_show` has the full guide; `skill_show` with topic \"recipes\" has step-by-step recipes.";
 
 /// A tool's name: the command's words joined by `_`, such as `resource_get`.
 fn tool_name(command: &CommandInfo) -> String {
@@ -162,7 +162,7 @@ fn command_line(
             return Err(format!("`{}` has no argument `{key}`", tool_name(command)));
         }
     }
-    let mut argv = vec!["bevy".to_string()];
+    let mut argv = vec!["hearth".to_string()];
     argv.extend(command.path.iter().cloned());
     for global in ["app", "timeout"] {
         if let Some(value) = arguments.get(global).filter(|value| !value.is_null()) {
@@ -266,8 +266,8 @@ impl Server {
                     "protocolVersion": version,
                     "capabilities": { "tools": { "listChanged": false } },
                     "serverInfo": {
-                        "name": "bevy",
-                        "title": "Bevy CLI",
+                        "name": "hearth",
+                        "title": "Hearth CLI",
                         "version": env!("CARGO_PKG_VERSION"),
                     },
                     "instructions": INSTRUCTIONS,
@@ -342,7 +342,7 @@ fn send(message: &Value) {
     let _ = stdout.flush();
 }
 
-/// `bevy mcp`.
+/// `hearth mcp`.
 pub fn serve(ctx: &mut Ctx, args: McpArgs) -> Result<Outcome, CliError> {
     // stdout carries the protocol, so nothing else may print there.
     ctx.out.capture = true;
@@ -422,7 +422,7 @@ mod tests {
         assert_eq!(
             command_line(&set, arguments.as_object().unwrap()).unwrap(),
             [
-                "bevy",
+                "hearth",
                 "set",
                 "--app=game",
                 "--",
@@ -437,7 +437,7 @@ mod tests {
         assert_eq!(
             command_line(&watch, arguments.as_object().unwrap()).unwrap(),
             [
-                "bevy",
+                "hearth",
                 "watch",
                 "--count=3",
                 "--",
@@ -450,7 +450,7 @@ mod tests {
         let arguments = json!({ "all": true, "components": false });
         assert_eq!(
             command_line(&tree, arguments.as_object().unwrap()).unwrap(),
-            ["bevy", "tree", "--all"]
+            ["hearth", "tree", "--all"]
         );
         let unknown = json!({ "nope": 1 });
         assert!(command_line(&tree, unknown.as_object().unwrap()).is_err());

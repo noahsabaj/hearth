@@ -1,4 +1,4 @@
-//! `bevy types` and `bevy schema`: what the app registered for reflection.
+//! `hearth types` and `hearth schema`: what the app registered for reflection.
 
 use serde_json::{json, Value};
 
@@ -22,7 +22,7 @@ fn summary(info: &TypeInfo) -> Value {
     })
 }
 
-/// `bevy types`.
+/// `hearth types`.
 pub fn types(ctx: &mut Ctx, args: TypesArgs) -> Result<Outcome, CliError> {
     let color = ctx.out.color;
     let human_output = ctx.out.format == crate::output::Format::Human;
@@ -85,7 +85,7 @@ pub fn types(ctx: &mut Ctx, args: TypesArgs) -> Result<Outcome, CliError> {
     Ok(Outcome::new(Value::Array(data), human))
 }
 
-/// `bevy schema`.
+/// `hearth schema`.
 pub fn schema(ctx: &mut Ctx, args: SchemaArgs) -> Result<Outcome, CliError> {
     let color = ctx.out.color;
     let registry = ctx.registry()?;

@@ -2,15 +2,15 @@
 name = "bevy_cli"
 version = "0.20.0-dev"
 edition = "2024"
-description = "A command line interface for building, running, inspecting and driving Bevy apps, for developers and agents"
+description = "A command line interface for building, running, inspecting and driving Hearth apps, for developers and agents"
 homepage = "https://bevy.org"
 repository = "https://github.com/bevyengine/bevy"
 license = "MIT OR Apache-2.0"
-keywords = ["bevy", "cli", "gamedev"]
+keywords = ["hearth", "bevy", "cli", "gamedev"]
 categories = ["command-line-utilities", "game-development"]
 
 [[bin]]
-name = "bevy"
+name = "hearth"
 path = "src/main.rs"
 
 [dependencies]

@@ -1,5 +1,5 @@
 //! Project commands: creating, building and running projects, and managing the sessions that
-//! `bevy run --detach` starts.
+//! `hearth run --detach` starts.
 
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
@@ -23,12 +23,12 @@ use crate::project::{self, cargo_flags, run_env, run_target, select_package, ver
 use crate::session::{self, Session};
 use crate::target::{self, Source};
 
-/// The port Bevy's render sub-app listens on. It can't be changed, so `bevy run` never picks it.
+/// The port Bevy's render sub-app listens on. It can't be changed, so `hearth run` never picks it.
 const RENDER_PORT: u16 = 15703;
 
-// --- bevy new ---
+// --- hearth new ---
 
-/// Names `bevy new` refuses because they clash with Bevy or Rust.
+/// Names `hearth new` refuses because they clash with Bevy or Rust.
 const RESERVED: &[&str] = &[
     "bevy",
     "test",
@@ -86,11 +86,11 @@ fn toml_string(text: &str) -> String {
 
 /// The `bevy` dependency of a new project.
 fn bevy_dependency(args: &NewArgs) -> Result<String, CliError> {
-    if let Some(path) = &args.bevy_path {
+    if let Some(path) = &args.engine_path {
         let manifest = std::fs::read_to_string(path.join("Cargo.toml")).unwrap_or_default();
         if !manifest.contains("name = \"bevy\"") {
             return Err(CliError::usage(format!(
-                "`{}` isn't a Bevy checkout: it has no Cargo.toml for the `bevy` package",
+                "`{}` isn't an engine checkout: it has no Cargo.toml for the `bevy` package",
                 path.display()
             )));
         }
@@ -99,17 +99,18 @@ fn bevy_dependency(args: &NewArgs) -> Result<String, CliError> {
         let path = display_path(&path).replace('\\', "/");
         return Ok(format!("{{ path = {} }}", toml_string(&path)));
     }
-    if let Some(git) = &args.bevy_git {
-        return Ok(match &args.bevy_branch {
-            Some(branch) => format!(
-                "{{ git = {}, branch = {} }}",
-                toml_string(git),
-                toml_string(branch)
-            ),
-            None => format!("{{ git = {} }}", toml_string(git)),
-        });
+    if let Some(version) = &args.bevy_version {
+        return Ok(toml_string(version));
     }
-    Ok(toml_string(&args.bevy_version))
+    let git = args.engine_git.as_deref().unwrap_or(project::HEARTH_GIT);
+    Ok(match &args.engine_branch {
+        Some(branch) => format!(
+            "{{ git = {}, branch = {} }}",
+            toml_string(git),
+            toml_string(branch)
+        ),
+        None => format!("{{ git = {} }}", toml_string(git)),
+    })
 }
 
 /// Initializes a git repository, unless `dir` is already in one. Returns whether it did.
@@ -145,7 +146,7 @@ fn git_init(dir: &Path) -> Result<bool, String> {
     }
 }
 
-/// `bevy new`.
+/// `hearth new`.
 pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
     validate_name(&args.name)?;
     let dir = args.path.join(&args.name);
@@ -210,8 +211,8 @@ pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
     };
     let next = vec![
         format!("cd {cd}"),
-        "bevy run --detach".to_string(),
-        "bevy tree".to_string(),
+        "hearth run --detach".to_string(),
+        "hearth tree".to_string(),
     ];
     let human = format!(
         "Created {} ({template} template) in {shown}\n\nNext:\n{}",
@@ -235,7 +236,7 @@ pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-// --- bevy build, bevy check ---
+// --- hearth build, hearth check ---
 
 /// The features `target` requires that `args` doesn't enable.
 fn missing_features(args: &CargoArgs, target: &project::Target) -> Vec<String> {
@@ -276,7 +277,7 @@ fn executables(build: &project::Build) -> Vec<Value> {
         .collect()
 }
 
-/// `bevy build` and `bevy check`.
+/// `hearth build` and `hearth check`.
 pub fn build(ctx: &mut Ctx, args: BuildArgs, check: bool) -> Result<Outcome, CliError> {
     let cargo = &args.cargo;
     let toolchain = project::toolchain(cargo.toolchain.as_deref());
@@ -345,7 +346,7 @@ pub fn build(ctx: &mut Ctx, args: BuildArgs, check: bool) -> Result<Outcome, Cli
     ))
 }
 
-// --- bevy run ---
+// --- hearth run ---
 
 /// Whether two paths name the same directory.
 fn same_dir(a: &Path, b: &Path) -> bool {
@@ -415,7 +416,7 @@ fn log_tail(path: &Path, count: usize) -> Vec<String> {
         .collect()
 }
 
-/// `bevy run`.
+/// `hearth run`.
 pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
     // The MCP server talks over stdout, which an attached app would write to.
     let detach = args.detach || ctx.mcp.is_some();
@@ -468,7 +469,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
             })
         {
             ctx.out.warn(format!(
-                "Session {0} runs this {label}, so the build may fail to replace its executable. `bevy stop {0}` stops it.",
+                "Session {0} runs this {label}, so the build may fail to replace its executable. `hearth stop {0}` stops it.",
                 running.name
             ));
         }
@@ -502,7 +503,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
     command
         .args(&args.args)
         .envs(run_env(package.dir(), &executable, toolchain.as_deref()))
-        .env("BEVY_REMOTE_PORT", port.to_string());
+        .env("HEARTH_REMOTE_PORT", port.to_string());
 
     if !detach {
         if remote {
@@ -572,10 +573,10 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
         "replaced": replaced,
         "ready": Value::Null,
     });
-    let next = format!("  bevy status --app {name}\n  bevy logs {name}\n  bevy stop {name}");
+    let next = format!("  hearth status --app {name}\n  hearth logs {name}\n  hearth stop {name}");
     if !remote {
         ctx.out.warn(format!(
-            "This build doesn't include `bevy_remote`, so live commands won't reach {name}. Enable the feature (`bevy new` projects have it by default) and add `RemotePlugin` and `RemoteHttpPlugin`."
+            "This build doesn't include `bevy_remote`, so live commands won't reach {name}. Enable the feature (`hearth new` projects have it by default) and add `RemotePlugin` and `RemoteHttpPlugin`."
         ));
         data["ready"] = json!(false);
         return Ok(Outcome::new(
@@ -622,7 +623,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
                 ),
             )
             .hint(format!(
-                "The end of its log is in `log_tail`; `bevy logs {name}` shows all of it."
+                "The end of its log is in `log_tail`; `hearth logs {name}` shows all of it."
             ))
             .data(json!({
                 "session": name,
@@ -634,7 +635,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
         Err(error) if error.code == "TIMEOUT" => {
             return Err(error
                 .hint(format!(
-                    "{name} is still running, but nothing answers on port {port}. The app needs `RemotePlugin` and `RemoteHttpPlugin` listening on the port in `BEVY_REMOTE_PORT`, as `bevy new` projects do; or pass the port it listens on with --port. `bevy logs {name}` shows its output and `bevy stop {name}` ends it."
+                    "{name} is still running, but nothing answers on port {port}. The app needs `RemotePlugin` and `RemoteHttpPlugin` listening on the port in `HEARTH_REMOTE_PORT`, as `hearth new` projects do; or pass the port it listens on with --port. `hearth logs {name}` shows its output and `hearth stop {name}` ends it."
                 ))
                 .data(json!({ "session": name, "pid": session.pid, "port": port, "log": display_path(&log) })));
         }
@@ -647,7 +648,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
     let version = info
         .as_ref()
         .and_then(|info| info["bevy_version"].as_str())
-        .map(|version| format!(", Bevy {version}"))
+        .map(|version| format!(", engine {version}"))
         .unwrap_or_default();
     Ok(Outcome::new(
         data,
@@ -672,7 +673,7 @@ fn unknown_session(name: &str) -> CliError {
         Exit::Unreachable,
         format!("There's no session named `{name}`"),
     )
-    .hint("`bevy ps` lists the sessions.")
+    .hint("`hearth ps` lists the sessions.")
     .data(json!({ "candidates": names }))
 }
 
@@ -691,11 +692,11 @@ fn pick_session(ctx: &mut Ctx, name: Option<&str>) -> Result<Session, CliError> 
             "NOT_A_SESSION",
             Exit::Usage,
             format!(
-                "The app at {} wasn't started with `bevy run --detach`",
+                "The app at {} wasn't started with `hearth run --detach`",
                 target.endpoint
             ),
         )
-        .hint("`bevy exit` asks any app to exit."));
+        .hint("`hearth exit` asks any app to exit."));
     }
     let sessions = session::list();
     let running: Vec<&Session> = sessions
@@ -707,7 +708,7 @@ fn pick_session(ctx: &mut Ctx, name: Option<&str>) -> Result<Session, CliError> 
         ([], [only]) => Ok(only.clone()),
         ([], []) => Err(
             CliError::new("NO_SESSION", Exit::Unreachable, "There are no sessions")
-                .hint("Start one with `bevy run --detach`."),
+                .hint("Start one with `hearth run --detach`."),
         ),
         _ => Err(CliError::new(
             "AMBIGUOUS_SESSION",
@@ -731,7 +732,7 @@ fn duration_text(secs: u64) -> String {
     }
 }
 
-/// `bevy ps`.
+/// `hearth ps`.
 pub fn ps(ctx: &mut Ctx, args: PsArgs) -> Result<Outcome, CliError> {
     let sessions = session::list();
     let found = if args.no_scan {
@@ -788,7 +789,7 @@ pub fn ps(ctx: &mut Ctx, args: PsArgs) -> Result<Outcome, CliError> {
         .filter(|found| !ports.contains(&found.endpoint.port))
         .collect();
     let mut human = if rows.is_empty() {
-        "No sessions. Start one with `bevy run --detach`.".to_string()
+        "No sessions. Start one with `hearth run --detach`.".to_string()
     } else {
         table(
             ctx.out.color,
@@ -849,7 +850,7 @@ fn level_name(level: Level) -> &'static str {
     }
 }
 
-/// Reads a log, filtering lines like `bevy logs` does.
+/// Reads a log, filtering lines like `hearth logs` does.
 struct LogReader {
     path: PathBuf,
     cursor: u64,
@@ -920,7 +921,7 @@ impl LogReader {
     }
 }
 
-/// The log a `bevy logs` call reads: a session's, or the log a stopped session left.
+/// The log a `hearth logs` call reads: a session's, or the log a stopped session left.
 fn log_source(
     ctx: &mut Ctx,
     name: Option<&str>,
@@ -939,7 +940,7 @@ fn log_source(
     Ok((session.name.clone(), session.log.clone(), Some(session)))
 }
 
-/// `bevy logs`.
+/// `hearth logs`.
 pub fn logs(ctx: &mut Ctx, args: LogsArgs) -> Result<Outcome, CliError> {
     let (name, path, session) = log_source(ctx, args.session.as_deref())?;
     let mut running = session.as_ref().is_some_and(Session::is_running);
@@ -1079,7 +1080,7 @@ fn stop_session(session: &Session, force: bool) -> Result<&'static str, CliError
     }
 }
 
-/// `bevy stop`.
+/// `hearth stop`.
 pub fn stop(ctx: &mut Ctx, args: StopArgs) -> Result<Outcome, CliError> {
     let sessions = if args.all {
         session::list()
@@ -1116,9 +1117,9 @@ pub fn stop(ctx: &mut Ctx, args: StopArgs) -> Result<Outcome, CliError> {
     ))
 }
 
-// --- bevy examples ---
+// --- hearth examples ---
 
-/// `bevy examples`.
+/// `hearth examples`.
 pub fn examples(ctx: &mut Ctx, args: ExamplesArgs) -> Result<Outcome, CliError> {
     let manifest = args.manifest_path.as_deref();
     let meta = project::metadata(manifest, project::toolchain(None).as_deref(), false)?;
@@ -1189,7 +1190,7 @@ pub fn examples(ctx: &mut Ctx, args: ExamplesArgs) -> Result<Outcome, CliError> 
             table(ctx.out.color, &["NAME", "CATEGORY", "DESCRIPTION"], &rows).trim_end(),
             ctx.out.paint(
                 &format!(
-                    "{} examples; * needs features, which `bevy run --example <name>` enables",
+                    "{} examples; * needs features, which `hearth run --example <name>` enables",
                     rows.len()
                 ),
                 Style::Dim
@@ -1199,7 +1200,7 @@ pub fn examples(ctx: &mut Ctx, args: ExamplesArgs) -> Result<Outcome, CliError> 
     Ok(Outcome::new(Value::Array(examples), human))
 }
 
-// --- bevy doctor ---
+// --- hearth doctor ---
 
 /// The first line of `<program> --version`.
 fn version_of(program: &str, toolchain: Option<&str>) -> Result<String, CliError> {
@@ -1248,7 +1249,7 @@ fn sources_mention(dir: &Path, needle: &str) -> bool {
     false
 }
 
-/// `bevy doctor`.
+/// `hearth doctor`.
 pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
     let toolchain = project::toolchain(args.toolchain.as_deref());
     let mut checks: Vec<Value> = Vec::new();
@@ -1286,7 +1287,9 @@ pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
                         .as_ref()
                         .map(|version| (version, package.name.as_str())),
                     bevy.and_then(|bevy| {
-                        bevy.rust_version.as_ref().map(|version| (version, "Bevy"))
+                        bevy.rust_version
+                            .as_ref()
+                            .map(|version| (version, "the engine"))
                     }),
                 ]
                 .into_iter()
@@ -1302,7 +1305,7 @@ pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
                             "rust_version",
                             "error",
                             format!("rustc {have} is older than {needed}, which {who} needs"),
-                            Some("Run `rustup update`, or build with a newer toolchain: --toolchain <name> or BEVY_TOOLCHAIN (and --cargo-arg=--ignore-rust-version for a nightly of that version).".to_string()),
+                            Some("Run `rustup update`, or build with a newer toolchain: --toolchain <name> or HEARTH_TOOLCHAIN (and --cargo-arg=--ignore-rust-version for a nightly of that version).".to_string()),
                         );
                     } else {
                         add(
@@ -1317,8 +1320,8 @@ pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
                     Some(bevy) if package.name == "bevy" => add(
                         "bevy",
                         "info",
-                        format!("This is the Bevy repository ({})", bevy.version),
-                        Some("Examples that use BRP need `-F bevy_remote`; `bevy run --example <name>` enables the features an example requires.".to_string()),
+                        format!("This is the engine repository ({})", bevy.version),
+                        Some("Examples that use BRP need `-F bevy_remote`; `hearth run --example <name>` enables the features an example requires.".to_string()),
                     ),
                     Some(bevy) => {
                         let features: Vec<String> = meta.resolve["nodes"]
@@ -1336,28 +1339,28 @@ pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
                             })
                             .unwrap_or_default();
                         if features.iter().any(|feature| feature == "bevy_remote") {
-                            add("bevy", "ok", format!("Bevy {} with `bevy_remote`", bevy.version), None);
+                            add("bevy", "ok", format!("Engine {} with `bevy_remote`", bevy.version), None);
                             if !sources_mention(package.dir(), "RemotePlugin") {
                                 add(
                                     "remote_plugin",
                                     "warn",
                                     "No source file adds `RemotePlugin`, which live commands need".to_string(),
-                                    Some("Add `RemotePlugin` and `RemoteHttpPlugin` to the app; the template of `bevy new` shows how.".to_string()),
+                                    Some("Add `RemotePlugin` and `RemoteHttpPlugin` to the app; the template of `hearth new` shows how.".to_string()),
                                 );
                             }
                         } else {
                             add(
                                 "bevy",
                                 "warn",
-                                format!("Bevy {} without the `bevy_remote` feature, so live commands can't reach the app", bevy.version),
-                                Some("Enable `bevy_remote` on the bevy dependency, or add a `remote = [\"bevy/bevy_remote\"]` feature as `bevy new` projects do.".to_string()),
+                                format!("Engine {} without the `bevy_remote` feature, so live commands can't reach the app", bevy.version),
+                                Some("Enable `bevy_remote` on the bevy dependency, or add a `remote = [\"bevy/bevy_remote\"]` feature as `hearth new` projects do.".to_string()),
                             );
                         }
                     }
                     None => add(
                         "bevy",
                         "warn",
-                        format!("{} doesn't depend on Bevy", package.name),
+                        format!("{} doesn't depend on the engine (`bevy`)", package.name),
                         None,
                     ),
                 }
@@ -1367,8 +1370,8 @@ pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
         Err(error) if error.code == "NO_PROJECT" => add(
             "project",
             "info",
-            "No Cargo project here; `bevy build` and `bevy run` need one".to_string(),
-            Some("`bevy new <name>` creates one.".to_string()),
+            "No Cargo project here; `hearth build` and `hearth run` need one".to_string(),
+            Some("`hearth new <name>` creates one.".to_string()),
         ),
         Err(error) => add("project", "error", error.message, error.hint),
     }
@@ -1423,7 +1426,7 @@ pub fn doctor(ctx: &mut Ctx, args: DoctorArgs) -> Result<Outcome, CliError> {
             "skill",
             "info",
             "The agent skill isn't installed for Claude Code".to_string(),
-            Some("`bevy skill install` teaches agents to use this CLI (`codex` and `agents` install for others).".to_string()),
+            Some("`hearth skill install` teaches agents to use this CLI (`codex` and `agents` install for others).".to_string()),
         ),
     }
 

@@ -1,4 +1,4 @@
-//! `bevy screenshot`: capturing a window to a PNG file.
+//! `hearth screenshot`: capturing a window to a PNG file.
 //!
 //! The capture spawns a `Screenshot` entity and observes the `ScreenshotCaptured` event on that
 //! entity alone. The app despawns the entity once it delivered the image.
@@ -55,7 +55,7 @@ pub struct Pixels {
     pub rgb: Vec<u8>,
 }
 
-/// `bevy screenshot`.
+/// `hearth screenshot`.
 pub fn screenshot(ctx: &mut Ctx, args: ScreenshotArgs) -> Result<Outcome, CliError> {
     let render_target = match &args.window {
         Some(window) => json!({ "Window": { "Entity": ctx.entity(window)? } }),
@@ -175,7 +175,7 @@ fn default_path(ctx: &mut Ctx) -> Result<PathBuf, CliError> {
         None => format!("port-{}", target.endpoint.port),
     };
     Ok(std::env::temp_dir()
-        .join("bevy-cli")
+        .join("hearth-cli")
         .join("screenshots")
         .join(format!("{name}-{}.png", crate::session::now_millis())))
 }

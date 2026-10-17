@@ -156,7 +156,7 @@ fn send_request(
         .map_err(|error| HttpError::Protocol(error.to_string()))?;
     let _ = stream.set_write_timeout(Some(Duration::from_secs(30)));
     let request = format!(
-        "POST {} HTTP/1.1\r\nHost: {}\r\nContent-Type: application/json\r\nAccept: application/json, text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\nUser-Agent: bevy-cli/{}\r\n\r\n",
+        "POST {} HTTP/1.1\r\nHost: {}\r\nContent-Type: application/json\r\nAccept: application/json, text/event-stream\r\nContent-Length: {}\r\nConnection: close\r\nUser-Agent: hearth-cli/{}\r\n\r\n",
         endpoint.path,
         endpoint.authority(),
         body.len(),

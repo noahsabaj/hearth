@@ -228,7 +228,7 @@ impl Registry {
         candidates.truncate(12);
         let hint = if candidates.is_empty() {
             format!(
-                "`bevy types <text>` searches the registered types. A {} must derive `Reflect` and be registered, which most types are automatically.",
+                "`hearth types <text>` searches the registered types. A {} must derive `Reflect` and be registered, which most types are automatically.",
                 want.noun()
             )
         } else {

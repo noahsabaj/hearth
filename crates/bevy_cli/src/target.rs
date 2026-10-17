@@ -14,7 +14,7 @@ use crate::session::{self, Session};
 pub enum Source {
     /// The `--app` flag.
     Flag,
-    /// The `BEVY_APP` environment variable.
+    /// The `HEARTH_APP` environment variable.
     Env,
     /// The one running session started from the current project.
     Project,
@@ -26,7 +26,7 @@ pub enum Source {
 pub struct Target {
     /// Where it listens.
     pub endpoint: Endpoint,
-    /// Its session, when it was started with `bevy run --detach`.
+    /// Its session, when it was started with `hearth run --detach`.
     pub session: Option<Session>,
     /// How it was chosen.
     pub source: Source,
@@ -37,13 +37,13 @@ impl Target {
     pub fn unreachable_hint(&self) -> String {
         if let Some(session) = &self.session {
             return format!(
-                "The session `{0}` may have exited: `bevy logs {0}` shows its output, and `bevy run --detach` starts it again.",
+                "The session `{0}` may have exited: `hearth logs {0}` shows its output, and `hearth run --detach` starts it again.",
                 session.name
             );
         }
         match self.source {
-            Source::Default => "Start the app with `bevy run --detach`, or pass --app. The app needs Bevy's `bevy_remote` feature with `RemotePlugin` and `RemoteHttpPlugin` added; `bevy ps` lists running apps.".to_string(),
-            _ => "Check the address, or run `bevy ps` to list running apps.".to_string(),
+            Source::Default => "Start the app with `hearth run --detach`, or pass --app. The app needs the engine's `bevy_remote` feature with `RemotePlugin` and `RemoteHttpPlugin` added; `hearth ps` lists running apps.".to_string(),
+            _ => "Check the address, or run `hearth ps` to list running apps.".to_string(),
         }
     }
 
@@ -62,12 +62,12 @@ impl Target {
     }
 }
 
-/// Resolves `--app` (or `BEVY_APP`) to a target.
+/// Resolves `--app` (or `HEARTH_APP`) to a target.
 ///
 /// A session name, a port, `host:port` and a URL are accepted. Without either, the one running
 /// session started from the current directory's project is used, else the default port.
 pub fn resolve(flag: Option<&str>) -> Result<Target, CliError> {
-    let env = std::env::var("BEVY_APP")
+    let env = std::env::var("HEARTH_APP")
         .ok()
         .filter(|value| !value.trim().is_empty());
     let chosen = match (flag, env) {
@@ -152,7 +152,7 @@ fn resolve_text(text: &str, source: Source) -> Result<Target, CliError> {
         Exit::Unreachable,
         format!("`{text}` is neither a session nor an address"),
     )
-    .hint("Pass a session name from `bevy ps`, a port such as 15702, `host:port` or a URL.")
+    .hint("Pass a session name from `hearth ps`, a port such as 15702, `host:port` or a URL.")
     .data(json!({ "candidates": names })))
 }
 
@@ -166,17 +166,17 @@ pub struct Found {
 }
 
 impl Found {
-    /// A one-line description, such as `127.0.0.1:15702 my_game (Bevy 0.20.0, main)`.
+    /// A one-line description, such as `127.0.0.1:15702 my_game (0.20.0, main)`.
     pub fn describe(&self) -> String {
         match &self.info {
             Some(info) => format!(
-                "{} {} (Bevy {}, {})",
+                "{} {} ({}, {})",
                 self.endpoint,
                 info["app_name"].as_str().unwrap_or("?"),
                 info["bevy_version"].as_str().unwrap_or("?"),
                 info["sub_app"].as_str().unwrap_or("?"),
             ),
-            None => format!("{} (a Bevy app)", self.endpoint),
+            None => format!("{} (a BRP app)", self.endpoint),
         }
     }
 }

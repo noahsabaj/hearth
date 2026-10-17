@@ -8,7 +8,7 @@ bevy = {{bevy}}
 
 [features]
 default = ["remote"]
-# Lets the `bevy` CLI inspect and drive the app while it runs, over the Bevy Remote Protocol.
+# Lets the `hearth` CLI inspect and drive the app while it runs, over the Bevy Remote Protocol.
 # Leave it out of releases you ship with `--no-default-features`.
 remote = ["bevy/bevy_remote"]
 
@@ -16,7 +16,7 @@ remote = ["bevy/bevy_remote"]
 [profile.dev]
 opt-level = 1
 
-# Compile dependencies, including Bevy, with full optimization. They rarely change, so this
+# Compile dependencies, including the engine, with full optimization. They rarely change, so this
 # costs time only on the first build.
 [profile.dev.package."*"]
 opt-level = 3

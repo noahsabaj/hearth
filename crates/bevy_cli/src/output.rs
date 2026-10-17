@@ -51,7 +51,7 @@ pub enum Exit {
 }
 
 impl Exit {
-    /// The documented exit code table, used by `bevy commands` and the skill.
+    /// The documented exit code table, used by `hearth commands` and the skill.
     pub const TABLE: &[(i32, &str)] = &[
         (0, "success"),
         (1, "error (local failure, e.g. I/O)"),

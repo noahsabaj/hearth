@@ -1,4 +1,4 @@
-//! End-to-end tests: the `bevy` binary against a headless app that serves the Bevy Remote
+//! End-to-end tests: the `hearth` binary against a headless app that serves the Bevy Remote
 //! Protocol on a free port.
 
 use core::time::Duration;
@@ -96,25 +96,25 @@ fn app() -> u16 {
 
 /// A home for sessions, so tests don't see the user's.
 fn home() -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("bevy-cli-test-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("hearth-cli-test-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     dir
 }
 
 fn command(args: &[&str]) -> Command {
-    let mut command = Command::new(env!("CARGO_BIN_EXE_bevy"));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_hearth"));
     command
         .args(args)
-        .env("BEVY_CLI_HOME", home())
-        .env_remove("BEVY_APP")
-        .env_remove("BEVY_FORMAT")
-        .env_remove("BEVY_TIMEOUT")
+        .env("HEARTH_CLI_HOME", home())
+        .env_remove("HEARTH_APP")
+        .env_remove("HEARTH_FORMAT")
+        .env_remove("HEARTH_TIMEOUT")
         .stdin(Stdio::null());
     command
 }
 
-/// Runs `bevy --app <app> --json <args>` and returns the envelope and the exit code.
-fn bevy(args: &[&str]) -> (Value, i32) {
+/// Runs `hearth --app <app> --json <args>` and returns the envelope and the exit code.
+fn hearth(args: &[&str]) -> (Value, i32) {
     let app = format!("127.0.0.1:{}", app());
     let mut all = vec!["--app", &app, "--json"];
     all.extend_from_slice(args);
@@ -125,7 +125,7 @@ fn run(args: &[&str]) -> (Value, i32) {
     let output = command(args).output().unwrap();
     let envelope = serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
         panic!(
-            "`bevy {}` didn't print JSON ({error}):\n{}\n{}",
+            "`hearth {}` didn't print JSON ({error}):\n{}\n{}",
             args.join(" "),
             String::from_utf8_lossy(&output.stdout),
             String::from_utf8_lossy(&output.stderr)
@@ -136,10 +136,10 @@ fn run(args: &[&str]) -> (Value, i32) {
 
 /// Runs a command that must succeed and returns its data.
 fn ok(args: &[&str]) -> Value {
-    let (envelope, code) = bevy(args);
+    let (envelope, code) = hearth(args);
     assert!(
         envelope["success"] == true && code == 0,
-        "`bevy {}` failed with {code}: {envelope:#}",
+        "`hearth {}` failed with {code}: {envelope:#}",
         args.join(" ")
     );
     envelope["data"].clone()
@@ -147,11 +147,11 @@ fn ok(args: &[&str]) -> Value {
 
 /// Runs a command that must fail and returns its error code and exit code.
 fn fails(args: &[&str]) -> (String, i32) {
-    let (envelope, code) = bevy(args);
+    let (envelope, code) = hearth(args);
     assert_eq!(
         envelope["success"],
         false,
-        "`bevy {}` succeeded",
+        "`hearth {}` succeeded",
         args.join(" ")
     );
     let error = envelope["errors"][0]["code"].as_str().unwrap().to_string();

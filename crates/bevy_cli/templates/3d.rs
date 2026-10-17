@@ -1,4 +1,4 @@
-//! {{title}}, made with Bevy.
+//! {{title}}, made with Hearth.
 
 use bevy::prelude::*;
 
@@ -14,7 +14,7 @@ fn main() {
     .add_systems(Startup, setup)
     .add_systems(Update, spin);
 
-    // Lets the `bevy` CLI inspect and drive the app while it runs.
+    // Lets the `hearth` CLI inspect and drive the app while it runs.
     #[cfg(feature = "remote")]
     app.add_plugins((
         bevy::remote::RemotePlugin::default(),
@@ -24,11 +24,11 @@ fn main() {
     app.run();
 }
 
-/// The port the app answers the Bevy Remote Protocol on: `BEVY_REMOTE_PORT`, which `bevy run`
+/// The port the app answers the Bevy Remote Protocol on: `HEARTH_REMOTE_PORT`, which `hearth run`
 /// sets, else the default.
 #[cfg(feature = "remote")]
 fn remote_port() -> u16 {
-    std::env::var("BEVY_REMOTE_PORT")
+    std::env::var("HEARTH_REMOTE_PORT")
         .ok()
         .and_then(|port| port.parse().ok())
         .unwrap_or(bevy::remote::http::DEFAULT_PORT)

@@ -1,8 +1,8 @@
 # Writing values
 
 Commands that take a value (`set`, `insert`, `spawn`, `resource set`, `trigger`, `send`) take
-the JSON that Bevy's reflection serializes the type to. `bevy schema <Type>` shows a type's
-fields and an example value; `bevy get <entity> <Component> --json` shows the current one,
+the JSON that the engine's reflection serializes the type to. `hearth schema <Type>` shows a type's
+fields and an example value; `hearth get <entity> <Component> --json` shows the current one,
 which is the easiest starting point.
 
 ## On the command line
@@ -50,23 +50,23 @@ pipe it to `-`.
 
 ## Field paths
 
-`bevy set` and `bevy resource set` accept a path after the type:
+`hearth set` and `hearth resource set` accept a path after the type:
 
 ```bash
-bevy set Player Transform.translation.y 2
-bevy set Player Transform.rotation '[0, 0.707, 0, 0.707]'
-bevy set Enemy my_game::Stats.0 5            # the first field of a tuple struct
-bevy set Bag my_game::Inventory.items[2] '"sword"'
-bevy resource set Time<Virtual>.context.relative_speed 0.5
+hearth set Player Transform.translation.y 2
+hearth set Player Transform.rotation '[0, 0.707, 0, 0.707]'
+hearth set Enemy my_game::Stats.0 5            # the first field of a tuple struct
+hearth set Bag my_game::Inventory.items[2] '"sword"'
+hearth resource set Time<Virtual>.context.relative_speed 0.5
 ```
 
 A partial object changes only the fields it names; the others keep their values:
 
 ```bash
-bevy set Player Transform '{"scale": [2, 2, 2]}'
+hearth set Player Transform '{"scale": [2, 2, 2]}'
 ```
 
 ## What can't be read or written
 
-Some components aren't serializable, such as mesh and image handles. `bevy get` lists them
+Some components aren't serializable, such as mesh and image handles. `hearth get` lists them
 under `unserializable` with a debug description; they can't be set over BRP.

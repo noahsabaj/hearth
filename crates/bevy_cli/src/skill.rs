@@ -1,7 +1,7 @@
-//! The agent skill: a guide that teaches agents to use this CLI. `bevy skill show` prints it and
-//! `bevy skill install` puts it where agent clients look for skills.
+//! The agent skill: a guide that teaches agents to use this CLI. `hearth skill show` prints it and
+//! `hearth skill install` puts it where agent clients look for skills.
 //!
-//! By default the installed skill is a short file that points back to `bevy skill show`, so it
+//! By default the installed skill is a short file that points back to `hearth skill show`, so it
 //! never goes stale as the CLI updates. `--full` copies the whole guide instead, for clients that
 //! can't run commands while loading skills.
 
@@ -35,16 +35,16 @@ pub const TOPICS: &[(&str, &str, &str)] = &[
     ),
     (
         "brp",
-        "The Bevy Remote Protocol behind the commands, for `bevy call`",
+        "The Bevy Remote Protocol behind the commands, for `hearth call`",
         include_str!("../skill/references/brp.md"),
     ),
 ];
 
 /// The name of the skill's folder.
-const NAME: &str = "bevy";
+const NAME: &str = "hearth";
 
 /// The comment that marks a `SKILL.md` this CLI wrote.
-const MARKER: &str = "<!-- installed by bevy-cli";
+const MARKER: &str = "<!-- installed by hearth-cli";
 
 /// The guide without its frontmatter.
 fn body(text: &str) -> &str {
@@ -63,10 +63,10 @@ fn description() -> &'static str {
         .unwrap_or_default()
 }
 
-/// The short skill that points to `bevy skill show`.
+/// The short skill that points to `hearth skill show`.
 fn pointer() -> String {
     format!(
-        "---\nname: {NAME}\ndescription: {}\n---\n\n# Bevy CLI\n\nThe `bevy` command line tool builds, runs, inspects and drives Bevy apps. Its guide ships\nwith the tool, so it always matches the installed version. Read it before using `bevy`:\n\n```bash\nbevy skill show           # the guide: workflow, output, errors\nbevy skill show --list    # reference topics, such as values and recipes\n```\n\n{MARKER} {} (pointer) -->\n",
+        "---\nname: {NAME}\ndescription: {}\n---\n\n# Hearth CLI\n\nThe `hearth` command line tool builds, runs, inspects and drives Hearth apps. Its guide ships\nwith the tool, so it always matches the installed version. Read it before using `bevy`:\n\n```bash\nbevy skill show           # the guide: workflow, output, errors\nbevy skill show --list    # reference topics, such as values and recipes\n```\n\n{MARKER} {} (pointer) -->\n",
         description(),
         env!("CARGO_PKG_VERSION")
     )
@@ -166,7 +166,7 @@ fn client_name(client: SkillClient) -> &'static str {
     }
 }
 
-/// `bevy skill show`.
+/// `hearth skill show`.
 pub fn show(ctx: &mut Ctx, topic: Option<&str>, list: bool) -> Result<Outcome, CliError> {
     if list {
         let rows: Vec<Vec<String>> = TOPICS
@@ -179,7 +179,7 @@ pub fn show(ctx: &mut Ctx, topic: Option<&str>, list: bool) -> Result<Outcome, C
                 .map(|(name, about, _)| json!({ "topic": name, "about": about }))
                 .collect::<Vec<_>>()),
             format!(
-                "{}Show one with `bevy skill show <topic>`.",
+                "{}Show one with `hearth skill show <topic>`.",
                 table(ctx.out.color, &["TOPIC", "ABOUT"], &rows)
             ),
         ));
@@ -196,14 +196,14 @@ pub fn show(ctx: &mut Ctx, topic: Option<&str>, list: bool) -> Result<Outcome, C
             Exit::Usage,
             format!("The skill has no topic named `{topic}`"),
         )
-        .hint("`bevy skill show --list` lists the topics.")
+        .hint("`hearth skill show --list` lists the topics.")
         .data(
             json!({ "candidates": TOPICS.iter().map(|(name, _, _)| *name).collect::<Vec<_>>() }),
         )),
     }
 }
 
-/// `bevy skill install`.
+/// `hearth skill install`.
 pub fn install(location: &SkillLocation, full: bool, force: bool) -> Result<Outcome, CliError> {
     let dir = skill_dir(location)?;
     let file = dir.join("SKILL.md");
@@ -253,11 +253,11 @@ pub fn install(location: &SkillLocation, full: bool, force: bool) -> Result<Outc
         }),
         format!(
             "Installed the {} skill at {shown}{}",
-            if full { "full" } else { "bevy" },
+            if full { "full" } else { "hearth" },
             if full {
                 ""
             } else {
-                "\nIt points agents to `bevy skill show`, so it stays current as the CLI updates."
+                "\nIt points agents to `hearth skill show`, so it stays current as the CLI updates."
             }
         ),
     ))
@@ -271,7 +271,7 @@ fn remove_references(references: &Path) {
     let _ = std::fs::remove_dir(references);
 }
 
-/// `bevy skill uninstall`.
+/// `hearth skill uninstall`.
 pub fn uninstall(location: &SkillLocation) -> Result<Outcome, CliError> {
     let dir = skill_dir(location)?;
     let file = dir.join("SKILL.md");
@@ -298,7 +298,7 @@ pub fn uninstall(location: &SkillLocation) -> Result<Outcome, CliError> {
     ))
 }
 
-/// `bevy skill status`.
+/// `hearth skill status`.
 pub fn status(location: &SkillLocation) -> Result<Outcome, CliError> {
     let dir = skill_dir(location)?;
     let file = dir.join("SKILL.md");
@@ -306,7 +306,7 @@ pub fn status(location: &SkillLocation) -> Result<Outcome, CliError> {
     let Ok(existing) = std::fs::read_to_string(&file) else {
         return Ok(Outcome::new(
             json!({ "client": client_name(location.client), "path": shown, "installed": false }),
-            format!("Not installed (it would go to {shown}). `bevy skill install` installs it."),
+            format!("Not installed (it would go to {shown}). `hearth skill install` installs it."),
         ));
     };
     let (mode, version) = describe(&existing);
@@ -315,11 +315,11 @@ pub fn status(location: &SkillLocation) -> Result<Outcome, CliError> {
     let human = match mode {
         "foreign" => format!("{shown} holds a skill this CLI didn't write"),
         "full" if outdated => format!(
-            "Installed at {shown}: a full copy from version {}, older than this CLI ({current}). Run `bevy skill install --full` to update it.",
+            "Installed at {shown}: a full copy from version {}, older than this CLI ({current}). Run `hearth skill install --full` to update it.",
             version.as_deref().unwrap_or("?")
         ),
         "full" => format!("Installed at {shown}: a full copy of the guide"),
-        _ => format!("Installed at {shown}: it points to `bevy skill show`, so it stays current"),
+        _ => format!("Installed at {shown}: it points to `hearth skill show`, so it stays current"),
     };
     Ok(Outcome::new(
         json!({
@@ -341,7 +341,9 @@ mod tests {
     #[test]
     fn guide_has_frontmatter() {
         // A Windows checkout may have CRLF line endings.
-        assert!(GUIDE.replace("\r\n", "\n").starts_with("---\nname: bevy\n"));
+        assert!(GUIDE
+            .replace("\r\n", "\n")
+            .starts_with("---\nname: hearth\n"));
         assert!(!description().is_empty());
         assert!(!body(GUIDE).starts_with("---"));
         assert!(body(GUIDE).starts_with('#'));
@@ -369,27 +371,28 @@ mod tests {
             ("pointer", Some(env!("CARGO_PKG_VERSION").to_string()))
         );
         assert_eq!(
-            describe("<!-- installed by bevy-cli 0.1.0 (full) -->"),
+            describe("<!-- installed by hearth-cli 0.1.0 (full) -->"),
             ("full", Some("0.1.0".to_string()))
         );
-        assert_eq!(describe("---\nname: bevy\n---\nmine"), ("foreign", None));
+        assert_eq!(describe("---\nname: hearth\n---\nmine"), ("foreign", None));
     }
 
     #[test]
     fn installs_and_uninstalls() {
-        let dir = std::env::temp_dir().join(format!("bevy-cli-skill-test-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("hearth-cli-skill-test-{}", std::process::id()));
         let location = SkillLocation {
             client: SkillClient::Claude,
             project: false,
             dir: Some(dir.clone()),
         };
         install(&location, true, false).unwrap();
-        assert!(dir.join("bevy/references/values.md").is_file());
+        assert!(dir.join("hearth/references/values.md").is_file());
         assert_eq!(status(&location).unwrap().data["mode"], "full");
         install(&location, false, false).unwrap();
-        assert!(!dir.join("bevy/references").exists());
+        assert!(!dir.join("hearth/references").exists());
         assert_eq!(status(&location).unwrap().data["mode"], "pointer");
-        std::fs::write(dir.join("bevy/SKILL.md"), "mine").unwrap();
+        std::fs::write(dir.join("hearth/SKILL.md"), "mine").unwrap();
         assert_eq!(
             install(&location, false, false).unwrap_err().code,
             "SKILL_EXISTS"
@@ -397,7 +400,7 @@ mod tests {
         assert_eq!(uninstall(&location).unwrap_err().code, "SKILL_EXISTS");
         install(&location, false, true).unwrap();
         assert_eq!(uninstall(&location).unwrap().data["removed"], true);
-        assert!(!dir.join("bevy").exists());
+        assert!(!dir.join("hearth").exists());
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

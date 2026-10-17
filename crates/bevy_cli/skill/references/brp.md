@@ -2,51 +2,51 @@
 
 The live commands use the Bevy Remote Protocol: JSON-RPC 2.0 over HTTP, served by
 `RemoteHttpPlugin` on 127.0.0.1:15702 by default (the render sub-app answers on 15703).
-`bevy call <method> [params]` sends any request and prints the result; methods ending in
+`hearth call <method> [params]` sends any request and prints the result; methods ending in
 `+watch` stream results until `--count` or `--duration`.
 
 ```bash
-bevy methods                         # what this app supports
-bevy call world.list_resources
-bevy call world.query '{"data": {"components": ["bevy_ecs::name::Name"]}, "filter": {"with": ["bevy_camera::components::Camera3d"]}}'
+hearth methods                         # what this app supports
+hearth call world.list_resources
+hearth call world.query '{"data": {"components": ["bevy_ecs::name::Name"]}, "filter": {"with": ["bevy_camera::components::Camera3d"]}}'
 ```
 
-Requests use full type paths, not short names; `bevy types <text>` finds them. Entity ids are
+Requests use full type paths, not short names; `hearth types <text>` finds them. Entity ids are
 strings such as `"495v0"`.
 
 ## Methods and the commands that use them
 
 | Method                         | Command                      | Parameters                                              |
 |--------------------------------|------------------------------|---------------------------------------------------------|
-| `rpc.discover`                 | `bevy methods`               | none                                                    |
-| `app.info`                     | `bevy status`                | none                                                    |
+| `rpc.discover`                 | `hearth methods`               | none                                                    |
+| `app.info`                     | `hearth status`                | none                                                    |
 | `world.query`                  | `tree`, `find`, `query`      | `{"data": {"components": [], "option": [] or "all", "has": []}, "filter": {"with": [], "without": []}, "strict": false}` |
-| `world.inspect`                | `bevy get <entity>`          | `{"entity": "495v0"}`                                   |
-| `world.get_components`         | `bevy get <entity> <C>...`   | `{"entity": "495v0", "components": ["<path>"]}`         |
+| `world.inspect`                | `hearth get <entity>`          | `{"entity": "495v0"}`                                   |
+| `world.get_components`         | `hearth get <entity> <C>...`   | `{"entity": "495v0", "components": ["<path>"]}`         |
 | `world.list_components`        |                              | `{"entity": "495v0"}`                                   |
-| `world.mutate_components`      | `bevy set`                   | `{"entity": "495v0", "component": "<path>", "path": ".translation.y", "value": 2}` |
-| `world.insert_components`      | `bevy insert`                | `{"entity": "495v0", "components": {"<path>": value}}`  |
-| `world.remove_components`      | `bevy remove`                | `{"entity": "495v0", "components": ["<path>"]}`         |
-| `world.spawn_entity`           | `bevy spawn`                 | `{"components": {"<path>": value}}`                     |
-| `world.despawn_entity`         | `bevy despawn`               | `{"entity": "495v0"}`                                   |
-| `world.reparent_entities`      | `bevy reparent`              | `{"entities": ["495v0"], "parent": "12v0" or null}`     |
-| `world.list_resources`         | `bevy resource list`         | none                                                    |
-| `world.get_resources`          | `bevy resource get`          | `{"resource": "<path>"}`                                |
-| `world.mutate_resources`       | `bevy resource set`, `time`  | `{"resource": "<path>", "path": ".field", "value": v}`  |
-| `world.insert_resources`       | `bevy resource insert`       | `{"resource": "<path>", "value": v}`                    |
-| `world.remove_resources`       | `bevy resource remove`       | `{"resource": "<path>"}`                                |
-| `world.trigger_event`          | `bevy trigger`               | `{"event": "<path>", "value": v}`                       |
-| `world.write_message`          | `bevy send`, `input`, `exit` | `{"message": "<path>", "value": v}`                     |
-| `world.get_components+watch`   | `bevy watch <entity> <C>...` | like `world.get_components`                             |
-| `world.list_components+watch`  | `bevy watch <entity>`        | `{"entity": "495v0"}`                                   |
-| `world.observe+watch`          | `bevy observe`, `screenshot` | `{"event": "<path>", "entity": "495v0"}` (entity optional) |
+| `world.mutate_components`      | `hearth set`                   | `{"entity": "495v0", "component": "<path>", "path": ".translation.y", "value": 2}` |
+| `world.insert_components`      | `hearth insert`                | `{"entity": "495v0", "components": {"<path>": value}}`  |
+| `world.remove_components`      | `hearth remove`                | `{"entity": "495v0", "components": ["<path>"]}`         |
+| `world.spawn_entity`           | `hearth spawn`                 | `{"components": {"<path>": value}}`                     |
+| `world.despawn_entity`         | `hearth despawn`               | `{"entity": "495v0"}`                                   |
+| `world.reparent_entities`      | `hearth reparent`              | `{"entities": ["495v0"], "parent": "12v0" or null}`     |
+| `world.list_resources`         | `hearth resource list`         | none                                                    |
+| `world.get_resources`          | `hearth resource get`          | `{"resource": "<path>"}`                                |
+| `world.mutate_resources`       | `hearth resource set`, `time`  | `{"resource": "<path>", "path": ".field", "value": v}`  |
+| `world.insert_resources`       | `hearth resource insert`       | `{"resource": "<path>", "value": v}`                    |
+| `world.remove_resources`       | `hearth resource remove`       | `{"resource": "<path>"}`                                |
+| `world.trigger_event`          | `hearth trigger`               | `{"event": "<path>", "value": v}`                       |
+| `world.write_message`          | `hearth send`, `input`, `exit` | `{"message": "<path>", "value": v}`                     |
+| `world.get_components+watch`   | `hearth watch <entity> <C>...` | like `world.get_components`                             |
+| `world.list_components+watch`  | `hearth watch <entity>`        | `{"entity": "495v0"}`                                   |
+| `world.observe+watch`          | `hearth observe`, `screenshot` | `{"event": "<path>", "entity": "495v0"}` (entity optional) |
 | `registry.schema`              | `types`, `schema`            | `{"with_crates": [], "without_crates": [], "type_limit": {"with": [], "without": []}}`, all optional |
-| `schedule.list`                | `bevy schedules`             | none                                                    |
-| `schedule.graph`               | `bevy schedules <label>`     | `{"schedule_label": "Update"}`                          |
-| `diagnostics.get`              | `bevy diagnostics`           | `{"paths": ["fps"]}`, optional                          |
+| `schedule.list`                | `hearth schedules`             | none                                                    |
+| `schedule.graph`               | `hearth schedules <label>`     | `{"schedule_label": "Update"}`                          |
+| `diagnostics.get`              | `hearth diagnostics`           | `{"paths": ["fps"]}`, optional                          |
 
 Newer apps have more, such as `world.summarize`, `world.inspect_resource` and
-`diagnostics.list`; `bevy methods` shows them.
+`diagnostics.list`; `hearth methods` shows them.
 
 ## Errors
 
