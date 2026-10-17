@@ -1038,6 +1038,7 @@ impl Plugin for RemotePlugin {
         app.insert_resource(remote_methods)
             .init_resource::<schemas::SchemaTypesMetadata>()
             .init_resource::<RemoteWatchingRequests>()
+            .init_resource::<CurrentWatchingRequest>()
             .init_resource::<builtin_methods::BrpEventObservers>()
             .add_systems(PreStartup, setup_mailbox_channel)
             .configure_sets(
@@ -1089,6 +1090,7 @@ impl Plugin for RemotePlugin {
                 .insert_resource(render_remote_methods)
                 .init_resource::<schemas::SchemaTypesMetadata>()
                 .init_resource::<RemoteWatchingRequests>()
+                .init_resource::<CurrentWatchingRequest>()
                 .add_systems(RenderStartup, setup_mailbox_channel.run_if(run_once))
                 .configure_sets(
                     RemoteLast,
@@ -1195,7 +1197,21 @@ impl RemoteMethods {
 
 /// Holds the [`BrpMessage`]'s of all ongoing watching requests along with their handlers.
 #[derive(Debug, Resource, Default)]
-pub struct RemoteWatchingRequests(Vec<(BrpMessage, RemoteWatchingMethodSystemId)>);
+pub struct RemoteWatchingRequests {
+    requests: Vec<(WatchingRequestId, BrpMessage, RemoteWatchingMethodSystemId)>,
+    next_id: u64,
+}
+
+/// Identifies one ongoing watching request, from when it is received until its stream closes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct WatchingRequestId(pub u64);
+
+/// The watching request whose handler is currently running, if any.
+///
+/// The server sets this before each poll of a watching handler, so handlers that keep state
+/// per request (like `world.observe+watch`) can tell concurrent requests apart.
+#[derive(Debug, Resource, Default)]
+pub struct CurrentWatchingRequest(pub Option<WatchingRequestId>);
 
 /// A single request from a Bevy Remote Protocol client to the server,
 /// serialized in JSON.
@@ -1716,11 +1732,11 @@ fn process_remote_requests(world: &mut World) {
 
                 let _ = message.sender.force_send(result);
             }
-            RemoteMethodSystemId::Watching(id) => {
-                world
-                    .resource_mut::<RemoteWatchingRequests>()
-                    .0
-                    .push((message, id));
+            RemoteMethodSystemId::Watching(system_id) => {
+                let mut requests = world.resource_mut::<RemoteWatchingRequests>();
+                let request_id = WatchingRequestId(requests.next_id);
+                requests.next_id += 1;
+                requests.requests.push((request_id, message, system_id));
             }
         }
     }
@@ -1730,7 +1746,8 @@ fn process_remote_requests(world: &mut World) {
 /// and handles it if so.
 fn process_ongoing_watching_requests(world: &mut World) {
     world.resource_scope::<RemoteWatchingRequests, ()>(|world, requests| {
-        for (message, system_id) in requests.0.iter() {
+        for (request_id, message, system_id) in requests.requests.iter() {
+            world.insert_resource(CurrentWatchingRequest(Some(*request_id)));
             let handler_result = process_single_ongoing_watching_request(world, message, system_id);
             let sender_result = match handler_result {
                 Ok(Some(value)) => message.sender.try_send(Ok(value)),
@@ -1744,6 +1761,7 @@ fn process_ongoing_watching_requests(world: &mut World) {
             }
         }
     });
+    world.insert_resource(CurrentWatchingRequest(None));
 }
 
 fn process_single_ongoing_watching_request(
@@ -1760,14 +1778,24 @@ fn process_single_ongoing_watching_request(
         })?
 }
 
-fn remove_closed_watching_requests(mut requests: ResMut<RemoteWatchingRequests>) {
-    for i in (0..requests.0.len()).rev() {
-        let Some((message, _)) = requests.0.get(i) else {
+fn remove_closed_watching_requests(
+    mut requests: ResMut<RemoteWatchingRequests>,
+    mut event_observers: Option<ResMut<builtin_methods::BrpEventObservers>>,
+    mut commands: Commands,
+) {
+    for i in (0..requests.requests.len()).rev() {
+        let Some((request_id, message, _)) = requests.requests.get(i) else {
             unreachable!()
         };
 
         if message.sender.is_closed() {
-            requests.0.swap_remove(i);
+            if let Some(observer) = event_observers
+                .as_mut()
+                .and_then(|event_observers| event_observers.remove(*request_id))
+            {
+                commands.entity(observer).try_despawn();
+            }
+            requests.requests.swap_remove(i);
         }
     }
 }
@@ -1793,8 +1821,131 @@ fn cache_schedule_build_metadata(
 
 #[cfg(test)]
 mod tests {
-    use crate::BrpRequest;
-    use serde_json::json;
+    use crate::{
+        builtin_methods::{BrpEventObservers, BrpObserveParams, BRP_OBSERVE_METHOD},
+        BrpMessage, BrpRequest, BrpResult, BrpSender, RemotePlugin, RemoteWatchingRequests,
+    };
+    use async_channel::Receiver;
+    use bevy_app::App;
+    use bevy_ecs::{
+        event::Event,
+        reflect::{AppTypeRegistry, ReflectEvent},
+    };
+    use bevy_reflect::Reflect;
+    use serde_json::{json, Value};
+
+    #[derive(Event, Reflect)]
+    #[reflect(Event)]
+    struct Ping {
+        value: u32,
+    }
+
+    fn observe_app() -> App {
+        let mut app = App::new();
+        app.add_plugins(RemotePlugin::default());
+        app.world()
+            .resource::<AppTypeRegistry>()
+            .write()
+            .register::<Ping>();
+        app.finish();
+        app.cleanup();
+        // The first update creates the request mailbox.
+        app.update();
+        app
+    }
+
+    /// Sends a `world.observe+watch` request for [`Ping`] and returns the receiving end of its stream.
+    fn watch_pings(app: &mut App) -> Receiver<BrpResult> {
+        let (sender, receiver) = async_channel::unbounded();
+        let params = serde_json::to_value(BrpObserveParams {
+            event: core::any::type_name::<Ping>().to_owned(),
+            entity: None,
+        })
+        .unwrap();
+        app.world()
+            .resource::<BrpSender>()
+            .force_send(BrpMessage {
+                method: BRP_OBSERVE_METHOD.to_owned(),
+                params: Some(params),
+                sender,
+            })
+            .unwrap();
+        receiver
+    }
+
+    fn received_values(receiver: &Receiver<BrpResult>) -> Vec<Value> {
+        let mut values = Vec::new();
+        while let Ok(result) = receiver.try_recv() {
+            let batch: Vec<Value> = serde_json::from_value(result.unwrap()).unwrap();
+            values.extend(batch.into_iter().map(|event| event["value"].clone()));
+        }
+        values
+    }
+
+    #[test]
+    fn observe_watch_cleans_up_after_stream_closes() {
+        let mut app = observe_app();
+        let receiver = watch_pings(&mut app);
+        app.update();
+
+        let observers = &app.world().resource::<BrpEventObservers>().watches;
+        assert_eq!(observers.len(), 1);
+        let observer = observers.values().next().unwrap().observer;
+        assert!(app.world().get_entity(observer).is_ok());
+
+        app.world_mut().trigger(Ping { value: 1 });
+        app.update();
+        assert_eq!(received_values(&receiver), vec![json!(1)]);
+
+        drop(receiver);
+        app.update();
+
+        assert!(app.world().get_entity(observer).is_err());
+        assert!(app
+            .world()
+            .resource::<BrpEventObservers>()
+            .watches
+            .is_empty());
+        assert!(app
+            .world()
+            .resource::<RemoteWatchingRequests>()
+            .requests
+            .is_empty());
+
+        // Events triggered after the stream closed are no longer buffered anywhere.
+        app.world_mut().trigger(Ping { value: 2 });
+        app.update();
+        assert!(app
+            .world()
+            .resource::<BrpEventObservers>()
+            .watches
+            .is_empty());
+    }
+
+    #[test]
+    fn concurrent_observe_watchers_each_receive_every_event() {
+        let mut app = observe_app();
+        let first = watch_pings(&mut app);
+        let second = watch_pings(&mut app);
+        app.update();
+        assert_eq!(app.world().resource::<BrpEventObservers>().watches.len(), 2);
+
+        app.world_mut().trigger(Ping { value: 1 });
+        app.world_mut().trigger(Ping { value: 2 });
+        app.update();
+
+        assert_eq!(received_values(&first), vec![json!(1), json!(2)]);
+        assert_eq!(received_values(&second), vec![json!(1), json!(2)]);
+
+        // Closing one watcher leaves the other one streaming.
+        drop(first);
+        app.update();
+        app.world_mut().trigger(Ping { value: 3 });
+        app.update();
+
+        assert_eq!(app.world().resource::<BrpEventObservers>().watches.len(), 1);
+        assert_eq!(received_values(&second), vec![json!(3)]);
+    }
 
     #[test]
     fn deserialize_brp_request_params_optional() {
