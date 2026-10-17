@@ -510,14 +510,16 @@ use core::{fmt::Debug, marker::PhantomData, ops::Deref};
 /// struct MyComponent;
 /// ```
 ///
-/// A summary tick allows queries to skip entire tables if none of the components
-/// that those queries care about have changed.
+/// A summary tick allows queries to skip entire tables, and chunks of
+/// [`SummaryTicks::CHUNK_ROWS`] rows within them, if none of the components
+/// that those queries care about have changed there.
 ///
 /// The downside is that performance of updating those components decreases, as
 /// the summary tick must be updated. Summary ticks are only valid for
 /// components with table storage; components that have sparse set storage may
 /// not use summary ticks.
 ///
+/// [`SummaryTicks::CHUNK_ROWS`]: crate::change_detection::SummaryTicks::CHUNK_ROWS
 /// [`SyncCell`]: bevy_platform::cell::SyncCell
 /// [`Exclusive`]: https://doc.rust-lang.org/nightly/std/sync/struct.Exclusive.html
 /// [`ComponentHooks`]: crate::lifecycle::ComponentHooks

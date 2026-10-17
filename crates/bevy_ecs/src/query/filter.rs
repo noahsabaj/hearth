@@ -1,6 +1,6 @@
 use crate::{
     archetype::Archetype,
-    change_detection::Tick,
+    change_detection::{AtomicTick, Tick},
     component::{Component, ComponentId, Components, StorageType},
     entity::{Entities, Entity},
     query::{DebugCheckedUnwrap, FilteredAccess, FilteredAccessSet, StorageSwitch, WorldQuery},
@@ -106,6 +106,25 @@ pub unsafe trait QueryFilter: WorldQuery {
     ///
     /// Must be called _after_ [`WorldQuery::set_table`] or [`WorldQuery::set_archetype`].
     unsafe fn filter_table(state: &Self::State, fetch: &mut Self::Fetch<'_>) -> bool;
+
+    /// Returns true if _any_ entity in the given chunk of the current table should be included in
+    /// the query results. If false, iteration skips the chunk's rows: those from
+    /// `chunk * SummaryTicks::CHUNK_ROWS` up to the next chunk.
+    ///
+    /// Filters on change ticks implement this with the per-chunk summary ticks of components that
+    /// track them. The default defers to [`QueryFilter::filter_table`], which is always correct.
+    ///
+    /// [`SummaryTicks::CHUNK_ROWS`]: crate::change_detection::SummaryTicks::CHUNK_ROWS
+    ///
+    /// # Safety
+    ///
+    /// Must be called _after_ [`WorldQuery::set_table`], and `chunk` must hold rows of that table.
+    #[inline(always)]
+    unsafe fn filter_chunk(state: &Self::State, fetch: &mut Self::Fetch<'_>, chunk: usize) -> bool {
+        let _ = chunk;
+        // SAFETY: The invariants are upheld by the caller.
+        unsafe { Self::filter_table(state, fetch) }
+    }
 
     /// Returns true if the provided [`Entity`] and [`TableRow`] should be included in the query results.
     /// If false, the entity will be skipped.
@@ -582,6 +601,18 @@ macro_rules! impl_or_query_filter {
             }
 
             #[inline(always)]
+            unsafe fn filter_chunk(state: &Self::State, fetch: &mut Self::Fetch<'_>, chunk: usize) -> bool {
+                let ($($state,)*) = state;
+                let ($($filter,)*) = fetch;
+
+                // See `filter_table`.
+                (Self::IS_ARCHETYPAL
+                    // SAFETY: The invariants are upheld by the caller.
+                    $(|| ($filter.matches && unsafe { $filter::filter_chunk($state, &mut $filter.fetch, chunk) }))*
+                    || !(false $(|| $filter.matches)*))
+            }
+
+            #[inline(always)]
             unsafe fn filter_fetch(
                 state: &Self::State,
                 fetch: &mut Self::Fetch<'_>,
@@ -631,6 +662,15 @@ macro_rules! impl_tuple_query_filter {
 
                 // SAFETY: The invariants are upheld by the caller.
                 true $(&& unsafe { $name::filter_table($state, $name) })*
+            }
+
+            #[inline(always)]
+            unsafe fn filter_chunk(state: &Self::State, fetch: &mut Self::Fetch<'_>, chunk: usize) -> bool {
+                let ($($state,)*) = state;
+                let ($($name,)*) = fetch;
+
+                // SAFETY: The invariants are upheld by the caller.
+                true $(&& unsafe { $name::filter_chunk($state, $name, chunk) })*
             }
 
             #[inline(always)]
@@ -819,6 +859,7 @@ pub struct AddedFetch<'w, T: Component> {
         Option<&'w ComponentSparseSet>,
     >,
     summary_tick: Tick,
+    chunk_ticks: &'w [AtomicTick],
     last_run: Tick,
     this_run: Tick,
 }
@@ -828,6 +869,7 @@ impl<T: Component> Clone for AddedFetch<'_, T> {
         Self {
             ticks: self.ticks,
             summary_tick: self.summary_tick,
+            chunk_ticks: self.chunk_ticks,
             last_run: self.last_run,
             this_run: self.this_run,
         }
@@ -868,6 +910,7 @@ unsafe impl<T: Component> WorldQuery for Added<T> {
             // This is a dummy valid chosen for safe behavior.
             // In case this is never modified it will cause `filter_table` to return `true`, which is always correct.
             summary_tick: last_run,
+            chunk_ticks: &[],
             last_run,
             this_run,
         }
@@ -911,10 +954,9 @@ unsafe impl<T: Component> WorldQuery for Added<T> {
         unsafe { fetch.ticks.set_table(table_ticks) };
 
         if T::HAS_SUMMARY_TICK {
-            fetch.summary_tick = table
-                .get_summary_tick(component_id)
-                .debug_checked_unwrap()
-                .get();
+            let summary = table.get_summary_tick(component_id).debug_checked_unwrap();
+            fetch.summary_tick = summary.get();
+            fetch.chunk_ticks = summary.chunks();
         }
     }
 
@@ -961,6 +1003,20 @@ unsafe impl<T: Component> QueryFilter for Added<T> {
             || fetch
                 .summary_tick
                 .is_newer_than(fetch.last_run, fetch.this_run)
+    }
+
+    #[inline(always)]
+    unsafe fn filter_chunk(
+        _state: &Self::State,
+        fetch: &mut Self::Fetch<'_>,
+        chunk: usize,
+    ) -> bool {
+        !T::HAS_SUMMARY_TICK
+            || fetch.chunk_ticks.get(chunk).is_none_or(|chunk_tick| {
+                chunk_tick
+                    .get()
+                    .is_newer_than(fetch.last_run, fetch.this_run)
+            })
     }
 
     #[inline(always)]
@@ -1076,6 +1132,7 @@ pub struct ChangedFetch<'w, T: Component> {
         Option<&'w ComponentSparseSet>,
     >,
     summary_tick: Tick,
+    chunk_ticks: &'w [AtomicTick],
     last_run: Tick,
     this_run: Tick,
 }
@@ -1085,6 +1142,7 @@ impl<T: Component> Clone for ChangedFetch<'_, T> {
         Self {
             ticks: self.ticks,
             summary_tick: self.summary_tick,
+            chunk_ticks: self.chunk_ticks,
             last_run: self.last_run,
             this_run: self.this_run,
         }
@@ -1125,6 +1183,7 @@ unsafe impl<T: Component> WorldQuery for Changed<T> {
             // This is a dummy valid chosen for safe behavior.
             // In case this is never modified it will cause `filter_table` to return `true`, which is always correct.
             summary_tick: last_run,
+            chunk_ticks: &[],
             last_run,
             this_run,
         }
@@ -1168,10 +1227,9 @@ unsafe impl<T: Component> WorldQuery for Changed<T> {
         unsafe { fetch.ticks.set_table(table_ticks) };
 
         if T::HAS_SUMMARY_TICK {
-            fetch.summary_tick = table
-                .get_summary_tick(component_id)
-                .debug_checked_unwrap()
-                .get();
+            let summary = table.get_summary_tick(component_id).debug_checked_unwrap();
+            fetch.summary_tick = summary.get();
+            fetch.chunk_ticks = summary.chunks();
         }
     }
 
@@ -1218,6 +1276,20 @@ unsafe impl<T: Component> QueryFilter for Changed<T> {
             || fetch
                 .summary_tick
                 .is_newer_than(fetch.last_run, fetch.this_run)
+    }
+
+    #[inline(always)]
+    unsafe fn filter_chunk(
+        _state: &Self::State,
+        fetch: &mut Self::Fetch<'_>,
+        chunk: usize,
+    ) -> bool {
+        !T::HAS_SUMMARY_TICK
+            || fetch.chunk_ticks.get(chunk).is_none_or(|chunk_tick| {
+                chunk_tick
+                    .get()
+                    .is_newer_than(fetch.last_run, fetch.this_run)
+            })
     }
 
     #[inline(always)]

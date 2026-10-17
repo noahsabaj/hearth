@@ -3,7 +3,7 @@ mod column;
 pub use column::Column;
 
 use crate::{
-    change_detection::{AtomicTick, CheckChangeTicks, ComponentTicks, MaybeLocation, Tick},
+    change_detection::{CheckChangeTicks, ComponentTicks, MaybeLocation, SummaryTicks, Tick},
     component::{ComponentId, ComponentInfo, Components},
     entity::Entity,
     query::DebugCheckedUnwrap,
@@ -597,7 +597,7 @@ impl Table {
     /// Returns a reference to this table's summary tick for the given
     /// component, if the component is dense and the component tracks summary
     /// ticks.
-    pub fn get_summary_tick(&self, component_id: ComponentId) -> Option<&AtomicTick> {
+    pub fn get_summary_tick(&self, component_id: ComponentId) -> Option<SummaryTicks<'_>> {
         self.get_column(component_id)
             .and_then(Column::get_summary_tick)
     }

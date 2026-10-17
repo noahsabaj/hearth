@@ -144,6 +144,94 @@ impl Debug for AtomicTick {
     }
 }
 
+/// The summary ticks a change to some rows of a table column must update: the tick of the whole
+/// column, and the ticks of the chunks of [`SummaryTicks::CHUNK_ROWS`] rows those rows lie in.
+///
+/// Queries filtered by [`Changed`](crate::query::Changed) or [`Added`](crate::query::Added) read
+/// the column's tick to skip a table and each chunk's tick to skip its rows, so a few changes in a
+/// large table don't make every query look at every row.
+///
+/// Updating more chunks than the changed rows lie in is always allowed: it only makes queries look
+/// at rows they could have skipped.
+#[derive(Copy, Clone, Debug)]
+pub struct SummaryTicks<'a> {
+    column: &'a AtomicTick,
+    chunks: &'a [AtomicTick],
+}
+
+impl<'a> SummaryTicks<'a> {
+    /// How many consecutive rows of a column share a chunk tick.
+    pub const CHUNK_ROWS: usize = 256;
+
+    /// Creates summary ticks from the column's tick and the chunk ticks to update along with it.
+    pub fn new(column: &'a AtomicTick, chunks: &'a [AtomicTick]) -> Self {
+        Self { column, chunks }
+    }
+
+    /// Returns the chunk that `row` lies in.
+    #[inline]
+    pub const fn chunk_of(row: usize) -> usize {
+        row / Self::CHUNK_ROWS
+    }
+
+    /// Returns the column's summary tick: the last time any row of the column changed.
+    #[inline]
+    pub fn get(&self) -> Tick {
+        self.column.get()
+    }
+
+    /// Returns the chunk ticks these summary ticks update.
+    #[inline]
+    pub fn chunks(&self) -> &'a [AtomicTick] {
+        self.chunks
+    }
+
+    /// Records a change at `tick` to the column and to every chunk.
+    #[inline]
+    pub fn set(&self, tick: Tick) {
+        for chunk in self.chunks {
+            chunk.set(tick);
+        }
+        self.column.set(tick);
+    }
+
+    /// Records, at `this_run`, a value whose change tick was set to `changed`, wherever `changed`
+    /// is newer than the summary.
+    #[inline]
+    pub fn include(&self, changed: Tick, this_run: Tick) {
+        for summary in self.chunks.iter().chain(core::iter::once(self.column)) {
+            if changed.is_newer_than(summary.get(), this_run) {
+                summary.set(this_run);
+            }
+        }
+    }
+
+    /// Narrows the chunks to the one that `row` lies in. `self` must cover the whole column.
+    #[inline]
+    pub fn row(self, row: usize) -> Self {
+        let chunk = Self::chunk_of(row);
+        Self {
+            column: self.column,
+            chunks: &self.chunks[chunk..=chunk],
+        }
+    }
+
+    /// Narrows the chunks to the ones that `rows` lie in. `self` must cover the whole column.
+    #[inline]
+    pub fn rows(self, rows: core::ops::Range<usize>) -> Self {
+        if rows.is_empty() {
+            return Self {
+                column: self.column,
+                chunks: &[],
+            };
+        }
+        Self {
+            column: self.column,
+            chunks: &self.chunks[Self::chunk_of(rows.start)..=Self::chunk_of(rows.end - 1)],
+        }
+    }
+}
+
 /// An [`Event`] that can be used to maintain [`Tick`]s in custom data structures, enabling to make
 /// use of bevy's periodic checks that clamps ticks to a certain range, preventing overflows and thus
 /// keeping methods like [`Tick::is_newer_than`] reliably return `false` for ticks that got too old.
@@ -188,9 +276,9 @@ pub struct ComponentTickCells<'a> {
     pub changed: &'a UnsafeCell<Tick>,
     /// The calling location that last modified the value.
     pub changed_by: MaybeLocation<&'a UnsafeCell<&'static Location<'static>>>,
-    /// The summary tick for the column, if the component is dense and has a
+    /// The summary ticks for the value's column and chunk, if the component is dense and has a
     /// summary tick.
-    pub summary_tick: Option<&'a AtomicTick>,
+    pub summary_tick: Option<SummaryTicks<'a>>,
 }
 
 /// Records when a component or resource was added and when it was last mutably dereferenced (or added).

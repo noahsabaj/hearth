@@ -2,7 +2,7 @@ use super::{QueryData, QueryFilter, ReadOnlyQueryData};
 use crate::{
     archetype::{Archetype, ArchetypeEntity, Archetypes},
     bundle::Bundle,
-    change_detection::Tick,
+    change_detection::{SummaryTicks, Tick},
     entity::{Entities, Entity, EntityEquivalent, EntitySet, EntitySetIterator},
     query::{
         ArchetypeFilter, ArchetypeQueryData, ContiguousQueryData, DebugCheckedUnwrap,
@@ -267,39 +267,65 @@ impl<'w, 's, D: IterQueryData, F: QueryFilter> QueryIter<'w, 's, D, F> {
         D::set_table(&mut self.cursor.fetch, &self.query_state.fetch_state, table);
 
         let entities = table.entities();
-        for row in rows {
-            // SAFETY: Caller assures `row` in range of the current archetype.
-            let entity = unsafe { entities.get_unchecked(row as usize) };
-            // SAFETY: This is from an exclusive range, so it can't be max.
-            let row = unsafe { TableRow::new(NonMaxU32::new_unchecked(row)) };
+        // Filters that look at change ticks can skip whole chunks of rows, so walk the rows a
+        // chunk at a time for them.
+        let mut start = rows.start;
+        while start < rows.end {
+            let end = if F::IS_ARCHETYPAL {
+                rows.end
+            } else {
+                let chunk = SummaryTicks::chunk_of(start as usize);
+                let chunk_end = (chunk + 1).saturating_mul(SummaryTicks::CHUNK_ROWS);
+                let end = u32::try_from(chunk_end).unwrap_or(u32::MAX).min(rows.end);
+                // SAFETY: set_table was called prior, and the chunk holds rows of the table.
+                let skip = unsafe {
+                    !F::filter_chunk(
+                        &self.query_state.filter_state,
+                        &mut self.cursor.filter,
+                        chunk,
+                    )
+                };
+                if skip {
+                    start = end;
+                    continue;
+                }
+                end
+            };
+            for row in start..end {
+                // SAFETY: Caller assures `row` in range of the current archetype.
+                let entity = unsafe { entities.get_unchecked(row as usize) };
+                // SAFETY: This is from an exclusive range, so it can't be max.
+                let row = unsafe { TableRow::new(NonMaxU32::new_unchecked(row)) };
 
-            // SAFETY: set_table was called prior.
-            // Caller assures `row` in range of the current archetype.
-            let fetched = unsafe {
-                !F::filter_fetch(
-                    &self.query_state.filter_state,
-                    &mut self.cursor.filter,
+                // SAFETY: set_table was called prior.
+                // Caller assures `row` in range of the current archetype.
+                let fetched = unsafe {
+                    !F::filter_fetch(
+                        &self.query_state.filter_state,
+                        &mut self.cursor.filter,
+                        *entity,
+                        row,
+                    )
+                };
+                if fetched {
+                    continue;
+                }
+
+                // SAFETY:
+                // - set_table was called prior.
+                // - Caller assures `row` in range of the current archetype.
+                // - Each row is unique, so each entity is only alive once
+                // - `D: IterQueryData`
+                if let Some(item) = D::fetch(
+                    &self.query_state.fetch_state,
+                    &mut self.cursor.fetch,
                     *entity,
                     row,
-                )
-            };
-            if fetched {
-                continue;
+                ) {
+                    accum = func(accum, item);
+                }
             }
-
-            // SAFETY:
-            // - set_table was called prior.
-            // - Caller assures `row` in range of the current archetype.
-            // - Each row is unique, so each entity is only alive once
-            // - `D: IterQueryData`
-            if let Some(item) = D::fetch(
-                &self.query_state.fetch_state,
-                &mut self.cursor.fetch,
-                *entity,
-                row,
-            ) {
-                accum = func(accum, item);
-            }
+            start = end;
         }
         accum
     }
@@ -3265,6 +3291,23 @@ impl<'w, 's, D: QueryData, F: QueryFilter> QueryIterationCursor<'w, 's, D, F> {
                 if self.current_row == self.current_len {
                     core::hint::cold_path();
                     self.fetch_next_table(tables, query_state)?;
+                }
+
+                // Filters that look at change ticks can skip whole chunks of rows.
+                if !F::IS_ARCHETYPAL
+                    && (self.current_row as usize).is_multiple_of(SummaryTicks::CHUNK_ROWS)
+                {
+                    let chunk = SummaryTicks::chunk_of(self.current_row as usize);
+                    // SAFETY: set_table was called prior, and the chunk holds rows of the table.
+                    if !unsafe {
+                        F::filter_chunk(&query_state.filter_state, &mut self.filter, chunk)
+                    } {
+                        self.current_row = self
+                            .current_row
+                            .saturating_add(SummaryTicks::CHUNK_ROWS as u32)
+                            .min(self.current_len);
+                        continue;
+                    }
                 }
 
                 // SAFETY: set_table was called prior.

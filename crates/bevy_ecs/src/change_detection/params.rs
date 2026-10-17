@@ -1,5 +1,5 @@
 use crate::{
-    change_detection::{traits::*, AtomicTick, ComponentTickCells, MaybeLocation, Tick},
+    change_detection::{traits::*, ComponentTickCells, MaybeLocation, SummaryTicks, Tick},
     component::Mutable,
     ptr::PtrMut,
     resource::Resource,
@@ -57,7 +57,7 @@ pub struct ContiguousComponentTicksRef<'w> {
     pub(crate) changed_by: MaybeLocation<&'w [&'static Location<'static>]>,
     pub(crate) last_run: Tick,
     pub(crate) this_run: Tick,
-    pub(crate) summary_tick: Option<&'w AtomicTick>,
+    pub(crate) summary_tick: Option<SummaryTicks<'w>>,
 }
 
 impl<'w> ContiguousComponentTicksRef<'w> {
@@ -69,7 +69,7 @@ impl<'w> ContiguousComponentTicksRef<'w> {
     pub(crate) unsafe fn from_slice_ptrs(
         added: ThinSlicePtr<'w, UnsafeCell<Tick>>,
         changed: ThinSlicePtr<'w, UnsafeCell<Tick>>,
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         changed_by: MaybeLocation<ThinSlicePtr<'w, UnsafeCell<&'static Location<'static>>>>,
         range: Range<usize>,
         this_run: Tick,
@@ -109,7 +109,7 @@ impl<'w> ContiguousComponentTicksRef<'w> {
     pub fn new(
         added: &'w [Tick],
         changed: &'w [Tick],
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         last_run: Tick,
         this_run: Tick,
         caller: MaybeLocation<&'w [&'static Location<'static>]>,
@@ -156,7 +156,7 @@ impl<'w> ContiguousComponentTicksRef<'w> {
 
     /// Returns the summary tick, if any.
     pub fn summary_tick(&self) -> Option<Tick> {
-        self.summary_tick.map(AtomicTick::get)
+        self.summary_tick.map(|summary| summary.get())
     }
 
     /// Returns an iterator where the i-th item corresponds to whether the i-th component was
@@ -255,7 +255,7 @@ pub(crate) struct ComponentTicksMut<'w> {
     pub(crate) this_run: Tick,
     /// A reference to the summary tick for the component, if the component is
     /// dense and has a summary tick.
-    pub(crate) summary_tick: Option<&'w AtomicTick>,
+    pub(crate) summary_tick: Option<SummaryTicks<'w>>,
 }
 
 impl<'w> ComponentTicksMut<'w> {
@@ -305,7 +305,7 @@ pub struct ContiguousComponentTicksMut<'w> {
     pub(crate) changed_by: MaybeLocation<&'w mut [&'static Location<'static>]>,
     pub(crate) last_run: Tick,
     pub(crate) this_run: Tick,
-    pub(crate) summary_tick: Option<&'w AtomicTick>,
+    pub(crate) summary_tick: Option<SummaryTicks<'w>>,
 }
 
 impl<'w> ContiguousComponentTicksMut<'w> {
@@ -317,7 +317,7 @@ impl<'w> ContiguousComponentTicksMut<'w> {
     pub(crate) unsafe fn from_slice_ptrs(
         added: ThinSlicePtr<'w, UnsafeCell<Tick>>,
         changed: ThinSlicePtr<'w, UnsafeCell<Tick>>,
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         changed_by: MaybeLocation<ThinSlicePtr<'w, UnsafeCell<&'static Location<'static>>>>,
         range: Range<usize>,
         this_run: Tick,
@@ -357,7 +357,7 @@ impl<'w> ContiguousComponentTicksMut<'w> {
     pub fn new(
         added: &'w mut [Tick],
         changed: &'w mut [Tick],
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         last_run: Tick,
         this_run: Tick,
         caller: MaybeLocation<&'w mut [&'static Location<'static>]>,
@@ -899,7 +899,7 @@ impl<'w, T> ContiguousRef<'w, T> {
         value: &'w [T],
         added: &'w [Tick],
         changed: &'w [Tick],
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         last_run: Tick,
         this_run: Tick,
         caller: MaybeLocation<&'w [&'static Location<'static>]>,
@@ -1054,7 +1054,7 @@ impl<'w, T: ?Sized> Mut<'w, T> {
         value: &'w mut T,
         added: &'w mut Tick,
         last_changed: &'w mut Tick,
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         last_run: Tick,
         this_run: Tick,
         caller: MaybeLocation<&'w mut &'static Location<'static>>,
@@ -1183,7 +1183,7 @@ impl<'w, T> ContiguousMut<'w, T> {
         value: &'w mut [T],
         added: &'w mut [Tick],
         changed: &'w mut [Tick],
-        summary_tick: Option<&'w AtomicTick>,
+        summary_tick: Option<SummaryTicks<'w>>,
         last_run: Tick,
         this_run: Tick,
         caller: MaybeLocation<&'w mut [&'static Location<'static>]>,
@@ -1546,10 +1546,8 @@ impl<'w> DetectChangesMut for MutUntyped<'w> {
     fn set_last_changed(&mut self, last_changed: Tick) {
         *self.ticks.changed = last_changed;
         self.ticks.changed_by.assign(MaybeLocation::caller());
-        if let Some(summary_tick) = self.ticks.summary_tick
-            && self.is_changed_after(summary_tick.get())
-        {
-            summary_tick.set(self.ticks.this_run);
+        if let Some(summary_tick) = self.ticks.summary_tick {
+            summary_tick.include(*self.ticks.changed, self.ticks.this_run);
         }
     }
 
@@ -1559,10 +1557,8 @@ impl<'w> DetectChangesMut for MutUntyped<'w> {
         *self.ticks.added = last_added;
         *self.ticks.changed = last_added;
         self.ticks.changed_by.assign(MaybeLocation::caller());
-        if let Some(summary_tick) = self.ticks.summary_tick
-            && self.is_changed_after(summary_tick.get())
-        {
-            summary_tick.set(self.ticks.this_run);
+        if let Some(summary_tick) = self.ticks.summary_tick {
+            summary_tick.include(*self.ticks.changed, self.ticks.this_run);
         }
     }
 

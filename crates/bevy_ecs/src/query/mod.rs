@@ -840,10 +840,6 @@ mod tests {
     // Declare a couple of components that have summary ticks.
     #[derive(Component)]
     #[component(summary_tick)]
-    #[expect(
-        dead_code,
-        reason = "Nothing reads the interior value but it's nice for debugging anyway"
-    )]
     struct SA(usize);
     #[derive(Component)]
     #[component(summary_tick)]
@@ -976,6 +972,103 @@ mod tests {
         assert_eq!(values.len(), 2);
         // One entity has changed, so the summary tick is changed.
         assert_eq!(ticks.summary_tick_is_changed(), Some(true));
+    }
+
+    /// Returns the entities that `Changed<SA>` matches, after checking that iterating one at a
+    /// time, folding and iterating in parallel agree, alone and inside `Or` and tuple filters.
+    fn changed_sa(world: &mut World) -> Vec<Entity> {
+        fn sorted(mut entities: Vec<Entity>) -> Vec<Entity> {
+            entities.sort();
+            entities
+        }
+
+        let mut query = world.query_filtered::<Entity, Changed<SA>>();
+        let mut one_at_a_time = Vec::new();
+        // A `for` loop calls `next`, unlike `for_each`, which folds.
+        for entity in query.iter(world) {
+            one_at_a_time.push(entity);
+        }
+        let mut folded = Vec::new();
+        query.iter(world).for_each(|entity| folded.push(entity));
+        let parallel = std::sync::Mutex::new(Vec::new());
+        query
+            .par_iter(world)
+            .for_each(|entity| parallel.lock().unwrap().push(entity));
+        let either: Vec<Entity> = world
+            .query_filtered::<Entity, Or<(Changed<SA>, Changed<SB>)>>()
+            .iter(world)
+            .collect();
+        let both: Vec<Entity> = world
+            .query_filtered::<Entity, (Changed<SA>, Without<SB>)>()
+            .iter(world)
+            .collect();
+
+        let one_at_a_time = sorted(one_at_a_time);
+        assert_eq!(sorted(folded), one_at_a_time);
+        assert_eq!(sorted(parallel.into_inner().unwrap()), one_at_a_time);
+        assert_eq!(sorted(either), one_at_a_time);
+        assert_eq!(sorted(both), one_at_a_time);
+        one_at_a_time
+    }
+
+    const CHUNK: usize = crate::change_detection::SummaryTicks::CHUNK_ROWS;
+
+    /// A change to one row of a large table is found, and nothing else is, whether it comes from
+    /// `World::get_mut` or from a query.
+    #[test]
+    fn changed_filters_skip_unchanged_chunks() {
+        let mut world = World::new();
+        let entities: Vec<Entity> = (0..5 * CHUNK).map(|i| world.spawn(SA(i)).id()).collect();
+        world.clear_trackers();
+        assert_eq!(changed_sa(&mut world), []);
+
+        world.get_mut::<SA>(entities[3 * CHUNK + 7]).unwrap().0 += 1;
+        assert_eq!(changed_sa(&mut world), [entities[3 * CHUNK + 7]]);
+
+        world.clear_trackers();
+        let target = entities[CHUNK - 1];
+        for (entity, mut sa) in world.query::<(Entity, &mut SA)>().iter_mut(&mut world) {
+            if entity == target {
+                sa.0 += 1;
+            }
+        }
+        assert_eq!(changed_sa(&mut world), [target]);
+    }
+
+    /// A changed value that swap-removal moves into an unchanged chunk is still found.
+    #[test]
+    fn changed_filters_follow_swap_removed_rows() {
+        let mut world = World::new();
+        let entities: Vec<Entity> = (0..4 * CHUNK).map(|i| world.spawn(SA(i)).id()).collect();
+        world.clear_trackers();
+
+        let last = *entities.last().unwrap();
+        world.get_mut::<SA>(last).unwrap().0 += 1;
+        // Despawning a row in the first chunk moves the last, changed row into it.
+        world.despawn(entities[5]);
+        assert_eq!(changed_sa(&mut world), [last]);
+    }
+
+    /// Changed values are still found after they or their neighbors move to another table.
+    #[test]
+    fn changed_filters_follow_table_moves() {
+        let mut world = World::new();
+        let entities: Vec<Entity> = (0..3 * CHUNK).map(|i| world.spawn(SA(i)).id()).collect();
+        world.clear_trackers();
+
+        // The last row is changed, and moving an unchanged row out of the first chunk moves the
+        // last row into it.
+        let last = *entities.last().unwrap();
+        world.get_mut::<SA>(last).unwrap().0 += 1;
+        world.entity_mut(entities[1]).insert(A(1));
+        // A changed value moves to a new table.
+        let moved = entities[2 * CHUNK + 3];
+        world.get_mut::<SA>(moved).unwrap().0 += 1;
+        world.entity_mut(moved).insert(A(0));
+
+        let mut expected = vec![moved, last];
+        expected.sort();
+        assert_eq!(changed_sa(&mut world), expected);
     }
 
     // regression test for https://github.com/bevyengine/bevy/pull/23394

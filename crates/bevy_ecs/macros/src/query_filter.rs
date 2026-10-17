@@ -87,6 +87,16 @@ pub fn derive_query_filter_impl(input: TokenStream) -> TokenStream {
 
             #[allow(unused_variables)]
             #[inline(always)]
+            unsafe fn filter_chunk<'__w>(
+                _state: &Self::State,
+                _fetch: &mut <Self as #path::query::WorldQuery>::Fetch<'__w>,
+                _chunk: usize,
+            ) -> bool {
+                true #(&& <#field_types>::filter_chunk(&_state.#field_aliases, &mut _fetch.#field_aliases, _chunk))*
+            }
+
+            #[allow(unused_variables)]
+            #[inline(always)]
             unsafe fn filter_fetch<'__w>(
                 _state: &Self::State,
                 _fetch: &mut <Self as #path::query::WorldQuery>::Fetch<'__w>,

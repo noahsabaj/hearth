@@ -42,7 +42,7 @@ mod tests {
         world::World,
     };
 
-    use super::{DetectChanges, DetectChangesMut, MutUntyped};
+    use super::{DetectChanges, DetectChangesMut, MutUntyped, SummaryTicks};
 
     #[derive(Component, PartialEq)]
     struct C;
@@ -162,7 +162,10 @@ mod tests {
             changed_by: caller.as_mut(),
             last_run: Tick::new(3),
             this_run: Tick::new(4),
-            summary_tick: Some(&summary_tick),
+            summary_tick: Some(SummaryTicks::new(
+                &summary_tick,
+                core::slice::from_ref(&summary_tick),
+            )),
         };
         let mut res = R {};
 
@@ -192,7 +195,10 @@ mod tests {
             &mut res,
             &mut component_ticks.added,
             &mut component_ticks.changed,
-            Some(&summary_tick),
+            Some(SummaryTicks::new(
+                &summary_tick,
+                core::slice::from_ref(&summary_tick),
+            )),
             Tick::new(2), // last_run
             Tick::new(4), // this_run
             caller.as_mut(),
@@ -216,7 +222,10 @@ mod tests {
             changed_by: caller.as_mut(),
             last_run: Tick::new(3),
             this_run: Tick::new(4),
-            summary_tick: Some(&summary_tick),
+            summary_tick: Some(SummaryTicks::new(
+                &summary_tick,
+                core::slice::from_ref(&summary_tick),
+            )),
         };
         let mut res = R {};
 
@@ -251,7 +260,10 @@ mod tests {
             changed_by: caller.as_mut(),
             last_run,
             this_run,
-            summary_tick: Some(&summary_tick),
+            summary_tick: Some(SummaryTicks::new(
+                &summary_tick,
+                core::slice::from_ref(&summary_tick),
+            )),
         };
 
         let mut outer = Outer(0);
@@ -341,7 +353,10 @@ mod tests {
             changed_by: caller.as_mut(),
             last_run,
             this_run,
-            summary_tick: Some(&summary_tick),
+            summary_tick: Some(SummaryTicks::new(
+                &summary_tick,
+                core::slice::from_ref(&summary_tick),
+            )),
         };
 
         let mut value: i32 = 5;
@@ -379,7 +394,10 @@ mod tests {
             changed_by: caller.as_mut(),
             last_run: Tick::new(3),
             this_run: Tick::new(4),
-            summary_tick: Some(&summary_tick),
+            summary_tick: Some(SummaryTicks::new(
+                &summary_tick,
+                core::slice::from_ref(&summary_tick),
+            )),
         };
         let mut c = C {};
 

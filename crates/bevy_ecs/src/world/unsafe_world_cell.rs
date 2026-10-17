@@ -1374,7 +1374,9 @@ unsafe fn get_component_and_ticks(
                         changed_by: table
                             .get_changed_by(component_id, location.table_row)
                             .map(|changed_by| changed_by.debug_checked_unwrap()),
-                        summary_tick: table.get_summary_tick(component_id),
+                        summary_tick: table
+                            .get_summary_tick(component_id)
+                            .map(|summary| summary.row(location.table_row.index())),
                     },
                 )
             })

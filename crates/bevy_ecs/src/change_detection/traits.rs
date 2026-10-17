@@ -468,10 +468,8 @@ macro_rules! change_detection_mut_impl {
             fn set_last_changed(&mut self, last_changed: Tick) {
                 *self.ticks.changed = last_changed;
                 self.ticks.changed_by.assign(MaybeLocation::caller());
-                if let Some(summary_tick) = self.ticks.summary_tick
-                    && self.is_changed_after(summary_tick.get())
-                {
-                    summary_tick.set(self.ticks.this_run);
+                if let Some(summary_tick) = self.ticks.summary_tick {
+                    summary_tick.include(*self.ticks.changed, self.ticks.this_run);
                 }
             }
 
@@ -481,10 +479,8 @@ macro_rules! change_detection_mut_impl {
                 *self.ticks.added = last_added;
                 *self.ticks.changed = last_added;
                 self.ticks.changed_by.assign(MaybeLocation::caller());
-                if let Some(summary_tick) = self.ticks.summary_tick
-                    && self.is_changed_after(summary_tick.get())
-                {
-                    summary_tick.set(self.ticks.this_run);
+                if let Some(summary_tick) = self.ticks.summary_tick {
+                    summary_tick.include(*self.ticks.changed, self.ticks.this_run);
                 }
             }
 

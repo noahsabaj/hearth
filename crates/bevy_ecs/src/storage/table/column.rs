@@ -1,8 +1,11 @@
 use crate::{
-    change_detection::{AtomicTick, CheckChangeTicks, ComponentTicks, MaybeLocation, Tick},
+    change_detection::{
+        AtomicTick, CheckChangeTicks, ComponentTicks, MaybeLocation, SummaryTicks, Tick,
+    },
     component::ComponentInfo,
     storage::{blob_array::BlobArray, thin_array_ptr::ThinArrayPtr, TableRow},
 };
+use alloc::vec::Vec;
 use bevy_ptr::{OwningPtr, Ptr, UnsafeCellDeref};
 use core::{cell::UnsafeCell, mem::needs_drop, num::NonZeroUsize, panic::Location};
 
@@ -29,7 +32,49 @@ pub struct Column {
     added_ticks: ThinArrayPtr<UnsafeCell<Tick>>,
     changed_ticks: ThinArrayPtr<UnsafeCell<Tick>>,
     changed_by: MaybeLocation<ThinArrayPtr<UnsafeCell<&'static Location<'static>>>>,
-    summary_tick: Option<AtomicTick>,
+    summary: Option<ColumnSummary>,
+}
+
+/// The summary ticks of a column that tracks them: one for the whole column and one for each
+/// chunk of [`SummaryTicks::CHUNK_ROWS`] rows. Every tick is at least as new as the newest change
+/// tick of the rows it covers, and the column's tick is at least as new as every chunk's.
+#[derive(Debug, Default)]
+struct ColumnSummary {
+    column: AtomicTick,
+    chunks: Vec<AtomicTick>,
+}
+
+impl ColumnSummary {
+    fn with_capacity(capacity: usize) -> Self {
+        let mut summary = Self::default();
+        summary.reserve(capacity);
+        summary
+    }
+
+    /// Makes sure there's a chunk tick for every row below `capacity`.
+    fn reserve(&mut self, capacity: usize) {
+        let chunks = capacity.div_ceil(SummaryTicks::CHUNK_ROWS);
+        if self.chunks.len() < chunks {
+            // New chunks hold no rows yet: a row updates its chunk's tick when it arrives.
+            self.chunks.resize_with(chunks, AtomicTick::default);
+        }
+    }
+
+    fn ticks(&self) -> SummaryTicks<'_> {
+        SummaryTicks::new(&self.column, &self.chunks)
+    }
+
+    /// Accounts for the value at `from` having been moved to `to`, as swap-removal does.
+    ///
+    /// Without the current tick there's no telling which of two ticks is newer, so this gives the
+    /// destination chunk the column's tick, which is at least as new as the moved value's.
+    #[cold]
+    fn moved(&self, from: usize, to: usize) {
+        let (from, to) = (SummaryTicks::chunk_of(from), SummaryTicks::chunk_of(to));
+        if from != to {
+            self.chunks[to].set(self.column.get());
+        }
+    }
 }
 
 impl Column {
@@ -45,14 +90,10 @@ impl Column {
             added_ticks: ThinArrayPtr::with_capacity(capacity),
             changed_ticks: ThinArrayPtr::with_capacity(capacity),
             changed_by: MaybeLocation::new_with(|| ThinArrayPtr::with_capacity(capacity)),
-            summary_tick: if component_info.summary_tick() {
-                // Set this to zero for now; when we initialize the column by
-                // inserting a component it'll be updated with the correct
-                // value.
-                Some(AtomicTick::default())
-            } else {
-                None
-            },
+            // The ticks start at zero; initializing a row with a component updates them.
+            summary: component_info
+                .summary_tick()
+                .then(|| ColumnSummary::with_capacity(capacity)),
         }
     }
 
@@ -77,6 +118,9 @@ impl Column {
         self.changed_by.as_mut().map(|changed_by| {
             changed_by.swap_remove_unchecked_nonoverlapping(row.index(), last_element_index);
         });
+        if let Some(summary) = &self.summary {
+            summary.moved(last_element_index, row.index());
+        }
     }
 
     /// Swap-remove the provided row.
@@ -109,6 +153,9 @@ impl Column {
         self.changed_by.as_mut().map(|changed_by| {
             changed_by.swap_remove_unchecked(row.index(), last_element_index);
         });
+        if let Some(summary) = &self.summary {
+            summary.moved(last_element_index, row.index());
+        }
     }
 
     /// Swap-remove and forgets the removed element, but the component at `row` must not be the last element.
@@ -133,6 +180,9 @@ impl Column {
         self.changed_by.as_mut().map(|changed_by| {
             changed_by.swap_remove_unchecked_nonoverlapping(row.index(), last_element_index);
         });
+        if let Some(summary) = &self.summary {
+            summary.moved(last_element_index, row.index());
+        }
         data
     }
 
@@ -156,6 +206,9 @@ impl Column {
         self.changed_by
             .as_mut()
             .map(|changed_by| changed_by.realloc(current_capacity, new_capacity));
+        if let Some(summary) = &mut self.summary {
+            summary.reserve(new_capacity.get());
+        }
     }
 
     /// Call [`alloc`](std::alloc::alloc) to allocate memory for this [`Column`]
@@ -171,6 +224,9 @@ impl Column {
         self.changed_by
             .as_mut()
             .map(|changed_by| changed_by.alloc(new_capacity));
+        if let Some(summary) = &mut self.summary {
+            summary.reserve(new_capacity.get());
+        }
     }
 
     /// Writes component data to the column at the given row.
@@ -199,8 +255,8 @@ impl Column {
             .map(|(changed_by, caller)| {
                 changed_by.initialize_unchecked(row.index(), UnsafeCell::new(caller));
             });
-        if let Some(summary_tick) = &self.summary_tick {
-            Self::update_summary_tick(summary_tick, tick);
+        if let Some(summary) = &self.summary {
+            Self::update_summary_tick(summary, row, tick);
         }
     }
 
@@ -224,8 +280,8 @@ impl Column {
             .as_mut()
             .map(|changed_by| changed_by.get_unchecked_mut(row.index()).get_mut())
             .assign(caller);
-        if let Some(summary_tick) = &self.summary_tick {
-            Self::update_summary_tick(summary_tick, change_tick);
+        if let Some(summary) = &self.summary {
+            Self::update_summary_tick(summary, row, change_tick);
         }
     }
 
@@ -257,7 +313,7 @@ impl Column {
         #[cold]
         fn update_summary_tick_from_row(
             changed_ticks: &ThinArrayPtr<UnsafeCell<Tick>>,
-            summary_tick: &AtomicTick,
+            summary: &ColumnSummary,
             dst_row: TableRow,
             this_run: Tick,
         ) {
@@ -265,8 +321,11 @@ impl Column {
             // - Changed tick just got initialized at dst_row
             // - There are no mutable references to the changed tick
             let row_change_tick = unsafe { changed_ticks.get_unchecked(dst_row.index()).read() };
-            if row_change_tick.is_newer_than(summary_tick.get(), this_run) {
-                summary_tick.set(row_change_tick);
+            let chunk = &summary.chunks[SummaryTicks::chunk_of(dst_row.index())];
+            for summary_tick in [chunk, &summary.column] {
+                if row_change_tick.is_newer_than(summary_tick.get(), this_run) {
+                    summary_tick.set(row_change_tick);
+                }
             }
         }
 
@@ -303,8 +362,12 @@ impl Column {
             );
         }
 
-        if let Some(summary_tick) = &self.summary_tick {
-            update_summary_tick_from_row(&self.changed_ticks, summary_tick, dst_row, this_run);
+        if let Some(summary) = &self.summary {
+            update_summary_tick_from_row(&self.changed_ticks, summary, dst_row, this_run);
+        }
+        // `src` moved its last value into `src_row`.
+        if let Some(summary) = &src.summary {
+            summary.moved(src_last_element_index, src_row.index());
         }
     }
 
@@ -330,11 +393,13 @@ impl Column {
                 .check_tick(check);
         }
 
-        // Update the summary tick, if one is present.
-        if let Some(summary_tick) = &self.summary_tick {
-            let mut summary_tick_value = summary_tick.get();
-            if summary_tick_value.check_tick(check) {
-                summary_tick.set(summary_tick_value);
+        // Update the summary ticks, if present.
+        if let Some(summary) = &self.summary {
+            for summary_tick in summary.chunks.iter().chain([&summary.column]) {
+                let mut summary_tick_value = summary_tick.get();
+                if summary_tick_value.check_tick(check) {
+                    summary_tick.set(summary_tick_value);
+                }
             }
         }
     }
@@ -518,14 +583,17 @@ impl Column {
     /// changes to the column values. Again, this is *only* true for dense
     /// iteration.
     #[inline]
-    pub fn get_summary_tick(&self) -> Option<&AtomicTick> {
-        self.summary_tick.as_ref()
+    ///
+    /// The returned ticks cover every chunk of the column; narrow them with
+    /// [`SummaryTicks::row`] or [`SummaryTicks::rows`] before recording a change to some rows.
+    pub fn get_summary_tick(&self) -> Option<SummaryTicks<'_>> {
+        self.summary.as_ref().map(ColumnSummary::ticks)
     }
 
     /// Separate method for the sake of using `#[cold]`,
     /// since most components won't have summary ticks.
     #[cold]
-    fn update_summary_tick(summary_tick: &AtomicTick, tick: Tick) {
-        summary_tick.set(tick);
+    fn update_summary_tick(summary: &ColumnSummary, row: TableRow, tick: Tick) {
+        summary.ticks().row(row.index()).set(tick);
     }
 }

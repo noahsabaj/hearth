@@ -2,8 +2,9 @@ use crate::{
     archetype::{Archetype, Archetypes},
     bundle::Bundle,
     change_detection::{
-        AtomicTick, ComponentTicksMut, ComponentTicksRef, ContiguousComponentTicksMut,
-        ContiguousComponentTicksRef, ContiguousMut, ContiguousRef, MaybeLocation, Tick,
+        ComponentTicksMut, ComponentTicksRef, ContiguousComponentTicksMut,
+        ContiguousComponentTicksRef, ContiguousMut, ContiguousRef, MaybeLocation, SummaryTicks,
+        Tick,
     },
     component::{Component, ComponentId, Components, Mutable, StorageType},
     entity::{Entities, Entity, EntityLocation},
@@ -2082,7 +2083,7 @@ pub struct RefFetch<'w, T: Component> {
             ThinSlicePtr<'w, UnsafeCell<T>>,
             ThinSlicePtr<'w, UnsafeCell<Tick>>,
             ThinSlicePtr<'w, UnsafeCell<Tick>>,
-            Option<&'w AtomicTick>,
+            Option<SummaryTicks<'w>>,
             MaybeLocation<ThinSlicePtr<'w, UnsafeCell<&'static Location<'static>>>>,
         )>,
         // T::STORAGE_TYPE = StorageType::SparseSet
@@ -2368,7 +2369,7 @@ pub struct WriteFetch<'w, T: Component> {
             ThinSlicePtr<'w, UnsafeCell<T>>,
             ThinSlicePtr<'w, UnsafeCell<Tick>>,
             ThinSlicePtr<'w, UnsafeCell<Tick>>,
-            Option<&'w AtomicTick>,
+            Option<SummaryTicks<'w>>,
             MaybeLocation<ThinSlicePtr<'w, UnsafeCell<&'static Location<'static>>>>,
         )>,
         // T::STORAGE_TYPE = StorageType::SparseSet
@@ -2541,7 +2542,7 @@ unsafe impl<'__w, T: Component<Mutability = Mutable>> QueryData for &'__w mut T 
                 // Make it statically known whether the atomic tick is present or not.
                 let summary_tick = if T::HAS_SUMMARY_TICK {
                     // SAFETY: Summary tick presence always matches `T::HAS_SUMMARY_TICK`.
-                    Some(unsafe { summary_tick.debug_checked_unwrap() })
+                    Some(unsafe { summary_tick.debug_checked_unwrap() }.row(table_row.index()))
                 } else {
                     None
                 };
@@ -2614,6 +2615,8 @@ impl<T: Component<Mutability = Mutable>> ContiguousQueryData for &mut T {
                     unsafe { table.debug_checked_unwrap() };
 
                 let range = (range.start as usize)..(range.end as usize);
+
+                let summary_tick = summary_tick.map(|summary| summary.rows(range.clone()));
 
                 ContiguousMut {
                     // SAFETY: `entities` has the same length as the rows in the set table.
