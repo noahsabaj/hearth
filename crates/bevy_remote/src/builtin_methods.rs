@@ -36,7 +36,7 @@ use crate::{
         json_schema::{export_type, JsonSchemaBevyType},
         open_rpc::OpenRpcDocument,
     },
-    BrpError, BrpResult, PreviousScheduleBuildMetadata,
+    BrpError, BrpResult, CurrentWatchingRequest, PreviousScheduleBuildMetadata, WatchingRequestId,
 };
 
 #[cfg(all(feature = "http", not(target_family = "wasm")))]
@@ -1617,28 +1617,52 @@ pub fn process_remote_write_message_request(
 }
 
 /// Stores observer state for `world.observe+watch` requests.
+///
+/// Each watching request owns its own observer and event buffer, so concurrent watchers of the
+/// same event each receive every event. Both are removed when the request's stream closes.
 #[derive(Resource, Default)]
 pub struct BrpEventObservers {
-    /// Map from observer key to buffered serialized events.
-    /// The key encodes both event type and optional entity scope.
-    observers: HashMap<String, Arc<Mutex<Vec<Value>>>>,
+    /// Map from watching request to its observer and buffered serialized events.
+    pub(crate) watches: HashMap<WatchingRequestId, ObserveWatch>,
+}
+
+/// The observer and event buffer owned by a single `world.observe+watch` request.
+pub(crate) struct ObserveWatch {
+    pub(crate) observer: Entity,
+    buffer: Arc<Mutex<Vec<Value>>>,
+}
+
+impl BrpEventObservers {
+    /// Forgets the state of the given watching request, returning its observer entity so the
+    /// caller can despawn it.
+    pub(crate) fn remove(&mut self, request: WatchingRequestId) -> Option<Entity> {
+        self.watches.remove(&request).map(|watch| watch.observer)
+    }
 }
 
 /// Handles a `world.observe+watch` request coming from a client.
 ///
-/// On the first call for a given event/entity combination, this registers an observer that captures triggered
-/// events. On each subsequent poll, it returns any events that have been captured since the last poll.
+/// On the first poll of a request, this registers an observer that captures triggered events.
+/// On each subsequent poll, it returns any events that have been captured since the last poll.
+/// The observer and its buffer belong to that request alone, and are removed once its stream
+/// closes.
 ///
 /// When `entity` is provided, the observer is scoped to that entity. Otherwise a global observer is registered.
+///
+/// This must be run by the server as a watching request, which sets [`CurrentWatchingRequest`].
 pub fn process_remote_observe_watching_request(
     In(params): In<Option<Value>>,
     world: &mut World,
 ) -> BrpResult<Option<Value>> {
     let BrpObserveParams { event, entity } = parse_some(params)?;
 
-    let key = match entity {
-        Some(e) => format!("{event}@{e}"),
-        None => event.clone(),
+    let Some(request) = world
+        .get_resource::<CurrentWatchingRequest>()
+        .and_then(|current| current.0)
+    else {
+        return Err(BrpError::internal(anyhow!(
+            "`{BRP_OBSERVE_METHOD}` must be run as a watching request"
+        )));
     };
 
     if !world.contains_resource::<BrpEventObservers>() {
@@ -1647,8 +1671,8 @@ pub fn process_remote_observe_watching_request(
 
     let already_registered = world
         .resource::<BrpEventObservers>()
-        .observers
-        .contains_key(&key);
+        .watches
+        .contains_key(&request);
 
     if !already_registered {
         let app_type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -1691,24 +1715,24 @@ pub fn process_remote_observe_watching_request(
         });
 
         let observer = reflect_event.create_observer(callback);
-        if let Some(target) = entity {
-            world.spawn(observer.with_entity(target));
+        let observer = if let Some(target) = entity {
+            world.spawn(observer.with_entity(target)).id()
         } else {
-            world.spawn(observer);
-        }
+            world.spawn(observer).id()
+        };
 
         world
             .resource_mut::<BrpEventObservers>()
-            .observers
-            .insert(key.clone(), buffer);
+            .watches
+            .insert(request, ObserveWatch { observer, buffer });
     }
 
     let observers = world.resource::<BrpEventObservers>();
-    let Some(buffer) = observers.observers.get(&key) else {
+    let Some(watch) = observers.watches.get(&request) else {
         return Err(BrpError::internal(anyhow!("Observer state missing")));
     };
 
-    let mut events = buffer.lock().unwrap();
+    let mut events = watch.buffer.lock().unwrap();
     if events.is_empty() {
         return Ok(None);
     }
@@ -2294,6 +2318,7 @@ mod tests {
         }
         let mut world = World::new();
         world.insert_resource(atr);
+        world.insert_resource(CurrentWatchingRequest(Some(WatchingRequestId(0))));
 
         let observe_params = serde_json::to_value(&BrpObserveParams {
             event: "bevy_remote::builtin_methods::tests::Ping".to_owned(),
