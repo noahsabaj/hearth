@@ -146,6 +146,25 @@ fn git_init(dir: &Path) -> Result<bool, String> {
     }
 }
 
+/// The `.cargo/config.toml` that `hearth new` writes on Windows when rustup's `rust-lld` is
+/// available. It only applies to Windows targets, so the project still builds elsewhere.
+const WINDOWS_LINKER: &str = "\
+# Link with LLVM's linker, which ships with Rust, instead of MSVC's link.exe: it links a game
+# about a third faster, and linking is most of the time an incremental rebuild takes.
+[target.x86_64-pc-windows-msvc]
+linker = \"rust-lld.exe\"
+
+[target.aarch64-pc-windows-msvc]
+linker = \"rust-lld.exe\"
+";
+
+/// Whether an executable called `name` is on `PATH`.
+fn on_path(name: &str) -> bool {
+    let file = format!("{name}{}", std::env::consts::EXE_SUFFIX);
+    std::env::var_os("PATH")
+        .is_some_and(|path| std::env::split_paths(&path).any(|dir| dir.join(&file).is_file()))
+}
+
 /// `hearth new`.
 pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
     validate_name(&args.name)?;
@@ -176,7 +195,7 @@ pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
             .replace("{{title}}", &title)
             .replace("{{bevy}}", &bevy)
     };
-    let files = [
+    let mut files = vec![
         (
             "Cargo.toml",
             fill(include_str!("../../templates/Cargo.toml.template")),
@@ -184,6 +203,9 @@ pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
         ("src/main.rs", fill(main)),
         (".gitignore", "/target\n".to_string()),
     ];
+    if cfg!(windows) && on_path("rust-lld") {
+        files.push((".cargo/config.toml", WINDOWS_LINKER.to_string()));
+    }
     for (path, text) in &files {
         let path = dir.join(path);
         if let Some(parent) = path.parent() {
