@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="Hearth">
+  <title>Hearth</title>
+  <defs>
+    <linearGradient id="hearth-flame" x1="0" y1="90" x2="0" y2="48.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8590C"/>
+      <stop offset="1" stop-color="#FF922B"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="22" fill="#2B211C"/>
+  <g transform="translate(20 9.6) scale(0.8)">
+    <path d="M14 10V86M14 61A21 21 0 0 1 56 61V86" fill="none" stroke="#F3EAE0" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M35 48.2C40.5 57 47.1 63.6 47.1 74.6C47.1 83.4 41.6 90 35 90C28.4 90 22.9 83.4 22.9 75.7C22.9 69.1 26.2 64.7 29.5 60.3C29.5 65.8 31.7 69.1 35 70.2C32.8 63.6 31.7 55.9 35 48.2Z" fill="url(#hearth-flame)"/>
+    <path d="M35 66.9C38.3 71.3 41.6 74.6 41.6 79C41.6 83.4 38.3 86.7 35 86.7C31.7 86.7 28.4 83.4 28.4 79C28.4 74.6 31.7 71.3 35 66.9Z" fill="#FFD43B"/>
+  </g>
+</svg>

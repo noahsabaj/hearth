@@ -33,7 +33,8 @@ this environment.
 
 ## Getting Started
 
-Install the CLI from a checkout of this repository, then make a project and run it:
+Install the CLI from a checkout of this repository (or anywhere, with
+`cargo install --git https://github.com/noahsabaj/hearth bevy_cli`), then make a project and run it:
 
 ```sh
 cargo install --path crates/bevy_cli

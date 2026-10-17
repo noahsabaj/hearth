@@ -5,11 +5,11 @@ edition = "2024"
 categories = ["game-engines", "graphics", "gui", "rendering"]
 description = "Hearth: a data-driven game engine and app framework, forked from Bevy"
 exclude = ["assets/", "tools/", ".github/", "crates/", "examples/wasm/assets/"]
-homepage = "https://github.com/noahsabaj/bevy"
+homepage = "https://github.com/noahsabaj/hearth"
 keywords = ["game", "engine", "gamedev", "hearth", "bevy"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/noahsabaj/bevy"
-documentation = "https://github.com/noahsabaj/bevy"
+repository = "https://github.com/noahsabaj/hearth"
+documentation = "https://github.com/noahsabaj/hearth"
 rust-version = "1.97.1"
 
 [workspace]

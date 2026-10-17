@@ -15,7 +15,7 @@ use crate::output::{strip_ansi, CliError, Exit, Format, Output};
 use crate::registry::edit_distance;
 
 /// The engine repository `hearth new` depends on unless told otherwise.
-pub const HEARTH_GIT: &str = "https://github.com/noahsabaj/bevy";
+pub const HEARTH_GIT: &str = "https://github.com/noahsabaj/hearth";
 
 /// How many warnings a build reports in full. Errors are always reported.
 const MAX_WARNINGS: usize = 100;

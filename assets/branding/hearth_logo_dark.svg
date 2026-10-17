@@ -1,13 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" width="360" height="96" role="img" aria-label="Hearth">
+  <title>Hearth</title>
   <defs>
-    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+    <linearGradient id="hearth-flame" x1="0" y1="90" x2="0" y2="48.2" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#E8590C"/>
-      <stop offset="1" stop-color="#FFB347"/>
+      <stop offset="1" stop-color="#FF922B"/>
     </linearGradient>
   </defs>
-  <path d="M16 86V44C16 26 30 12 48 12S80 26 80 44V86" fill="none" stroke="#EDE3D8" stroke-width="7" stroke-linecap="round"/>
-  <path d="M8 86H88" stroke="#EDE3D8" stroke-width="7" stroke-linecap="round"/>
-  <path d="M48 24C58 37 65 45 65 58C65 70 57 78 48 78S31 70 31 58C31 50 36 44 40 38C41 46 44 50 48 52C46 42 44 33 48 24Z" fill="url(#flame)"/>
-  <path d="M48 52C53 58 56 62 56 67C56 72 52 76 48 76S40 72 40 67C40 62 43 58 48 52Z" fill="#FFE08A"/>
-  <text x="106" y="67" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#EDE3D8">Hearth</text>
+  <g fill="none" stroke="#F3EAE0" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 10V86M14 61A21 21 0 0 1 56 61V86"/>
+    <path d="M78 63H124A23 23 0 1 0 115.8 80.6"/>
+    <circle cx="169" cy="63" r="23"/>
+    <path d="M192 40V86"/>
+    <path d="M214 86V40M214 62A22 22 0 0 1 236 40"/>
+    <path d="M265 18V70A16 16 0 0 0 281 86M254 40H282"/>
+    <path d="M304 10V86M304 61A21 21 0 0 1 346 61V86"/>
+  </g>
+  <path d="M35 48.2C40.5 57 47.1 63.6 47.1 74.6C47.1 83.4 41.6 90 35 90C28.4 90 22.9 83.4 22.9 75.7C22.9 69.1 26.2 64.7 29.5 60.3C29.5 65.8 31.7 69.1 35 70.2C32.8 63.6 31.7 55.9 35 48.2Z" fill="url(#hearth-flame)"/>
+  <path d="M35 66.9C38.3 71.3 41.6 74.6 41.6 79C41.6 83.4 38.3 86.7 35 86.7C31.7 86.7 28.4 83.4 28.4 79C28.4 74.6 31.7 71.3 35 66.9Z" fill="#FFD43B"/>
 </svg>

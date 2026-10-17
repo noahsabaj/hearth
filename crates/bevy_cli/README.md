@@ -1,8 +1,8 @@
 # Hearth CLI
 
-[![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](https://github.com/noahsabaj/bevy#license)
+[![License](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](https://github.com/noahsabaj/hearth#license)
 
-`hearth` is the command line tool for [Hearth](https://github.com/noahsabaj/bevy) projects. It creates, builds and
+`hearth` is the command line tool for [Hearth](https://github.com/noahsabaj/hearth) projects. It creates, builds and
 runs them, and it inspects and drives a running app over the Bevy Remote Protocol (BRP), so it works with plain
 Bevy apps too. It is made for people at a terminal and for scripts and coding agents alike:
 
