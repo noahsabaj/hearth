@@ -1,7 +1,6 @@
 //! A JSON-RPC batch sent over HTTP reaches the app all at once, so one frame answers it.
 
 #![cfg(feature = "http")]
-#![expect(clippy::std_instead_of_alloc, reason = "this is a std test binary")]
 
 use bevy_app::{App, TaskPoolPlugin};
 use bevy_remote::http::RemoteHttpPlugin;

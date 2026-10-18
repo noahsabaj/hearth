@@ -19,7 +19,14 @@ use core::ops::Range;
 /// See [`Query::par_iter`], [`MessageReader::par_read`] for more information.
 ///
 /// [`Query::par_iter`]: crate::system::Query::par_iter
-/// [`MessageReader::par_read`]: crate::message::MessageReader::par_read
+#[cfg_attr(
+    feature = "multi_threaded",
+    doc = "[`MessageReader::par_read`]: crate::message::MessageReader::par_read"
+)]
+#[cfg_attr(
+    not(feature = "multi_threaded"),
+    doc = "[`MessageReader::par_read`]: crate::message::MessageReader"
+)]
 #[derive(Clone, Debug)]
 pub struct BatchingStrategy {
     /// The upper and lower limits for a batch of items.

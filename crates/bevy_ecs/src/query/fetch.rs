@@ -4325,18 +4325,23 @@ impl<C: Component, T: Copy, S: Copy> Copy for StorageSwitch<C, T, S> {}
 #[cfg(test)]
 mod tests {
     use core::sync::atomic::{AtomicUsize, Ordering};
-    use std::sync::Mutex;
 
     use super::*;
-    use crate::batching::BatchingStrategy;
     use crate::change_detection::DetectChanges;
-    use crate::query::{QueryNotDenseError, Without};
+    use crate::query::Without;
     use crate::system::{assert_is_system, Query};
-    use alloc::sync::Arc;
-    use alloc::{vec, vec::Vec};
     use bevy_ecs::prelude::Schedule;
     use bevy_ecs_macros::QueryData;
-    use fixedbitset::FixedBitSet;
+
+    // Only the parallel iteration tests use these.
+    #[cfg(all(feature = "multi_threaded", feature = "std"))]
+    use {
+        crate::batching::BatchingStrategy,
+        crate::query::QueryNotDenseError,
+        alloc::{sync::Arc, vec, vec::Vec},
+        fixedbitset::FixedBitSet,
+        std::sync::Mutex,
+    };
 
     #[derive(Component)]
     pub struct A;
