@@ -1,6 +1,6 @@
 //! Example demonstrating bordered UI nodes
 
-use bevy::{color::palettes::css::*, ecs::spawn::SpawnIter, prelude::*};
+use hearth::{color::palettes::css::*, ecs::spawn::SpawnIter, prelude::*};
 
 fn main() {
     App::new()

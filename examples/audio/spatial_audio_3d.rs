@@ -1,5 +1,5 @@
 //! This example illustrates how to load and play an audio file, and control where the sounds seems to come from.
-use bevy::{
+use hearth::{
     color::palettes::basic::{BLUE, LIME, RED},
     prelude::*,
     time::Stopwatch,

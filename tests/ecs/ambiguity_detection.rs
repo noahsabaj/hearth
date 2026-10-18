@@ -1,10 +1,10 @@
-//! A test to confirm that `bevy` doesn't regress its system ambiguities count when using [`DefaultPlugins`].
+//! A test to confirm that `hearth` doesn't regress its system ambiguities count when using [`DefaultPlugins`].
 //! This is run in CI.
 //!
 //! Note that because this test requires rendering, it isn't actually an integration test!
 //! Instead, it's secretly an example: you can run this test manually using `cargo run --example ambiguity_detection`.
 
-use bevy::{
+use hearth::{
     ecs::schedule::{InternedScheduleLabel, LogLevel, ScheduleBuildSettings},
     platform::collections::HashMap,
     prelude::*,
@@ -37,14 +37,14 @@ fn main() {
         // us to meet a higher bar. We don't just want no ambiguities - we also don't want
         // changes to systems or the auto-insert code from "creating" new ambiguities (by
         // reordering the graph). However, the cost is that the graph is no longer runnable,
-        // since Bevy crates often rely on auto-insert apply_deferred to not panic (e.g.,
+        // since Hearth crates often rely on auto-insert apply_deferred to not panic (e.g.,
         // because a resource wasn't inserted).
         auto_insert_apply_deferred: false,
         use_shortnames: false,
         ..default()
     };
     app.configure_schedules(schedule_build_settings.clone());
-    app.sub_app_mut(bevy_render::RenderApp)
+    app.sub_app_mut(hearth_render::RenderApp)
         .configure_schedules(schedule_build_settings);
 
     // Make sure all the system stuff is added.
@@ -58,9 +58,9 @@ fn main() {
         "Main app has unexpected ambiguities among the following schedules: \n{main_app_ambiguities:#?}.",
     );
 
-    let render_app = app.sub_app_mut(bevy_render::RenderApp);
+    let render_app = app.sub_app_mut(hearth_render::RenderApp);
     // Initialize the MainWorld so the render world systems don't fail initialization.
-    render_app.init_resource::<bevy_render::MainWorld>();
+    render_app.init_resource::<hearth_render::MainWorld>();
     let render_app_ambiguities = count_ambiguities(render_app);
     assert_eq!(
         render_app_ambiguities.total(),

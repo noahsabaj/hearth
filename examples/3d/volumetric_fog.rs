@@ -1,7 +1,7 @@
 //! Demonstrates volumetric fog and lighting (light shafts or god rays).
 //! Note: On Wasm, this example only runs on WebGPU
 
-use bevy::{
+use hearth::{
     color::palettes::css::RED,
     core_pipeline::tonemapping::Tonemapping,
     light::Skybox,

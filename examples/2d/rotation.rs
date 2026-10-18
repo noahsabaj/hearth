@@ -1,6 +1,6 @@
 //! Demonstrates rotating entities in 2D using quaternions.
 
-use bevy::{math::ops, prelude::*};
+use hearth::{math::ops, prelude::*};
 
 const BOUNDS: Vec2 = Vec2::new(1200.0, 640.0);
 
@@ -42,7 +42,7 @@ struct RotateToPlayer {
 
 /// Add the game's entities to our world and creates an orthographic camera for 2D rendering.
 ///
-/// The Bevy coordinate system is the same for 2D and 3D, in terms of 2D this means that:
+/// The Hearth coordinate system is the same for 2D and 3D, in terms of 2D this means that:
 ///
 /// * `X` axis goes from left to right (`+X` points right)
 /// * `Y` axis goes from bottom to top (`+Y` point up)
@@ -227,7 +227,7 @@ fn rotate_to_player_system(
         let right_dot_player = enemy_right.dot(to_player);
 
         // Determine the sign of rotation from the right dot player. We need to negate the sign
-        // here as the 2D bevy co-ordinate system rotates around +Z, which is pointing out of the
+        // here as the 2D hearth co-ordinate system rotates around +Z, which is pointing out of the
         // screen. Due to the right hand rule, positive rotation around +Z is counter clockwise and
         // negative is clockwise.
         let rotation_sign = -f32::copysign(1.0, right_dot_player);

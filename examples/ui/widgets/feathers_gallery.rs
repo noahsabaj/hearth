@@ -1,6 +1,6 @@
-//! This example shows off the various Bevy Feathers widgets.
+//! This example shows off the various Hearth Feathers widgets.
 
-use bevy::{
+use hearth::{
     color::palettes,
     ecs::template::OptionTemplate,
     feathers::{

@@ -1,9 +1,9 @@
 //! Demonstrates how to use `FixedNode` to lay out a UI node as a root node
 
-use bevy::color::palettes::css::BLUE;
-use bevy::color::palettes::css::RED;
-use bevy::color::palettes::css::YELLOW;
-use bevy::prelude::*;
+use hearth::color::palettes::css::BLUE;
+use hearth::color::palettes::css::RED;
+use hearth::color::palettes::css::YELLOW;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

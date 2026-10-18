@@ -1,6 +1,6 @@
 //! Demonstrates using a custom extension to the `StandardMaterial` to modify the results of the builtin pbr shader.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::RED,
     material::OpaqueRendererMethod,
     pbr::{ExtendedMaterial, MaterialExtension},

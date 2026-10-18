@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
@@ -268,7 +268,10 @@ fn move_player(
 fn focus_camera(
     time: Res<Time>,
     mut game: ResMut<Game>,
-    mut transforms: ParamSet<(Query<&mut Transform, With<Camera3d>>, Query<&Transform>)>,
+    mut transforms: ParamSet<(
+        Query<&'static mut Transform, With<Camera3d>>,
+        Query<&'static Transform>,
+    )>,
 ) {
     const SPEED: f32 = 2.0;
     // if there is both a player and a bonus, target the mid-point of them

@@ -4,7 +4,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     gltf::GltfPlugin,
     light::CascadeShadowConfigBuilder,

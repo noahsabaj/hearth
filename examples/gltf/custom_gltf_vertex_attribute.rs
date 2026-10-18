@@ -1,6 +1,6 @@
 //! Renders a glTF mesh in 2D with a custom vertex attribute.
 
-use bevy::{
+use hearth::{
     gltf::GltfPlugin,
     mesh::{MeshVertexAttribute, MeshVertexBufferLayoutRef},
     prelude::*,

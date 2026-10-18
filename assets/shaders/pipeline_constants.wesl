@@ -1,7 +1,7 @@
-import bevy_sprite_render::mesh2d::vertex_output::VertexOutput;
+import hearth_sprite_render::mesh2d::vertex_output::VertexOutput;
 
 /// Pipeline-overridable constant: number of discrete color steps.
-/// This value is substituted at pipeline compilation time by Bevy's pipeline cache
+/// This value is substituted at pipeline compilation time by Hearth's pipeline cache
 /// when the material's `specialize` method pushes it into `descriptor.constants`.
 override LEVELS: f32 = 4.0;
 

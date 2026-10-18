@@ -1,8 +1,8 @@
-//! Compares different anti-aliasing techniques supported by Bevy.
+//! Compares different anti-aliasing techniques supported by Hearth.
 
 use std::{f32::consts::PI, fmt::Write};
 
-use bevy::{
+use hearth::{
     anti_alias::{
         contrast_adaptive_sharpening::ContrastAdaptiveSharpening,
         fxaa::{Fxaa, Sensitivity},
@@ -22,7 +22,7 @@ use bevy::{
 };
 
 #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-use bevy::anti_alias::dlss::{
+use hearth::anti_alias::dlss::{
     Dlss, DlssPerfQualityMode, DlssProjectId, DlssSuperResolutionSupported,
 };
 
@@ -30,7 +30,7 @@ fn main() {
     let mut app = App::new();
 
     #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-    app.insert_resource(DlssProjectId(bevy_asset::uuid::uuid!(
+    app.insert_resource(DlssProjectId(hearth_asset::uuid::uuid!(
         "5417916c-0291-4e3f-8f65-326c1858ab96" // Don't copy paste this - generate your own UUID!
     )));
 

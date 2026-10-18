@@ -3,7 +3,7 @@
 use std::fmt;
 use std::ops::Range;
 
-use bevy::{
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     camera::Hdr,
     color::palettes::css::{BLACK, WHITE},
@@ -205,7 +205,7 @@ enum AppNumberInput {
     EdgeFadeoutEnd,
 }
 
-#[derive(bevy::ecs::system::SystemParam)]
+#[derive(hearth::ecs::system::SystemParam)]
 struct ModelQueries<'w, 's> {
     cube_models: Query<'w, 's, Entity, With<CubeModel>>,
     flight_helmet_models: Query<'w, 's, Entity, With<FlightHelmetModel>>,
@@ -226,7 +226,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Screen Space Reflections Example".into(),
+                    title: "Hearth Screen Space Reflections Example".into(),
                     ..default()
                 }),
                 ..default()
@@ -348,7 +348,7 @@ fn spawn_metallic_base(
     commands.spawn((
         Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(1.0)))),
         MeshMaterial3d(standard_materials.add(StandardMaterial {
-            base_color: Color::from(bevy::color::palettes::css::DARK_GRAY),
+            base_color: Color::from(hearth::color::palettes::css::DARK_GRAY),
             metallic: 1.0,
             perceptual_roughness: 0.3,
             ..default()
@@ -368,7 +368,7 @@ fn spawn_non_metallic_base(
     commands.spawn((
         Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(1.0)))),
         MeshMaterial3d(standard_materials.add(StandardMaterial {
-            base_color: Color::from(bevy::color::palettes::css::RED),
+            base_color: Color::from(hearth::color::palettes::css::RED),
             metallic: 0.0,
             perceptual_roughness: 0.2,
             ..default()

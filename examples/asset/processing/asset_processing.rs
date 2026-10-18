@@ -1,6 +1,6 @@
 //! This example illustrates how to define custom `AssetLoader`s, `AssetTransformer`s, and `AssetSaver`s, how to configure them, and how to register asset processors.
 
-use bevy::{
+use hearth::{
     asset::{
         embedded_asset,
         io::{Reader, Writer},
@@ -130,7 +130,7 @@ enum CoolTextLoaderError {
     #[error(transparent)]
     RonSpannedError(#[from] ron::error::SpannedError),
     #[error(transparent)]
-    LoadDirectError(#[from] bevy::asset::LoadDirectError),
+    LoadDirectError(#[from] hearth::asset::LoadDirectError),
 }
 
 impl AssetLoader for CoolTextLoader {

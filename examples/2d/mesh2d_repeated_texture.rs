@@ -1,7 +1,7 @@
-//! By default Bevy loads images to textures that clamps the image to the edges
+//! By default Hearth loads images to textures that clamps the image to the edges
 //! This example shows how to configure it to repeat the image instead.
 
-use bevy::{
+use hearth::{
     audio::AudioPlugin,
     image::{ImageAddressMode, ImageLoaderSettings, ImageSampler, ImageSamplerDescriptor},
     math::Affine2,

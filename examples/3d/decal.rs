@@ -1,13 +1,13 @@
 //! Decal rendering.
 //! Note: On Wasm, this example only runs on WebGPU
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     core_pipeline::prepass::DepthPrepass,
     pbr::decal::{ForwardDecal, ForwardDecalMaterial, ForwardDecalMaterialExt},
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {

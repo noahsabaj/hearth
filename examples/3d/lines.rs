@@ -1,6 +1,6 @@
 //! Create a custom material to draw basic lines in 3D
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     mesh::{Indices, PrimitiveTopology},
     prelude::*,

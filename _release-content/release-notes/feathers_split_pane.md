@@ -4,7 +4,7 @@ authors: ["@jbuehler23"]
 pull_requests: [25970]
 ---
 
-`bevy_feathers` now has a styled split pane built on the headless `SplitPane` widget. `FeathersSplitPane` is the container, `FeathersPane` is a resizable child, and `FeathersSplitPaneHandle` is drawn as a thin line that highlights while hovered or dragged and shows a resize cursor matching the split direction.
+`hearth_feathers` now has a styled split pane built on the headless `SplitPane` widget. `FeathersSplitPane` is the container, `FeathersPane` is a resizable child, and `FeathersSplitPaneHandle` is drawn as a thin line that highlights while hovered or dragged and shows a resize cursor matching the split direction.
 
 As with the headless widget, pane sizes are only updated when `split_pane_self_update` or your own observer handles the `ValueChange<Vec<f32>>` event.
 

@@ -3,9 +3,9 @@
 //! It doesn't use the [`Material2d`] abstraction, but changes the vertex buffer to include vertex color.
 //! Check out the "mesh2d" example for simpler / higher level 2d meshes.
 //!
-//! [`Material2d`]: bevy::sprite_render::Material2d
+//! [`Material2d`]: hearth::sprite_render::Material2d
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     color::palettes::basic::YELLOW,
     core_pipeline::{core_2d::CORE_2D_DEPTH_FORMAT, Core2d, Core2dSystems},
@@ -261,7 +261,7 @@ type DrawTransparentColoredMesh2d = (
 // using `include_str!()`, or loaded like any other asset with `asset_server.load()`.
 const COLORED_MESH2D_SHADER: &str = r"
 // Import the standard 2d mesh uniforms and set their bind groups
-import bevy_sprite_render::mesh2d::functions as mesh2d_functions;
+import hearth_sprite_render::mesh2d::functions as mesh2d_functions;
 
 // The structure of the vertex buffer is as specified in `specialize()`
 struct Vertex {
@@ -662,7 +662,7 @@ fn main_colored_transparent_pass_2d(
     let color_attachments = [Some(target.get_color_attachment())];
     // NOTE: For the transparent pass we load the depth buffer. There should be no
     // need to write to it, but store is set to `true` as a workaround for issue #3776,
-    // https://github.com/bevyengine/bevy/issues/3776
+    // upstream issue #3776
     // so that wgpu does not clear the depth buffer.
     // As the opaque and alpha mask passes run first, opaque meshes can occlude
     // transparent ones.
@@ -739,9 +739,9 @@ where
         };
         let metadata_slab_id = mesh_allocator
             .key_to_slab
-            .get(&bevy_render::mesh::allocator::MeshAllocationKey::new(
+            .get(&hearth_render::mesh::allocator::MeshAllocationKey::new(
                 *mesh_asset_id,
-                bevy_render::mesh::allocator::ElementClass::Metadata,
+                hearth_render::mesh::allocator::ElementClass::Metadata,
             ))
             .cloned()
             .unwrap_or(metadata_fallback_buffer.slab_id);

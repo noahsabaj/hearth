@@ -1,11 +1,11 @@
-//! A Bevy app that you can connect to with the BRP and edit.
+//! A Hearth app that you can connect to with the HRP and edit.
 //! Run this example with the `remote` feature enabled:
 //! ```bash
-//! cargo run --example server --features="bevy_remote"
+//! cargo run --example server --features="hearth_remote"
 //! ```
 
-use bevy::math::ops::cos;
-use bevy::{
+use hearth::math::ops::cos;
+use hearth::{
     input::common_conditions::input_just_pressed,
     prelude::*,
     remote::{http::RemoteHttpPlugin, RemotePlugin},

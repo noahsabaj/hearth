@@ -1,11 +1,11 @@
 //! This example illustrates how to create buttons with their textures sliced
 //! and kept in proportion instead of being stretched by the button dimensions.
 //!
-//! It uses the `bevy_ui_widgets` headless [`Button`] widget. The button's hover and press
+//! It uses the `hearth_ui_widgets` headless [`Button`] widget. The button's hover and press
 //! state is tracked by the `Hovered` and `Pressed` components; a `Changed`-based system
 //! updates the sliced image's tint and label to match.
 
-use bevy::{
+use hearth::{
     color::palettes::css::{GOLD, ORANGE},
     picking::hover::Hovered,
     platform::collections::HashSet,

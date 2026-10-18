@@ -1,6 +1,6 @@
 //! Uses glTF extension processing to convert incoming 3d Meshes to 2d Meshes
 
-use bevy::{
+use hearth::{
     asset::LoadContext,
     gltf::{
         extensions::{ErasedGltfExtensionHandler, GltfExtensionHandler, GltfExtensionHandlers},
@@ -69,7 +69,7 @@ struct GltfToMesh2dPlugin;
 impl Plugin for GltfToMesh2dPlugin {
     fn build(&self, app: &mut App) {
         #[cfg(target_family = "wasm")]
-        bevy::tasks::block_on(async {
+        hearth::tasks::block_on(async {
             app.world_mut()
                 .resource_mut::<GltfExtensionHandlers>()
                 .0

@@ -4,7 +4,7 @@
 
 # Examples
 
-These examples demonstrate the main features of Bevy and how to use them.
+These examples demonstrate the main features of Hearth and how to use them.
 To run an example, use the command `cargo run --example <Example>`, and add the option `--features x11` or `--features wayland` to force the example to run on a specific window compositor, e.g.
 
 ```sh
@@ -13,12 +13,12 @@ cargo run --features wayland --example hello_world
 
 **⚠️ Note: for users of releases on crates.io!**
 
-There are often large differences and incompatible API changes between the latest [crates.io](https://crates.io/crates/bevy) release and the development version of Bevy in the git main branch!
+There are often large differences and incompatible API changes between the latest crates.io release and the development version of Hearth in the git main branch!
 
-If you are using a released version of Bevy, you need to make sure you are viewing the correct version of the examples!
+If you are using a released version of Hearth, you need to make sure you are viewing the correct version of the examples!
 
-- Latest release: [https://github.com/bevyengine/bevy/tree/latest/examples](https://github.com/bevyengine/bevy/tree/latest/examples)
-- Specific version, such as `0.4`: [https://github.com/bevyengine/bevy/tree/v0.4.0/examples](https://github.com/bevyengine/bevy/tree/v0.4.0/examples)
+- Latest release: [https://github.com/noahsabaj/hearth/tree/main/examples](https://github.com/noahsabaj/hearth/tree/main/examples)
+- Specific version, such as `0.4`: [https://github.com/noahsabaj/hearth/tree/main/examples](https://github.com/noahsabaj/hearth/tree/main/examples)
 
 When you clone the repo locally to run the examples, use `git checkout` to get the correct version:
 
@@ -88,7 +88,7 @@ Example | Description
 
 ## Platform-Specific Examples
 
-`bevy_mobile_example` sets `strip = true` in the workspace `Cargo.toml` to keep app bundles reasonable. Remove the `strip` override if you need native debug symbols.
+`hearth_mobile_example` sets `strip = true` in the workspace `Cargo.toml` to keep app bundles reasonable. Remove the `strip` override if you need native debug symbols.
 
 ### Android
 
@@ -117,7 +117,7 @@ The following commands are run from the `examples/mobile` directory.
 
 **⚠️ Note:** In order to run this example on `x86_64`, you may need to use the `--release` flag.
 
-**⚠️ Note:** The `-P 26` flag is currently required for building the example. It sets the correct API level required by `bevy_audio`.
+**⚠️ Note:** The `-P 26` flag is currently required for building the example. It sets the correct API level required by `hearth_audio`.
 
 1. Build shared object files for the target architecture with `cargo-ndk`:
 
@@ -186,7 +186,7 @@ The following commands are run from the `examples/mobile` directory.
 You can view the logs with the following command:
 
 ```sh
-adb logcat | grep 'RustStdoutStderr\|bevy\|wgpu'
+adb logcat | grep 'RustStdoutStderr\|hearth\|wgpu'
 ```
 
 In case of an error getting a GPU or setting it up, you can try settings logs of `wgpu_hal` to `DEBUG` to get more information.
@@ -194,20 +194,20 @@ In case of an error getting a GPU or setting it up, you can try settings logs of
 Sometimes, running the app complains about an unknown activity. This may be fixed by uninstalling the application:
 
 ```sh
-adb uninstall org.bevyengine.example
+adb uninstall org.hearthengine.example
 ```
 
 #### Old phones
 
-**⚠️ Note:** If you are using `bevy_audio` the minimum supported Android API version is 26 (Android 8/Oreo).
+**⚠️ Note:** If you are using `hearth_audio` the minimum supported Android API version is 26 (Android 8/Oreo).
 
-In its example, Bevy uses Android API 37 as `targetSdk` to be able to benefit from security and performance improvements. For backwards compatibility, the example specifies Android API 26 as `minSdk`. This approach is recommended in the [Android Developers documentation](https://developer.android.com/google/play/requirements/target-sdk#why-target).
+In its example, Hearth uses Android API 37 as `targetSdk` to be able to benefit from security and performance improvements. For backwards compatibility, the example specifies Android API 26 as `minSdk`. This approach is recommended in the [Android Developers documentation](https://developer.android.com/google/play/requirements/target-sdk#why-target).
 
 If you want to support older APIs, you can set a lower `minSdk`. You should however make sure that dependencies in `android/gradle/libs.versions.toml` support your API. You might also have to migrate to `NativeActivity`.
 
 ##### [`GameActivity`](https://developer.android.com/games/agdk/game-activity) vs [`NativeActivity`](https://developer.android.com/reference/android/app/NativeActivity)
 
-Bevy uses `GameActivity`, which only works for Android API 23 and higher.
+Hearth uses `GameActivity`, which only works for Android API 23 and higher.
 
 Quoting from [Android Developers](https://developer.android.com/games/agdk/game-activity), the major differences are as follows:
 
@@ -234,8 +234,8 @@ If you still want to use `NativeActivity`, please see the next section.
     --- a/examples/mobile/Cargo.toml
     +++ b/examples/mobile/Cargo.toml
     [dependencies]
-    -bevy = { version = "0.19", features = ["android-game-activity"] }
-    +bevy = { version = "0.19", features = ["android-native-activity"] }
+    -hearth = { version = "0.19", features = ["android-game-activity"] }
+    +hearth = { version = "0.19", features = ["android-native-activity"] }
     ```
 
     </details>
@@ -248,7 +248,7 @@ If you still want to use `NativeActivity`, please see the next section.
     +++ b/examples/mobile/android/gradle/libs.versions.toml
     [versions]
     ...
-    -gamesActivity = "..." # Note: This must be compatible with `android-activity` crate used by bevy.
+    -gamesActivity = "..." # Note: This must be compatible with `android-activity` crate used by hearth.
     ...
 
     [libraries]
@@ -280,9 +280,9 @@ If you still want to use `NativeActivity`, please see the next section.
     <summary>Required Changes (Example)</summary>
 
     ```diff
-    --- a/examples/mobile/android/app/src/main/kotlin/org/bevyengine/example/MainActivity.kt
-    +++ b/examples/mobile/android/app/src/main/kotlin/org/bevyengine/example/MainActivity.kt
-    package org.bevyengine.example
+    --- a/examples/mobile/android/app/src/main/kotlin/org/hearthengine/example/MainActivity.kt
+    +++ b/examples/mobile/android/app/src/main/kotlin/org/hearthengine/example/MainActivity.kt
+    package org.hearthengine.example
 
     +import android.app.NativeActivity
     import android.os.Bundle
@@ -341,7 +341,7 @@ DEVICE_ID=${YOUR_DEVICE_ID} make run
 If you'd like to see xcode do stuff, you can run
 
 ```sh
-open bevy_mobile_example.xcodeproj/
+open hearth_mobile_example.xcodeproj/
 ```
 
 which will open xcode. You then must push the zoom zoom play button and wait
@@ -388,11 +388,11 @@ ruby -run -ehttpd examples/wasm
 
 ##### WebGL2 and WebGPU
 
-Bevy support for WebGPU is being worked on, but is currently experimental.
+Hearth support for WebGPU is being worked on, but is currently experimental.
 
 To build for WebGPU, you'll need to enable the `webgpu` feature. This will override the `webgl2` feature, and builds with the `webgpu` feature enabled won't be able to run on browsers that don't support WebGPU.
 
-Bevy has a helper to build its examples:
+Hearth has a helper to build its examples:
 
 - Build for WebGL2: `cargo run -p build-wasm-example -- --api webgl2 load_gltf`
 - Build for WebGPU: `cargo run -p build-wasm-example -- --api webgpu load_gltf`
@@ -410,7 +410,7 @@ In browsers, audio is not authorized to start without being triggered by an user
 
 On the web, it's useful to reduce the size of the files that are distributed.
 With Rust, there are many ways to improve your executable sizes, starting with
-the steps described in [the quick-start guide](https://bevy.org/learn/quick-start/getting-started/setup/#compile-with-performance-optimizations).
+the steps described in [the quick-start guide](https://github.com/noahsabaj/hearth).
 
 Now, when building the executable, use `--profile wasm-release` instead of `--release`:
 

@@ -1,5 +1,5 @@
 //! Desktop request redraw
-use bevy::{
+use hearth::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
     prelude::*,
     window::RequestRedraw,

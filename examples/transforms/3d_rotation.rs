@@ -1,6 +1,6 @@
 //! Illustrates how to rotate an object around an axis.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 use std::f32::consts::TAU;
 

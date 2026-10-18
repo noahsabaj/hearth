@@ -10,15 +10,15 @@
 //!
 //! # Default query filters
 //!
-//! Under the hood, Bevy uses a "default query filter" that skips entities with the
+//! Under the hood, Hearth uses a "default query filter" that skips entities with the
 //! the [`Disabled`] component.
 //! These filters act as a by-default exclusion list for all queries,
 //! and can be bypassed by explicitly including these components in your queries.
 //! For example, `Query<&A, With<Disabled>`, `Query<(Entity, Has<Disabled>>)` or
 //! `Query<&A, Or<(With<Disabled>, With<B>)>>` will include disabled entities.
 
-use bevy::ecs::entity_disabling::Disabled;
-use bevy::prelude::*;
+use hearth::ecs::entity_disabling::Disabled;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

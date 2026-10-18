@@ -2,7 +2,7 @@
 //!
 //! Continuously recomputes a large block of text with 100 text spans.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::{BLUE, YELLOW},
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,

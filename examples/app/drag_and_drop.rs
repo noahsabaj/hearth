@@ -1,6 +1,6 @@
 //! An example that shows how to handle drag and drop of files in an app.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

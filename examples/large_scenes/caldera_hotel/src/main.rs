@@ -11,8 +11,8 @@ use std::{f32::consts::PI, time::Instant};
 
 use crate::light_consts::lux;
 use argh::FromArgs;
-use bevy::pbr::ContactShadows;
-use bevy::{
+use hearth::pbr::ContactShadows;
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     camera::{
         visibility::{NoCpuCulling, NoFrustumCulling},

@@ -1,8 +1,8 @@
 //! Demonstrates how to observe events: both component lifecycle events and custom events.
 
-use bevy::ecs::entity::EntityHashSet;
-use bevy::{platform::collections::HashMap, prelude::*};
 use chacha20::ChaCha8Rng;
+use hearth::ecs::entity::EntityHashSet;
+use hearth::{platform::collections::HashMap, prelude::*};
 use rand::{RngExt, SeedableRng};
 
 fn main() {

@@ -6,7 +6,7 @@
 
 //! One common use case for embedded assets is including them directly within the executable during its creation. By embedding an asset at build time rather than runtime
 //! the program never needs to go to disk for the asset at all, since it is already located in the program's binary executable.
-use bevy::{
+use hearth::{
     asset::{embedded_asset, io::AssetSourceId, AssetPath},
     prelude::*,
 };
@@ -28,7 +28,7 @@ impl Plugin for EmbeddedAssetPlugin {
         let omit_prefix = "examples/asset";
         // Path to asset must be relative to this file, because that's how
         // include_bytes! works.
-        embedded_asset!(app, omit_prefix, "files/bevy_pixel_light.png");
+        embedded_asset!(app, omit_prefix, "files/hearth_pixel_light.png");
     }
 }
 
@@ -39,11 +39,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let crate_name = "embedded_asset";
 
     // The actual file path relative to workspace root is
-    // "examples/asset/files/bevy_pixel_light.png".
+    // "examples/asset/files/hearth_pixel_light.png".
     //
     // We omit the "examples/asset" from the embedded_asset! call and replace it
     // with the crate name.
-    let path = Path::new(crate_name).join("files/bevy_pixel_light.png");
+    let path = Path::new(crate_name).join("files/hearth_pixel_light.png");
     let source = AssetSourceId::from("embedded");
     let asset_path = AssetPath::from_path(&path).with_source(source);
 
@@ -51,7 +51,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // path.
     assert_eq!(
         asset_path,
-        "embedded://embedded_asset/files/bevy_pixel_light.png".into()
+        "embedded://embedded_asset/files/hearth_pixel_light.png".into()
     );
 
     commands.spawn(Sprite::from_image(asset_server.load(asset_path)));

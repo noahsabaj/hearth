@@ -1,6 +1,6 @@
 //! Shows handling of gamepad input, connections, and disconnections.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

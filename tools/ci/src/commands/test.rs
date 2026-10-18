@@ -16,14 +16,14 @@ impl Prepare for TestCommand {
         let jobs_ref = &jobs;
         let test_threads_ref = &test_threads;
 
-        // The bevy_ecs error tests need this set to test backtraces
+        // The hearth_ecs error tests need this set to test backtraces
         sh.set_var("RUST_BACKTRACE", "1");
 
         vec![
             PreparedCommand::new::<Self>(
                 cmd!(
                     sh,
-                    "cargo test --workspace --lib --bins --tests --features bevy_ecs/track_location {no_fail_fast...} {jobs_ref...} -- {test_threads_ref...}"
+                    "cargo test --workspace --lib --bins --tests --features hearth_ecs/track_location {no_fail_fast...} {jobs_ref...} -- {test_threads_ref...}"
                 ),
                 "Please fix failing tests in output above.",
             ),

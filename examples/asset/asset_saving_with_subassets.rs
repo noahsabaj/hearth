@@ -1,6 +1,6 @@
 //! This example demonstrates how to save assets that include subassets.
 
-use bevy::{
+use hearth::{
     asset::{
         io::{Reader, Writer},
         saver::{save_using_saver, AssetSaver, SavedAsset, SavedAssetBuilder},
@@ -162,7 +162,7 @@ struct ManyBoxesSaver;
 
 impl AssetSaver for ManyBoxesSaver {
     type Asset = ManyBoxes;
-    type Error = BevyError;
+    type Error = HearthError;
     type OutputLoader = ManyBoxesLoader;
     type Settings = ();
 
@@ -200,7 +200,7 @@ struct ManyBoxesLoader;
 
 impl AssetLoader for ManyBoxesLoader {
     type Asset = ManyBoxes;
-    type Error = BevyError;
+    type Error = HearthError;
     type Settings = ();
 
     async fn load(

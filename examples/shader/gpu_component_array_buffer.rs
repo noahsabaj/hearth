@@ -2,14 +2,16 @@
 //! per-mesh-instance data.
 //!
 //! This example repeatedly spawns and despawns randomly colored and textured
-//! cubes, in order to demonstrate (and test) that Bevy automatically manages
+//! cubes, in order to demonstrate (and test) that Hearth automatically manages
 //! indices of elements within `GpuComponentArrayBuffer`. Bindless is used when
 //! supported; if bindless is supported on the platform, you can verify with a
 //! debugger that all cubes are drawn in a single drawcall.
 
 use std::time::Duration;
 
-use bevy::{
+use bytemuck::{Pod, Zeroable};
+use chacha20::ChaCha8Rng;
+use hearth::{
     ecs::{query::QueryItem, system::lifetimeless::Read},
     prelude::*,
     reflect::TypePath,
@@ -23,8 +25,6 @@ use bevy::{
     shader::ShaderRef,
     time::common_conditions::on_timer,
 };
-use bytemuck::{Pod, Zeroable};
-use chacha20::ChaCha8Rng;
 use rand::{seq::IndexedRandom, RngExt as _, SeedableRng as _};
 
 /// This example uses a shader source file from the assets subdirectory.
@@ -56,7 +56,7 @@ struct CustomMaterial {
     ///
     /// This is a single [`ShaderBuffer`] that contains all the data used by
     /// each mesh instance, indexed by the
-    /// [`MeshTag`](bevy_mesh::components::MeshTag).
+    /// [`MeshTag`](hearth_mesh::components::MeshTag).
     #[storage(1, read_only, binding_array(4))]
     data: Handle<ShaderBuffer>,
 
@@ -122,7 +122,7 @@ fn setup(
 
     // Load the image for each material below.
     let (texture_dark, texture_light) = (
-        asset_server.load("branding/bevy_bird_dark.png"),
+        asset_server.load("branding/hearth_mark.png"),
         asset_server.load("branding/icon.png"),
     );
 

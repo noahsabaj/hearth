@@ -1,12 +1,12 @@
 //! Shows how to display a window in transparent mode.
 //!
 //! This feature works as expected depending on the platform. Please check the
-//! [documentation](https://docs.rs/bevy/latest/bevy/prelude/struct.Window.html#structfield.transparent)
+//! documentation
 //! for more details.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
-use bevy::window::CompositeAlphaMode;
+use hearth::window::CompositeAlphaMode;
 
 fn main() {
     App::new()

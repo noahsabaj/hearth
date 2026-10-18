@@ -16,9 +16,9 @@ Test loading a gLTF, computing mips with texture compression, and caching compre
 
 ## Note
 
-Bevy supports a [variety of compressed image formats](https://docs.rs/bevy/latest/bevy/render/texture/enum.ImageFormat.html) that can also contain mipmaps. This plugin is intended for situations where the use of those formats is impractical (mostly prototyping/testing). With this plugin, mipmap generation happens slowly on the cpu.
+Hearth supports a variety of compressed image formats that can also contain mipmaps. This plugin is intended for situations where the use of those formats is impractical (mostly prototyping/testing). With this plugin, mipmap generation happens slowly on the cpu.
 
-Instead of using this plugin, consider using the new [CompressedImageSaver](https://bevyengine.org/news/bevy-0-12/#compressedimagesaver).
+Instead of using this plugin, consider using the new [CompressedImageSaver](https://github.com/noahsabaj/hearth).
 
 For generating compressed textures ahead of time also check out:
 
@@ -28,7 +28,7 @@ For generating compressed textures ahead of time also check out:
 - [compressonator](https://gpuopen.com/compressonator/)
 - [basis_universal](https://github.com/BinomialLLC/basis_universal)
 
-In my experience, many of these compressed formats can be used with bevy in `gltf` files. This can be done by converting and replacing the images included in the `gltf` and then setting the mimeType with something like: `"mimeType": "image/ktx2"` (for ktx2)
+In my experience, many of these compressed formats can be used with hearth in `gltf` files. This can be done by converting and replacing the images included in the `gltf` and then setting the mimeType with something like: `"mimeType": "image/ktx2"` (for ktx2)
 
 ## Usage
 

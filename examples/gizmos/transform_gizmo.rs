@@ -4,7 +4,7 @@
 //! - Click an object to select it (primary mouse button)
 //! - Radio buttons switch between Translate/Rotate/Scale modes and toggle World/Local space.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     feathers::{controls::FeathersSlider, display::label, theme::UiTheme, FeathersPlugins},
     gizmos::transform_gizmo::{

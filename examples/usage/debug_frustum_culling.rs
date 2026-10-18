@@ -1,25 +1,25 @@
 //! This example demonstrates how to debug and visualize frustum culling,
-//! a process (and Bevy [`system`](bevy::camera::visibility::check_visibility)) that determines
+//! a process (and Hearth [`system`](hearth::camera::visibility::check_visibility)) that determines
 //! which entities are visible and should be rendered within
-//! a camera's view. If an entity's [`Aabb`](bevy::camera::primitives::Aabb)
+//! a camera's view. If an entity's [`Aabb`](hearth::camera::primitives::Aabb)
 //! (Axis-Aligned Bounding Box) does not intersect with a camera's
-//! [`Frustum`](bevy::camera::primitives::Frustum), that entity is said to be "culled"
+//! [`Frustum`](hearth::camera::primitives::Frustum), that entity is said to be "culled"
 //! from the camera's view frustum.
 //!
 //! To debug and visualize frustum culling, this example uses Aabb and Frustum gizmos provided
-//! by bevy's [`Gizmo`] library. [`Aabb gizmos`](bevy::gizmos::aabb) are used to visualize the
-//! [`Aabb`](bevy::camera::primitives::Aabb) of entities.
-//! [`Frustum gizmos`](bevy::gizmos::frustum) are used to visualize the
-//! [`Frustum`](bevy::camera::primitives::Frustum) of a camera.
+//! by hearth's [`Gizmo`] library. [`Aabb gizmos`](hearth::gizmos::aabb) are used to visualize the
+//! [`Aabb`](hearth::camera::primitives::Aabb) of entities.
+//! [`Frustum gizmos`](hearth::gizmos::frustum) are used to visualize the
+//! [`Frustum`](hearth::camera::primitives::Frustum) of a camera.
 //! Both can be used together to visualize which entities have been culled
 //! from a given camera's view, which entities are visible, and when
 //! that change happens during an entity's Aabb interaction with a camera's Frustum.
 //!
 //! This example contains a scene with a camera `MyCamera` that has its
-//! [`Frustum`](bevy::camera::primitives::Frustum) gizmo visible.
+//! [`Frustum`](hearth::camera::primitives::Frustum) gizmo visible.
 //! A collection of `MyShape`s, with their individual
-//! [`Aabb`](bevy::camera::primitives::Aabb) gizmos visible, periodically move in and
-//! out of the camera's frustum. The [`Aabb`](bevy::camera::primitives::Aabb)
+//! [`Aabb`](hearth::camera::primitives::Aabb) gizmos visible, periodically move in and
+//! out of the camera's frustum. The [`Aabb`](hearth::camera::primitives::Aabb)
 //! gizmos are colored red when they have been culled from `MyCamera`'s view.
 //! The gizmos change color to green when the shape is considered visible by the
 //! camera and would be extracted for rendering.
@@ -28,7 +28,7 @@
 //! This second camera's view occupies most of the window. `MyCamera`'s view is visible in the
 //! bottom right ninth of the screen.
 
-use bevy::{
+use hearth::{
     camera::{
         visibility::{VisibilitySystems, VisibleEntities},
         Viewport,
@@ -299,7 +299,7 @@ fn move_shapes(
     Ok(())
 }
 
-// A system that changes the color of the [`AabbGizmo`](bevy::gizmos::Aabb)
+// A system that changes the color of the [`AabbGizmo`](hearth::gizmos::Aabb)
 // if they are considered visible by the camera.
 fn update_shape_aabb_colors(
     view_query: Query<&VisibleEntities, With<MyCamera>>,

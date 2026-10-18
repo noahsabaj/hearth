@@ -8,7 +8,7 @@
 //!
 //! This is a native only feature.
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     pbr::wireframe::{
         NoWireframe, Wireframe, WireframeColor, WireframeConfig, WireframeLineWidth,

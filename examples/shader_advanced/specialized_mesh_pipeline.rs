@@ -1,12 +1,12 @@
 //! Demonstrates how to define and use specialized mesh pipeline
 //!
 //! This example shows how to use the built-in [`SpecializedMeshPipeline`]
-//! functionality with a custom [`RenderCommand`](bevy::render::render_phase::RenderCommand)
+//! functionality with a custom [`RenderCommand`](hearth::render::render_phase::RenderCommand)
 //! to allow custom mesh rendering with more flexibility than the material api.
 //!
 //! [`SpecializedMeshPipeline`] let's you customize the entire pipeline used when rendering a mesh.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     camera::visibility::{self, VisibilityClass},
     core_pipeline::core_3d::{Opaque3d, Opaque3dBatchSetKey, Opaque3dBinKey, CORE_3D_DEPTH_FORMAT},
@@ -133,7 +133,7 @@ impl Plugin for CustomRenderedMeshPipelinePlugin {
             return;
         };
         render_app
-            // This is needed to tell bevy about your custom pipeline
+            // This is needed to tell hearth about your custom pipeline
             .init_resource::<SpecializedMeshPipelines<CustomMeshPipeline>>()
             .init_resource::<PendingCustomMeshQueues>()
             // We need to use a custom draw command so we need to register it
@@ -153,8 +153,8 @@ impl Plugin for CustomRenderedMeshPipelinePlugin {
 /// our specialized pipeline.
 ///
 /// Note the [`ExtractComponent`] trait implementation: this is necessary to
-/// tell Bevy that this object should be pulled into the render world. Also note
-/// the `on_add` hook, which is needed to tell Bevy's `check_visibility` system
+/// tell Hearth that this object should be pulled into the render world. Also note
+/// the `on_add` hook, which is needed to tell Hearth's `check_visibility` system
 /// that entities with this component need to be examined for visibility.
 #[derive(Clone, Component, ExtractComponent)]
 #[require(VisibilityClass)]
@@ -162,7 +162,7 @@ impl Plugin for CustomRenderedMeshPipelinePlugin {
 #[extract_app(RenderApp)]
 struct CustomRenderedEntity;
 
-/// The custom draw commands that Bevy executes for each entity we enqueue into
+/// The custom draw commands that Hearth executes for each entity we enqueue into
 /// the render phase.
 type DrawSpecializedPipelineCommands = (
     // Set the pipeline
@@ -180,10 +180,10 @@ type DrawSpecializedPipelineCommands = (
 // This contains the state needed to specialize a mesh pipeline
 #[derive(Resource)]
 struct CustomMeshPipeline {
-    /// The base mesh pipeline defined by bevy
+    /// The base mesh pipeline defined by hearth
     ///
-    /// This isn't required, but if you want to use a bevy `Mesh` it's easier when you
-    /// have access to the base `MeshPipeline` that bevy already defines
+    /// This isn't required, but if you want to use a hearth `Mesh` it's easier when you
+    /// have access to the base `MeshPipeline` that hearth already defines
     mesh_pipeline: MeshPipeline,
     /// Stores the shader used for this pipeline directly on the pipeline.
     /// This isn't required, it's only done like this for simplicity.
@@ -208,7 +208,7 @@ impl SpecializedMeshPipeline for CustomMeshPipeline {
     /// The key is also used by the pipeline cache to determine if
     /// it needs to create a new pipeline or not
     ///
-    /// In this example we just use the base `MeshPipelineKey` defined by bevy, but this could be anything.
+    /// In this example we just use the base `MeshPipelineKey` defined by hearth, but this could be anything.
     /// For example, if you want to make a pipeline with a procedural shader you could add the Handle<Shader> to the key.
     type Key = MeshPipelineKey;
 
@@ -218,7 +218,7 @@ impl SpecializedMeshPipeline for CustomMeshPipeline {
         layout: &MeshVertexBufferLayoutRef,
     ) -> Result<RenderPipelineDescriptor, SpecializedMeshPipelineError> {
         let mut shader_defs = Vec::new();
-        // Define the vertex attributes based on a standard bevy [`Mesh`]
+        // Define the vertex attributes based on a standard hearth [`Mesh`]
         let mut vertex_attributes = Vec::new();
         if layout.0.contains(Mesh::ATTRIBUTE_POSITION) {
             // Handle compressed vertex positions.
@@ -262,7 +262,7 @@ impl SpecializedMeshPipeline for CustomMeshPipeline {
                 shader: self.shader_handle.clone(),
                 shader_defs,
                 targets: vec![Some(ColorTargetState {
-                    // This isn't required, but bevy supports rendering different formats
+                    // This isn't required, but hearth supports rendering different formats
                     // so it's generally recommended to specialize the pipeline for that
                     format: mesh_key.target_format(),
                     // For this example we only use opaque meshes,
@@ -414,7 +414,7 @@ fn queue_custom_mesh_pipeline(
                 // specialization can fail you need to handle the error here
                 .expect("Failed to specialize mesh pipeline");
 
-            // Bump the change tick so that Bevy is forced to rebuild the bin.
+            // Bump the change tick so that Hearth is forced to rebuild the bin.
             let next_change_tick = change_tick.get() + 1;
             change_tick.set(next_change_tick);
 

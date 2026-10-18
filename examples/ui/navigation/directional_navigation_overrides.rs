@@ -19,7 +19,7 @@
 
 use core::time::Duration;
 
-use bevy::{
+use hearth::{
     camera::NormalizedRenderTarget,
     input_focus::{
         directional_navigation::{
@@ -79,17 +79,17 @@ fn main() {
         .run();
 }
 
-const PAGE_1_NORMAL_BUTTON: Srgba = bevy::color::palettes::tailwind::BLUE_400;
-const PAGE_1_PRESSED_BUTTON: Srgba = bevy::color::palettes::tailwind::BLUE_500;
-const PAGE_1_FOCUSED_BORDER: Srgba = bevy::color::palettes::tailwind::BLUE_50;
+const PAGE_1_NORMAL_BUTTON: Srgba = hearth::color::palettes::tailwind::BLUE_400;
+const PAGE_1_PRESSED_BUTTON: Srgba = hearth::color::palettes::tailwind::BLUE_500;
+const PAGE_1_FOCUSED_BORDER: Srgba = hearth::color::palettes::tailwind::BLUE_50;
 
-const PAGE_2_NORMAL_BUTTON: Srgba = bevy::color::palettes::tailwind::RED_400;
-const PAGE_2_PRESSED_BUTTON: Srgba = bevy::color::palettes::tailwind::RED_500;
-const PAGE_2_FOCUSED_BORDER: Srgba = bevy::color::palettes::tailwind::RED_50;
+const PAGE_2_NORMAL_BUTTON: Srgba = hearth::color::palettes::tailwind::RED_400;
+const PAGE_2_PRESSED_BUTTON: Srgba = hearth::color::palettes::tailwind::RED_500;
+const PAGE_2_FOCUSED_BORDER: Srgba = hearth::color::palettes::tailwind::RED_50;
 
-const PAGE_3_NORMAL_BUTTON: Srgba = bevy::color::palettes::tailwind::GREEN_400;
-const PAGE_3_PRESSED_BUTTON: Srgba = bevy::color::palettes::tailwind::GREEN_500;
-const PAGE_3_FOCUSED_BORDER: Srgba = bevy::color::palettes::tailwind::GREEN_50;
+const PAGE_3_NORMAL_BUTTON: Srgba = hearth::color::palettes::tailwind::GREEN_400;
+const PAGE_3_PRESSED_BUTTON: Srgba = hearth::color::palettes::tailwind::GREEN_500;
+const PAGE_3_FOCUSED_BORDER: Srgba = hearth::color::palettes::tailwind::GREEN_50;
 
 const NORMAL_BUTTON_COLORS: [Srgba; 3] = [
     PAGE_1_NORMAL_BUTTON,

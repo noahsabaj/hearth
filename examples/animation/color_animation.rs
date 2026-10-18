@@ -1,6 +1,6 @@
 //! Demonstrates how to animate colors in different color spaces using mixing and splines.
 
-use bevy::{math::VectorSpace, prelude::*};
+use hearth::{math::VectorSpace, prelude::*};
 
 // We define this trait so we can reuse the same code for multiple color types that may be implemented using curves.
 trait CurveColor: VectorSpace<Scalar = f32> + Into<Color> + Send + Sync + 'static {}

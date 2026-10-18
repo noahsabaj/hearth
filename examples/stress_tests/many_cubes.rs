@@ -11,7 +11,8 @@
 use std::{f64::consts::PI, str::FromStr};
 
 use argh::FromArgs;
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     asset::RenderAssetUsages,
     camera::visibility::{NoCpuCulling, NoFrustumCulling},
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
@@ -31,7 +32,6 @@ use bevy::{
     window::{PresentMode, WindowResolution},
     winit::WinitSettings,
 };
-use chacha20::ChaCha8Rng;
 use rand::{seq::IndexedRandom, RngExt, SeedableRng};
 
 #[derive(FromArgs, Resource)]

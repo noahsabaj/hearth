@@ -2,8 +2,8 @@
 
 use std::f32::consts::PI;
 
-use bevy::picking::PickingSystems;
-use bevy::{
+use hearth::picking::PickingSystems;
+use hearth::{
     asset::uuid::Uuid,
     camera::RenderTarget,
     color::palettes::css::{BLUE, GRAY, RED},
@@ -151,7 +151,7 @@ fn rotator_system(time: Res<Time>, mut query: Query<&mut Transform, With<Cube>>)
     }
 }
 
-/// Because bevy has no way to know how to map a mouse input to the UI texture, we need to write a
+/// Because hearth has no way to know how to map a mouse input to the UI texture, we need to write a
 /// system that tells it there is a pointer on the UI texture. We cast a ray into the scene and find
 /// the UV (2D texture) coordinates of the raycast hit. This UV coordinate is effectively the same
 /// as a pointer coordinate on a 2D UI rect.

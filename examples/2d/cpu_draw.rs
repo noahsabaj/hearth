@@ -1,15 +1,15 @@
 //! Example of how to draw to a texture from the CPU.
 //!
 //! You can set the values of individual pixels to whatever you want.
-//! Bevy provides user-friendly APIs that work with [`Color`]
+//! Hearth provides user-friendly APIs that work with [`Color`]
 //! values and automatically perform any necessary conversions and encoding
 //! into the texture's native pixel format.
 
-use bevy::asset::RenderAssetUsages;
-use bevy::color::{color_difference::EuclideanDistance, palettes::css};
-use bevy::prelude::*;
-use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 use chacha20::ChaCha8Rng;
+use hearth::asset::RenderAssetUsages;
+use hearth::color::{color_difference::EuclideanDistance, palettes::css};
+use hearth::prelude::*;
+use hearth::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
 use rand::{RngExt, SeedableRng};
 
 const IMAGE_WIDTH: u32 = 256;
@@ -73,7 +73,7 @@ fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
         }
     }
 
-    // Add it to Bevy's assets, so it can be used for rendering
+    // Add it to Hearth's assets, so it can be used for rendering
     // this will give us a handle we can use
     // (to display it in a sprite, or as part of UI, etc.)
     let handle = images.add(image);
@@ -106,7 +106,7 @@ fn draw(
         );
     }
 
-    // Get the image from Bevy's asset storage.
+    // Get the image from Hearth's asset storage.
     let mut image = images.get_mut(&my_handle.0).expect("Image not found");
 
     // Compute the position of the pixel to draw.

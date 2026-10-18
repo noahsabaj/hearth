@@ -1,7 +1,7 @@
 //! This example illustrates the different ways you can employ component lifecycle hooks.
 //!
-//! Whenever possible, prefer using Bevy's change detection or Events for reacting to component changes.
-//! Events generally offer better performance and more flexible integration into Bevy's systems.
+//! Whenever possible, prefer using Hearth's change detection or Events for reacting to component changes.
+//! Events generally offer better performance and more flexible integration into Hearth's systems.
 //! Hooks are useful to enforce correctness but have limitations (only one hook per component,
 //! less ergonomic than events).
 //!
@@ -13,7 +13,7 @@
 //! - Enforcing structural rules: When you have systems that depend on specific relationships
 //!   between components (like hierarchies or parent-child links) and need to maintain correctness.
 
-use bevy::{
+use hearth::{
     ecs::component::{Mutable, StorageType},
     ecs::lifecycle::{ComponentHook, HookContext},
     prelude::*,

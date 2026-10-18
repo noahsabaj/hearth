@@ -3,7 +3,7 @@
 //! This terminal-based tool generates a release content file
 //! from the content of the `_release-content` directory.
 //!
-//! To run this tool, use the following command from the `bevy` repository root:
+//! To run this tool, use the following command from the `hearth` repository root:
 //!
 //! ```sh
 //! cargo run -p export-content

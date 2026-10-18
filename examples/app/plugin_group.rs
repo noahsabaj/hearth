@@ -1,12 +1,12 @@
 //! Demonstrates the creation and registration of a custom plugin group.
 //! [`PluginGroup`]s are a way to group sets of plugins that should be registered together.
 
-use bevy::{app::PluginGroupBuilder, prelude::*};
+use hearth::{app::PluginGroupBuilder, prelude::*};
 
 fn main() {
     App::new()
         .add_plugins((
-            // Two PluginGroups that are included with bevy are DefaultPlugins and MinimalPlugins
+            // Two PluginGroups that are included with hearth are DefaultPlugins and MinimalPlugins
             DefaultPlugins,
             // Adding a plugin group adds all plugins in the group by default
             HelloWorldPlugins,
@@ -17,7 +17,7 @@ fn main() {
         //         .build()
         //         .disable::<PrintWorldPlugin>()
         //         .add_before::<PrintHelloPlugin>(
-        //             bevy::diagnostic::LogDiagnosticsPlugin::default(),
+        //             hearth::diagnostic::LogDiagnosticsPlugin::default(),
         //         ),
         // )
         .run();

@@ -1,6 +1,6 @@
 //! This example illustrates how to how to flip and tile images with 9-slicing in the UI.
 
-use bevy::{
+use hearth::{
     image::{ImageLoaderSettings, ImageSampler},
     prelude::*,
     ui::widget::NodeImageMode,

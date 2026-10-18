@@ -1,7 +1,7 @@
 //! A shader that binds several textures onto one
 //! `binding_array<texture<f32>>` shader binding slot and sample non-uniformly.
 
-use bevy::{
+use hearth::{
     ecs::system::{lifetimeless::SRes, SystemParamItem},
     prelude::*,
     reflect::TypePath,
@@ -125,7 +125,7 @@ impl AsBindGroup for BindlessMaterial {
 
         let textures = vec![&fallback_image.texture_view; MAX_TEXTURE_COUNT];
 
-        // convert bevy's resource types to WGPU's references
+        // convert hearth's resource types to WGPU's references
         let mut textures: Vec<_> = textures.into_iter().map(|texture| &**texture).collect();
 
         // fill in up to the first `MAX_TEXTURE_COUNT` textures and samplers to the arrays

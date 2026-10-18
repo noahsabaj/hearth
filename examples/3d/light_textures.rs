@@ -3,8 +3,8 @@
 use std::f32::consts::{FRAC_PI_2, FRAC_PI_3, FRAC_PI_4, PI};
 use std::fmt::{self, Formatter};
 
-use bevy::ui_widgets::radio_self_update;
-use bevy::{
+use hearth::ui_widgets::radio_self_update;
+use hearth::{
     camera::primitives::CubemapLayout,
     color::palettes::css::{SILVER, YELLOW},
     feathers::{
@@ -104,7 +104,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Light Textures Example".into(),
+                    title: "Hearth Light Textures Example".into(),
                     ..default()
                 }),
                 ..default()

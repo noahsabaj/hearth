@@ -1,5 +1,5 @@
 //! Shows how to create a loading screen that waits for assets to load and render.
-use bevy::{ecs::system::SystemId, prelude::*};
+use hearth::{ecs::system::SystemId, prelude::*};
 
 use pipelines_ready::*;
 
@@ -274,7 +274,7 @@ fn display_loading_screen(
 }
 
 mod pipelines_ready {
-    use bevy::{
+    use hearth::{
         prelude::*,
         render::{render_resource::*, *},
     };

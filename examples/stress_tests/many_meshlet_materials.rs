@@ -4,7 +4,7 @@
 //! Run without it (shared material) to see the baseline performance.
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     pbr::experimental::meshlet::{MeshletMesh3d, MeshletPlugin},
     prelude::*,
@@ -26,7 +26,7 @@ struct Args {
 }
 
 const ASSET_URL: &str =
-    "https://github.com/bevyengine/bevy_asset_files/raw/6dccaef517bde74d1969734703709aead7211dbc/meshlet/bunny.meshlet_mesh";
+    "https://github.com/noahsabaj/hearth_asset_files/raw/6dccaef517bde74d1969734703709aead7211dbc/meshlet/bunny.meshlet_mesh";
 
 fn main() {
     let args: Args = argh::from_env();

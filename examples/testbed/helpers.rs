@@ -1,5 +1,5 @@
-#[cfg(feature = "bevy_ci_testing")]
-use bevy::{
+#[cfg(feature = "hearth_ci_testing")]
+use hearth::{
     dev_tools::ci_testing::{CiTestingConfig, CiTestingEvent, CiTestingEventOnFrame},
     diagnostic::FrameCount,
     platform::collections::HashSet,
@@ -8,7 +8,7 @@ use bevy::{
     state::state::FreelyMutableState,
 };
 
-#[cfg(feature = "bevy_ci_testing")]
+#[cfg(feature = "hearth_ci_testing")]
 pub fn switch_scene_in_ci<Scene: States + FreelyMutableState + Next>(
     mut ci_config: ResMut<CiTestingConfig>,
     scene: Res<State<Scene>>,

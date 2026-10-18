@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use bevy::{log::LogPlugin, prelude::*, time::common_conditions::on_timer};
+use hearth::{log::LogPlugin, prelude::*, time::common_conditions::on_timer};
 use rand::{rng, seq::IteratorRandom, RngExt};
 
 fn main() {
@@ -66,7 +66,7 @@ struct HitPoints(u16);
 #[derive(Component, Deref)]
 struct Armor(u16);
 
-/// A normal bevy system that attacks a piece of the goblin's armor on a timer.
+/// A normal hearth system that attacks a piece of the goblin's armor on a timer.
 fn attack_armor(entities: Query<Entity, With<Armor>>, mut commands: Commands) {
     let mut rng = rng();
     if let Some(entity) = entities.iter().choose(&mut rng) {

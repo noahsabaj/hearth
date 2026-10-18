@@ -6,15 +6,15 @@
 //! To use IME input, the system must have fonts installed that support the target script.
 //! This example uses [`FontSource::SansSerif`], which resolves to a system sans-serif font.
 //! On systems without e.g. CJK fonts installed, CJK input will render as boxes or question marks.
-use bevy::color::palettes::css::DARK_GREY;
-use bevy::color::palettes::tailwind::SLATE_300;
-use bevy::input_focus::{
+use hearth::color::palettes::css::DARK_GREY;
+use hearth::color::palettes::tailwind::SLATE_300;
+use hearth::input_focus::{
     tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin},
     InputFocus,
 };
-use bevy::prelude::*;
-use bevy::text::{EditableText, TextCursorStyle};
-use bevy::ui_widgets::TextInput;
+use hearth::prelude::*;
+use hearth::text::{EditableText, TextCursorStyle};
+use hearth::ui_widgets::TextInput;
 
 fn main() {
     App::new()
@@ -52,7 +52,7 @@ fn setup(mut commands: Commands) {
             },
             // SansSerif resolves to a system sans-serif font, which on most CJK systems
             // includes support for Chinese, Japanese, and Korean characters.
-            // Note that using system fonts requires the "bevy/system-fonts" feature to be enabled.
+            // Note that using system fonts requires the "hearth/system-fonts" feature to be enabled.
             TextFont {
                 font: FontSource::sans_serif(),
                 font_size: FontSize::Px(32.0),

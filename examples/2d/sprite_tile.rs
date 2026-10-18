@@ -1,6 +1,6 @@
 //! Displays a single [`Sprite`] tiled in a grid, with a scaling animation
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

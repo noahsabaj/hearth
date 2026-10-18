@@ -1,7 +1,7 @@
 //! This example demonstrates how to save assets in the common case where the asset contains no
 //! subassets.
 
-use bevy::{
+use hearth::{
     asset::{
         saver::{save_using_saver, SavedAsset},
         RenderAssetUsages,

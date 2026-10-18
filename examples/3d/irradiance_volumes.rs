@@ -13,7 +13,7 @@
 //!
 //! * Clicking anywhere moves the object.
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     light::Skybox,
     light::{IrradianceVolume, NotShadowCaster},
@@ -149,7 +149,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Irradiance Volumes Example".into(),
+                title: "Hearth Irradiance Volumes Example".into(),
                 ..default()
             }),
             ..default()
@@ -505,7 +505,7 @@ impl FromWorld for ExampleAssets {
             voxel_cube: world.add_asset(Cuboid::default()),
             // Just use a specular map for the skybox since it's not too blurry.
             // In reality you wouldn't do this--you'd use a real skybox texture--but
-            // reusing the textures like this saves space in the Bevy repository.
+            // reusing the textures like this saves space in the Hearth repository.
             skybox: world.load_asset("environment_maps/pisa_specular_rgb9e5_zstd.ktx2"),
         }
     }

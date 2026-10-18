@@ -1,7 +1,7 @@
 //! Shows how to render a polygonal [`Mesh`], generated from a [`Rectangle`] primitive, in a 2D scene.
 //! Adds a texture and colored vertices, giving per-vertex tinting.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -16,7 +16,7 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     asset_server: Res<AssetServer>,
 ) {
-    // Load the Bevy logo as a texture
+    // Load the Hearth logo as a texture
     let texture_handle = asset_server.load("branding/banner.png");
     // Build a default quad mesh
     let mut mesh = Mesh::from(Rectangle::default());

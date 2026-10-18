@@ -1,6 +1,6 @@
 //! Demonstrates how to display images inline with text.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     let mut app = App::new();
@@ -19,7 +19,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             align_self: AlignSelf::Center,
             ..default()
         },
-        BackgroundColor(bevy::color::palettes::css::MAROON.into()),
+        BackgroundColor(hearth::color::palettes::css::MAROON.into()),
         Outline {
             width: px(2),
             ..default()
@@ -30,8 +30,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextFont::from_font_size(px(40)),
             ),
             (InlineImage {
-                color: bevy::color::palettes::css::RED.into(),
-                image: asset_server.load("branding/bevy_logo_dark.png"),
+                color: hearth::color::palettes::css::RED.into(),
+                image: asset_server.load("branding/hearth_logo_dark.png"),
                 height: Some(30.),
                 ..default()
             },),
@@ -40,8 +40,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextFont::from_font_size(px(40.)),
             ),
             (InlineImage {
-                color: bevy::color::palettes::css::YELLOW.into(),
-                image: asset_server.load("branding/bevy_bird_dark.png"),
+                color: hearth::color::palettes::css::YELLOW.into(),
+                image: asset_server.load("branding/hearth_mark.png"),
                 width: Some(30.),
                 ..default()
             },),

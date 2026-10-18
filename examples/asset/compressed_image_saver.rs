@@ -1,6 +1,6 @@
 //! Demonstrates compressing textures and generating mipmaps using `CompressedImageSaver`.
 
-use bevy::{
+use hearth::{
     camera::Hdr,
     light::{CascadeShadowConfigBuilder, DirectionalLightShadowMap},
     mesh::SphereKind,
@@ -31,7 +31,7 @@ fn spawn_scene(
     mut meshes: ResMut<Assets<Mesh>>,
     mut commands: Commands,
 ) {
-    // See .meta files at https://github.com/bevyengine/bevy_asset_files/tree/main/GroundSand005
+    // See .meta files at https://github.com/noahsabaj/hearth_asset_files/tree/main/GroundSand005
     let orm = asset_server.load("textures/GroundSand005/GroundSand005_ORM_2K.png");
     let sphere_material = StandardMaterial {
         base_color_texture: Some(
@@ -132,8 +132,9 @@ fn download_assets() -> io::Result<()> {
             continue;
         }
 
-        let url =
-            format!("https://github.com/bevyengine/bevy_asset_files/raw/main/GroundSand005/{file}");
+        let url = format!(
+            "https://github.com/noahsabaj/hearth_asset_files/raw/main/GroundSand005/{file}"
+        );
         info!("Downloading {url}");
 
         let mut response = ureq::get(&url)

@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use bevy::{
+use hearth::{
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
     time::common_conditions::on_timer,

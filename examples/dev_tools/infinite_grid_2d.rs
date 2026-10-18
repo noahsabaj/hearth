@@ -1,6 +1,6 @@
 //! Shows how to use an infinite grid in a 2D scene.
 
-use bevy::{
+use hearth::{
     dev_tools::infinite_grid::{InfiniteGrid, InfiniteGridPlugin, InfiniteGridSettings},
     input::mouse::{AccumulatedMouseScroll, MouseScrollPixelsPerLine},
     prelude::*,
@@ -20,7 +20,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         InfiniteGridSettings {
             // The grid was originally made for the XZ plane so we need to rotate it and
             // recolor the Z axis
-            // This color is the Y_AXIS in bevy_feathers
+            // This color is the Y_AXIS in hearth_feathers
             z_axis_color: Color::oklcha(0.5866, 0.1543, 129.84, 1.0),
             // Distance between minor lines is 1/scale so this results in 1 minor line every 10
             // world unit. In 2d a world unit is 1 pixel
@@ -50,7 +50,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 
     commands.spawn(Sprite::from_image(
-        asset_server.load("branding/bevy_bird_dark.png"),
+        asset_server.load("branding/hearth_mark.png"),
     ));
 }
 

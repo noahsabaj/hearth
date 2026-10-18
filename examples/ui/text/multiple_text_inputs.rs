@@ -5,17 +5,17 @@
 //! [`synchronize_output_text`] system, and the fourth column is updated by the [`submit_text`] system when the user submits the
 //! [`TextInput`]'s text by pressing `Enter`.
 
-use bevy::color::palettes::tailwind::SLATE_300;
-use bevy::input::keyboard::Key;
-use bevy::input_focus::tab_navigation::NavAction;
-use bevy::input_focus::{tab_navigation::TabNavigation, AutoFocus, FocusCause};
-use bevy::input_focus::{
+use hearth::color::palettes::tailwind::SLATE_300;
+use hearth::input::keyboard::Key;
+use hearth::input_focus::tab_navigation::NavAction;
+use hearth::input_focus::{tab_navigation::TabNavigation, AutoFocus, FocusCause};
+use hearth::input_focus::{
     tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin},
     InputFocus,
 };
-use bevy::prelude::*;
-use bevy::text::{EditableText, TextCursorStyle, TextEditChange, TextReadWriteMode};
-use bevy::ui_widgets::TextInput;
+use hearth::prelude::*;
+use hearth::text::{EditableText, TextCursorStyle, TextEditChange, TextReadWriteMode};
+use hearth::ui_widgets::TextInput;
 
 fn main() {
     App::new()
@@ -118,7 +118,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     EditableText::new(format!("Initial text {row}")),
                     TextCursorStyle::default(),
                     font.clone(),
-                    BackgroundColor(bevy::color::palettes::css::DARK_GREY.into()),
+                    BackgroundColor(hearth::color::palettes::css::DARK_GREY.into()),
                     TextInputRow(row),
                     TextLayout::no_wrap().with_justify(justify),
                     TabIndex(row as i32),
@@ -139,13 +139,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         },
                         ..default()
                     },
-                    BackgroundColor(bevy::color::palettes::css::DARK_SLATE_BLUE.into()),
+                    BackgroundColor(hearth::color::palettes::css::DARK_SLATE_BLUE.into()),
                     BorderColor::all(Color::WHITE),
                     children![(
                         Text::default(),
                         TextLayout::no_wrap(),
                         font.clone(),
-                        BackgroundColor(bevy::color::palettes::css::DARK_SLATE_GRAY.into()),
+                        BackgroundColor(hearth::color::palettes::css::DARK_SLATE_GRAY.into()),
                         BorderColor::all(Color::WHITE),
                         TextInputRow(row),
                         TextOutput,
@@ -164,7 +164,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
                         ..default()
                     },
-                    BackgroundColor(bevy::color::palettes::css::DARK_SLATE_BLUE.into()),
+                    BackgroundColor(hearth::color::palettes::css::DARK_SLATE_BLUE.into()),
                     BorderColor::all(Color::WHITE),
                     children![(
                         Text::default(),
@@ -218,7 +218,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     EditableText::new(format!("Initial text {row}")),
                     TextCursorStyle::default(),
                     font.clone(),
-                    BackgroundColor(bevy::color::palettes::css::DARK_GREY.into()),
+                    BackgroundColor(hearth::color::palettes::css::DARK_GREY.into()),
                     TextInputRow(row + 100),
                     rwmode,
                     TabIndex(row as i32 + 100),
@@ -239,13 +239,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         },
                         ..default()
                     },
-                    BackgroundColor(bevy::color::palettes::css::DARK_SLATE_BLUE.into()),
+                    BackgroundColor(hearth::color::palettes::css::DARK_SLATE_BLUE.into()),
                     BorderColor::all(Color::WHITE),
                     children![(
                         Text::default(),
                         TextLayout::no_wrap(),
                         font.clone(),
-                        BackgroundColor(bevy::color::palettes::css::DARK_SLATE_GRAY.into()),
+                        BackgroundColor(hearth::color::palettes::css::DARK_SLATE_GRAY.into()),
                         BorderColor::all(Color::WHITE),
                         TextInputRow(row + 100),
                         TextOutput,
@@ -264,7 +264,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
                         ..default()
                     },
-                    BackgroundColor(bevy::color::palettes::css::DARK_SLATE_BLUE.into()),
+                    BackgroundColor(hearth::color::palettes::css::DARK_SLATE_BLUE.into()),
                     BorderColor::all(Color::WHITE),
                     children![(
                         Text::default(),

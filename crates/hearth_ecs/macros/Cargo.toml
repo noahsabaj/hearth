@@ -1,0 +1,27 @@
+[package]
+name = "hearth_ecs_macros"
+version = "0.20.0-dev"
+description = "Hearth ECS Macros"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+hearth_macro_utils = { path = "../../hearth_macro_utils", version = "0.20.0-dev" }
+hearth_ecs_macro_logic = { path = "../macro_logic", version = "0.20.0-dev" }
+
+syn = { version = "3", features = ["full", "extra-traits"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

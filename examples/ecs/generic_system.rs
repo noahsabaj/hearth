@@ -9,7 +9,7 @@
 //! For more advice on working with generic types in Rust, check out <https://doc.rust-lang.org/book/ch10-01-syntax.html>
 //! or <https://doc.rust-lang.org/rust-by-example/generics.html>
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash, States)]
 enum AppState {

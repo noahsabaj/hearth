@@ -1,8 +1,8 @@
 //! A simplified implementation of the classic game "Breakout".
 //!
-//! Demonstrates Bevy's stepping capabilities if compiled with the `bevy_debug_stepping` feature.
+//! Demonstrates Hearth's stepping capabilities if compiled with the `hearth_debug_stepping` feature.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 mod stepping;
 
@@ -150,7 +150,7 @@ impl Wall {
                 translation: location.position().extend(0.0),
                 // The z-scale of 2D objects must always be 1.0,
                 // or their ordering will be affected in surprising ways.
-                // See https://github.com/bevyengine/bevy/issues/4149
+                // See upstream issue #4149
                 scale: location.size().extend(1.0),
                 ..default()
             },
@@ -256,7 +256,7 @@ fn setup(
         // Space taken up by the gaps
         - n_vertical_gaps as f32 / 2.0 * GAP_BETWEEN_BRICKS;
 
-    // In Bevy, the `translation` of an entity describes the center point,
+    // In Hearth, the `translation` of an entity describes the center point,
     // not its bottom-left corner
     let offset_x = left_edge_of_bricks + BRICK_SIZE.x / 2.;
     let offset_y = bottom_edge_of_bricks + BRICK_SIZE.y / 2.;

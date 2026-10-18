@@ -1,6 +1,6 @@
 //! This example demonstrates how to automatically serialize schedule data.
 
-use bevy::{dev_tools::schedule_data::plugin::*, prelude::*};
+use hearth::{dev_tools::schedule_data::plugin::*, prelude::*};
 
 fn main() {
     App::new()

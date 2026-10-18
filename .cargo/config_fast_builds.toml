@@ -56,7 +56,7 @@
 #
 # Note that you may have some issues with this flag on Windows. If compiling fails due to the 65k symbol limit,
 # you may have to disable this setting. For more information and possible solutions to this error, see
-# <https://github.com/bevyengine/bevy/issues/1110>.
+# upstream issue #1110.
 #
 # ## `threads`
 #
@@ -99,7 +99,7 @@ rustflags = [
   # "-Zcache-proc-macros",
 ]
 # Some systems may experience linker performance issues when running doc tests.
-# See https://github.com/bevyengine/bevy/issues/12207 for details.
+# See upstream issue #12207 for details.
 rustdocflags = [
   # Mold linker
   # "-Clink-arg=-fuse-ld=mold",

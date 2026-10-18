@@ -1,12 +1,12 @@
 //! Demonstrates how CSS Grid layout can be used to lay items out in a 2D grid
-use bevy::{color::palettes::css::*, prelude::*};
+use hearth::{color::palettes::css::*, prelude::*};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 resolution: (800, 600).into(),
-                title: "Bevy CSS Grid Layout Example".to_string(),
+                title: "Hearth CSS Grid Layout Example".to_string(),
                 ..default()
             }),
             ..default()
@@ -58,7 +58,7 @@ fn spawn_layout(mut commands: Commands, asset_server: Res<AssetServer>) {
                     },
                 )
                 .with_children(|builder| {
-                    spawn_nested_text_bundle(builder, font.clone(), "Bevy CSS Grid Layout Example");
+                    spawn_nested_text_bundle(builder, font.clone(), "Hearth CSS Grid Layout Example");
                 });
 
             // Main content grid (auto placed in row 2, column 1)

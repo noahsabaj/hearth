@@ -2,7 +2,7 @@
 
 // Note: This example showcases the meshlet API, but is not the type of scene that would benefit from using meshlets.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     light::{CascadeShadowConfigBuilder, DirectionalLightShadowMap},
     pbr::experimental::meshlet::{MeshletMesh3d, MeshletPlugin},
@@ -12,7 +12,7 @@ use bevy::{
 use std::f32::consts::PI;
 
 const ASSET_URL: &str =
-    "https://github.com/bevyengine/bevy_asset_files/raw/6dccaef517bde74d1969734703709aead7211dbc/meshlet/bunny.meshlet_mesh";
+    "https://github.com/noahsabaj/hearth_asset_files/raw/6dccaef517bde74d1969734703709aead7211dbc/meshlet/bunny.meshlet_mesh";
 
 fn main() {
     App::new()
@@ -65,9 +65,9 @@ fn setup(
         Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, PI * -0.15, PI * -0.15)),
     ));
 
-    // A custom file format storing a [`bevy_mesh::Mesh`]
-    // that has been converted to a [`bevy_pbr::meshlet::MeshletMesh`]
-    // using [`bevy_pbr::meshlet::MeshletMesh::from_mesh`], which is
+    // A custom file format storing a [`hearth_mesh::Mesh`]
+    // that has been converted to a [`hearth_pbr::meshlet::MeshletMesh`]
+    // using [`hearth_pbr::meshlet::MeshletMesh::from_mesh`], which is
     // a function only available when the `meshlet_processor` cargo feature is enabled.
     let meshlet_mesh_handle = asset_server.load(ASSET_URL);
     let debug_material = debug_materials.add(MeshletDebugMaterial::default());

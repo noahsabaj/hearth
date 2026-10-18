@@ -6,7 +6,7 @@
 //! - Magnify a section of the image, by rendering a small sub view in another
 //!   camera
 //! - Rapidly change the sub view offset to get a screen shake effect
-use bevy::{
+use hearth::{
     camera::{ScalingMode, SubCameraView, Viewport},
     prelude::*,
 };
@@ -253,7 +253,7 @@ fn move_camera_view(
 
 // To ensure viewports remain the same at any window size
 fn resize_viewports(
-    window: Single<&Window, With<bevy::window::PrimaryWindow>>,
+    window: Single<&Window, With<hearth::window::PrimaryWindow>>,
     mut viewports: Query<(&mut Camera, &ExampleViewports)>,
 ) {
     let window_size = window.physical_size();

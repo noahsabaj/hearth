@@ -3,9 +3,9 @@
 use std::f32::consts::{FRAC_PI_3, PI};
 use std::fmt::{self, Formatter};
 
-use bevy::feathers::dark_theme::create_dark_theme;
-use bevy::ui_widgets::radio_self_update;
-use bevy::{
+use hearth::feathers::dark_theme::create_dark_theme;
+use hearth::ui_widgets::radio_self_update;
+use hearth::{
     color::palettes::css::{LIME, ORANGE_RED, SILVER},
     feathers::{
         controls::{FeathersNumberInput, NumberInputPrecision},
@@ -112,7 +112,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Clustered Decals Example".into(),
+                    title: "Hearth Clustered Decals Example".into(),
                     ..default()
                 }),
                 ..default()

@@ -1,7 +1,7 @@
 //! This example illustrates how reflection works for simple data structures, like
 //! structs, tuples and vectors.
 
-use bevy::{
+use hearth::{
     platform::collections::HashMap,
     prelude::*,
     reflect::{list::DynamicList, PartialReflect, ReflectRef},
@@ -127,7 +127,7 @@ fn setup() {
         )]
         #[allow(
             unreachable_patterns,
-            reason = "This example cannot always detect when `bevy_reflect/functions` is enabled."
+            reason = "This example cannot always detect when `hearth_reflect/functions` is enabled."
         )]
         _ => {}
     }

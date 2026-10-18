@@ -1,6 +1,6 @@
 # Installing Linux dependencies
 
-This page lists the required dependencies to build a Bevy project on your Linux machine.
+This page lists the required dependencies to build a Hearth project on your Linux machine.
 
 If you don't see your distro present in the list, feel free to add the instructions in this document.
 
@@ -108,7 +108,7 @@ Add a `flake.nix` file to the root of your GitHub repository containing:
 
 ```nix
 {
-  description = "bevy flake";
+  description = "hearth flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -199,7 +199,7 @@ mkShell rec {
 ```
 
 And enter it by just running `nix-shell`.
-You should be able compile Bevy programs using `cargo run` within this nix-shell.
+You should be able compile Hearth programs using `cargo run` within this nix-shell.
 You can do this in one line with `nix-shell --run "cargo run"`.
 
 If running nix on a non NixOS system (such as ubuntu, arch etc.), [NixGL](https://github.com/nix-community/nixGL) is additionally required,
@@ -208,7 +208,7 @@ to link graphics drivers into the context of software installed by nix:
 1. Install a system specific nixGL wrapper ([docs](https://github.com/nix-community/nixGL)).
    - If you're running a nvidia GPU choose `nixVulkanNvidia`.
    - Otherwise, choose another wrapper appropriate for your system.
-2. Run `nixVulkanNvidia-xxx.xxx.xx cargo run` to compile a bevy program, where `xxx-xxx-xx` denotes the graphics driver version `nixVulkanNvidia` was compiled with.
+2. Run `nixVulkanNvidia-xxx.xxx.xx cargo run` to compile a hearth program, where `xxx-xxx-xx` denotes the graphics driver version `nixVulkanNvidia` was compiled with.
 
 This is also possible with [Nix flakes](https://nixos.org/manual/nix/unstable/command-ref/new-cli/nix3-flake.html).
 Instead of creating `shell.nix`, you just need to add the derivation (`mkShell`)
@@ -221,7 +221,7 @@ Note that this template does not add Rust to the environment because there are m
 For example, to use stable Rust from nixpkgs, you can add `cargo` and `rustc` to `nativeBuildInputs`.
 
 [nixpkgs#Jumpy](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/ju/jumpy/package.nix)
-is an example of packaging a Bevy program in nix.
+is an example of packaging a Hearth program in nix.
 
 ## [OpenSUSE](https://www.opensuse.org/)
 
@@ -235,9 +235,9 @@ is an example of packaging a Bevy program in nix.
    sudo emerge --ask libX11 pkgconf alsa-lib
 ```
 
-When using an AMD Radeon GPU, you may also need to emerge `amdgpu-pro-vulkan` to get Bevy to find the GPU.
+When using an AMD Radeon GPU, you may also need to emerge `amdgpu-pro-vulkan` to get Hearth to find the GPU.
 
-When using a NVIDIA GPU with the proprietary driver (eg. `x11-drivers/nvidia-drivers`), you may also need to emerge `media-libs/vulkan-loader` to get Bevy to find the GPU. NVIDIA Vulkan driver is included in `nvidia-driver`, but may need the loader to find the correct driver. See Gentoo [Documentation](https://wiki.gentoo.org/wiki/Vulkan) for details.
+When using a NVIDIA GPU with the proprietary driver (eg. `x11-drivers/nvidia-drivers`), you may also need to emerge `media-libs/vulkan-loader` to get Hearth to find the GPU. NVIDIA Vulkan driver is included in `nvidia-driver`, but may need the loader to find the correct driver. See Gentoo [Documentation](https://wiki.gentoo.org/wiki/Vulkan) for details.
 
 ## [Clear Linux OS](https://clearlinux.org/)
 
@@ -293,13 +293,13 @@ Bazzite is built atop an immutable version of Fedora. But it ships with distrobo
 Create a new distrobox built on fedora:
 
 ```sh
-distrobox create -n bevybuild --image fedora:latest --additional-packages "gcc-c++ libX11-devel alsa-lib-devel systemd-devel wayland-devel libxkbcommon-devel"
+distrobox create -n hearthbuild --image fedora:latest --additional-packages "gcc-c++ libX11-devel alsa-lib-devel systemd-devel wayland-devel libxkbcommon-devel"
 ```
 
 Now you have a distrobox named fedora that can run your builds:
 
 ```sh
-distrobox enter -n bevybuild -- cargo build
+distrobox enter -n hearthbuild -- cargo build
 ```
 
 Once an executable is built, run it as normal:

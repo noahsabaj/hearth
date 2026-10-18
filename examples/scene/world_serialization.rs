@@ -1,6 +1,6 @@
 //! This example demonstrates how to load world data from files and then dynamically
-//! apply that data to entities in your Bevy `World`. This includes spawning new
-//! entities and applying updates to existing ones. World serialization in Bevy
+//! apply that data to entities in your Hearth `World`. This includes spawning new
+//! entities and applying updates to existing ones. World serialization in Hearth
 //! serializes and deserializes `Components` and `Resources` so that you can easily
 //! store, load, and manipulate data outside of a purely code-driven context.
 //!
@@ -15,7 +15,7 @@
 //! The example proceeds by creating components and resources, registering their types,
 //! loading a world from a file, logging when changes are detected, and finally saving
 //! a new world file to disk. This is useful for anyone wanting to see how to integrate
-//! file-based ECS workflows into their Bevy projects.
+//! file-based ECS workflows into their Hearth projects.
 //!
 //! # Note on working with files
 //!
@@ -24,12 +24,12 @@
 //! won't work on WASM because WASM typically doesn't have direct filesystem access.
 //!
 
-use bevy::{asset::LoadState, prelude::*, tasks::IoTaskPool};
+use hearth::{asset::LoadState, prelude::*, tasks::IoTaskPool};
 
 use core::time::Duration;
 use std::{fs::File, io::Write};
 
-/// The entry point of our Bevy app.
+/// The entry point of our Hearth app.
 ///
 /// Sets up default plugins, registers all necessary component/resource types
 /// for serialization/reflection, and runs the various systems in the correct schedule.
@@ -46,9 +46,9 @@ fn main() {
 
 /// # Components, Resources, and Reflection
 ///
-/// Below are some simple examples of how to define your own Bevy `Component` types
+/// Below are some simple examples of how to define your own Hearth `Component` types
 /// and `Resource` types so that they can be properly reflected, serialized, and
-/// deserialized. The `#[derive(Reflect)]` macro enables Bevy's reflection features,
+/// deserialized. The `#[derive(Reflect)]` macro enables Hearth's reflection features,
 /// and we add component-specific reflection by using `#[reflect(Component)]`.
 /// We also illustrate how to skip serializing fields and how `FromWorld` can help
 /// create runtime-initialized data.
@@ -232,7 +232,7 @@ fn infotext_system(mut commands: Commands) {
     ));
 }
 
-/// To help with Bevy's automated testing, we want the example to close with an appropriate if the
+/// To help with Hearth's automated testing, we want the example to close with an appropriate if the
 /// world asset fails to load. This is most likely not something you want in your own app.
 fn panic_on_fail(world_roots: Query<&DynamicWorldRoot>, asset_server: Res<AssetServer>) {
     for world_root in &world_roots {

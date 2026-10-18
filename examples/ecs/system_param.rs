@@ -1,6 +1,6 @@
 //! This example creates a custom [`SystemParam`] struct that counts the number of players.
 
-use bevy::{ecs::system::SystemParam, prelude::*};
+use hearth::{ecs::system::SystemParam, prelude::*};
 
 fn main() {
     App::new()

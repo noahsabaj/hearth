@@ -5,12 +5,12 @@
 //!
 //! On desktop, if you quit the app and then restart it, the counter value should display
 //! the most recent value the app had before exiting. Settings are saved as TOML at
-//! `{preferences_dir}/org.bevy.examples.settings/settings.toml` (see [`SettingsPlugin`]).
+//! `{preferences_dir}/org.hearth.examples.settings/settings.toml` (see [`SettingsPlugin`]).
 //! On web, if you navigate away and then come back to the window, the counter
 //! should display the most recent value the app had before navigating away.
 use std::time::Duration;
 
-use bevy::{
+use hearth::{
     prelude::*,
     settings::{
         ReflectSettingsGroup, SaveSettingsDeferred, SaveSettingsSync, SettingsGroup, SettingsPlugin,
@@ -29,7 +29,7 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugins(SettingsPlugin::new("org.bevy.examples.settings"))
+        .add_plugins(SettingsPlugin::new("org.hearth.examples.settings"))
         .add_systems(Startup, setup)
         .add_systems(Update, (show_count, change_count, on_window_close))
         .run();

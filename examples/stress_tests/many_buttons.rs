@@ -1,7 +1,7 @@
 //! General UI benchmark that stress tests layouting, text, interaction and rendering
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     color::palettes::css::ORANGE_RED,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     picking::hover::Hovered,

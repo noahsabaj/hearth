@@ -1,6 +1,6 @@
 /// Helpers to create a basic option menu using Feathers Radio Buttons.
-/// Using these helpers requires the `bevy_feathers` feature to be enabled.
-use bevy::{
+/// Using these helpers requires the `hearth_feathers` feature to be enabled.
+use hearth::{
     feathers::{
         controls::FeathersRadio,
         display::{caption, label},

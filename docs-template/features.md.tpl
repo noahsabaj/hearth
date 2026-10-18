@@ -4,26 +4,26 @@
 
 ## Cargo Features
 
-Bevy exposes many Cargo features to customize the engine. Enabling them adds functionality but may come at the cost of longer compilation times
+Hearth exposes many Cargo features to customize the engine. Enabling them adds functionality but may come at the cost of longer compilation times
 and extra dependencies.
 
 ### Profiles
 
-"Profiles" are high-level groups of cargo features that provide the full Bevy experience, but scoped to a specific domain.
-These exist to be paired with `default-features = false`, enabling compiling only the subset of Bevy that you need.
+"Profiles" are high-level groups of cargo features that provide the full Hearth experience, but scoped to a specific domain.
+These exist to be paired with `default-features = false`, enabling compiling only the subset of Hearth that you need.
 This can cut down compile times and shrink your final binary size.
 
-For example, you can compile only the "2D" Bevy features (without the 3D features) like this:
+For example, you can compile only the "2D" Hearth features (without the 3D features) like this:
 
 ```toml
-bevy = { version = "0.18", default-features = false, features = ["2d"] }
+hearth = { version = "0.18", default-features = false, features = ["2d"] }
 ```
 
 |Profile|Description|
 |-|-|
 {% for feature in features %}{% if feature.is_profile %}|{{ feature.name }}|{{ feature.description }}|
 {% endif %}{% endfor %}
-By default, the `bevy` crate enables the {% for feature in features %}{% if feature.is_default %}`{{ feature.name }}`{% endif %}{% endfor %} features.
+By default, the `hearth` crate enables the {% for feature in features %}{% if feature.is_default %}`{{ feature.name }}`{% endif %}{% endfor %} features.
 
 ### Collections
 
@@ -37,7 +37,7 @@ collections to build your own "profile" equivalent, without needing to manually 
 {% endif %}{% endfor %}
 ### Feature List
 
-This is the complete `bevy` cargo feature list, without "profiles" or "collections" (sorted by name):
+This is the complete `hearth` cargo feature list, without "profiles" or "collections" (sorted by name):
 
 |Feature|Description|
 |-|-|

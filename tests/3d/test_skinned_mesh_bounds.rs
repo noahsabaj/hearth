@@ -1,6 +1,6 @@
 //! Test `SkinnedMeshBounds` by showing the bounds of various animated meshes.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     camera::visibility::DynamicSkinnedMeshBounds,
     mesh::{

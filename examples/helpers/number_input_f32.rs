@@ -1,6 +1,6 @@
 /// Helpers to create a basic f32 number input using `FeathersNumberInput`
-/// Using these helpers requires the `bevy_feathers` feature to be enabled.
-use bevy::{
+/// Using these helpers requires the `hearth_feathers` feature to be enabled.
+use hearth::{
     feathers::{
         controls::{FeathersNumberInput, HardLimit, NumberInputPrecision},
         display::label,

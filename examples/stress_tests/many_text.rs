@@ -1,7 +1,7 @@
 //! UI text benchmark
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     ecs::component::Mutable,
     prelude::*,
@@ -143,7 +143,7 @@ fn setup_text(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 parent.spawn((
                                     Text(format!("Justify::{justify:?}, LineBreak::{linebreak:?}")),
                                     text_font.clone(),
-                                    TextColor::from(bevy::color::palettes::css::YELLOW),
+                                    TextColor::from(hearth::color::palettes::css::YELLOW),
                                 ));
                                 let layout = TextLayout { justify, linebreak };
                                 parent.spawn((
@@ -151,14 +151,14 @@ fn setup_text(mut commands: Commands, asset_server: Res<AssetServer>) {
                                     Lorem(false),
                                     layout,
                                     text_font.clone().with_font_size(10.),
-                                    TextColor::from(bevy::color::palettes::css::NAVY),
+                                    TextColor::from(hearth::color::palettes::css::NAVY),
                                 ));
                                 parent.spawn((
                                     Text::new(LOREM_TEXT_2),
                                     Lorem(true),
                                     layout,
                                     text_font.clone().with_font_size(11.),
-                                    TextColor::from(bevy::color::palettes::css::PALE_GREEN),
+                                    TextColor::from(hearth::color::palettes::css::PALE_GREEN),
                                 ));
                             }
                         }
@@ -168,14 +168,14 @@ fn setup_text(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 Text::new(LOREM_TEXT_1),
                                 Lorem(false),
                                 text_font.clone().with_font_size(12.),
-                                TextColor::from(bevy::color::palettes::css::MISTY_ROSE),
+                                TextColor::from(hearth::color::palettes::css::MISTY_ROSE),
                             ))
                             .with_child((TextSpan::new(" "), text_font.clone().with_font_size(13.)))
                             .with_child((
                                 TextSpan::new(LOREM_TEXT_2),
                                 Lorem(true),
                                 text_font.clone().with_font_size(13.),
-                                TextColor::from(bevy::color::palettes::css::MAROON),
+                                TextColor::from(hearth::color::palettes::css::MAROON),
                             ));
 
                         parent

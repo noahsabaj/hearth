@@ -1,12 +1,12 @@
-//! This example demonstrates how you can add your own custom primitives to bevy highlighting
+//! This example demonstrates how you can add your own custom primitives to hearth highlighting
 //! traits you may want to implement for your primitives to achieve different functionalities.
 
 use std::f32::consts::{PI, SQRT_2};
 
 #[cfg(not(target_family = "wasm"))]
-use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
+use hearth::pbr::wireframe::{WireframeConfig, WireframePlugin};
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     camera::ScalingMode,
     color::palettes::css::{RED, WHITE},
@@ -399,7 +399,7 @@ struct Heart {
     radius: f32,
 }
 
-// The `Primitive2d` or `Primitive3d` trait is required by almost all other traits for primitives in bevy.
+// The `Primitive2d` or `Primitive3d` trait is required by almost all other traits for primitives in hearth.
 // Depending on your shape, you should implement either one of them.
 impl Primitive2d for Heart {}
 
@@ -550,10 +550,10 @@ impl MeshBuilder for HeartMeshBuilder {
 
         // Here, the actual `Mesh` is created. We set the indices, vertices, normals and UVs created above and specify the topology of the mesh.
         Mesh::new(
-            bevy::mesh::PrimitiveTopology::TriangleList,
+            hearth::mesh::PrimitiveTopology::TriangleList,
             RenderAssetUsages::default(),
         )
-        .with_inserted_indices(bevy::mesh::Indices::U32(indices))
+        .with_inserted_indices(hearth::mesh::Indices::U32(indices))
         .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
         .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, normals)
         .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, uvs)

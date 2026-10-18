@@ -1,6 +1,6 @@
-//! This example demonstrates Bevy's immediate mode drawing API intended for visual debugging.
+//! This example demonstrates Hearth's immediate mode drawing API intended for visual debugging.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     color::palettes::css::*,
     prelude::*,

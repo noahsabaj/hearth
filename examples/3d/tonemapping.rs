@@ -1,6 +1,6 @@
 //! This examples compares Tonemapping options
 
-use bevy::{
+use hearth::{
     asset::UnapprovedPathMode,
     camera::Hdr,
     core_pipeline::tonemapping::Tonemapping,
@@ -161,7 +161,7 @@ fn setup_image_viewer_scene(
     let mut transform = camera_transform.0;
     transform.translation += *transform.forward();
 
-    // exr/hdr viewer (exr requires enabling bevy feature)
+    // exr/hdr viewer (exr requires enabling hearth feature)
     commands.spawn((
         Mesh3d(meshes.add(Rectangle::default())),
         MeshMaterial3d(materials.add(StandardMaterial {

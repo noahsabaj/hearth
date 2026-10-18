@@ -3,7 +3,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::{Exposure, PhysicalCameraParameters},
     color::palettes::css::*,
     light::CascadeShadowConfigBuilder,
@@ -81,13 +81,13 @@ fn setup(
         transform,
     ));
 
-    // Bevy logo to demonstrate alpha mask shadows
+    // Hearth logo to demonstrate alpha mask shadows
     let mut transform = Transform::from_xyz(-2.2, 0.5, 1.0);
     transform.rotate_y(PI / 8.);
     commands.spawn((
         Mesh3d(meshes.add(Rectangle::new(2.0, 0.5))),
         MeshMaterial3d(materials.add(StandardMaterial {
-            base_color_texture: Some(asset_server.load("branding/bevy_logo_light.png")),
+            base_color_texture: Some(asset_server.load("branding/hearth_logo_light.png")),
             perceptual_roughness: 1.0,
             alpha_mode: AlphaMode::Mask(0.5),
             cull_mode: None,

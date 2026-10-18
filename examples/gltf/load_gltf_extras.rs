@@ -1,6 +1,6 @@
 //! Loads and renders a glTF file as a scene, and list all the different `gltf_extras`.
 
-use bevy::{
+use hearth::{
     gltf::{GltfExtras, GltfMaterialExtras, GltfMeshExtras, GltfSceneExtras},
     prelude::*,
 };

@@ -2,7 +2,7 @@
 
 use std::{collections::VecDeque, time::Duration};
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     prelude::*,

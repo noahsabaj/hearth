@@ -1,14 +1,14 @@
 //! Illustrates rectangular area lights and how surface roughness affects their appearance.
 
-use bevy::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
-use bevy::prelude::*;
+use hearth::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
+use hearth::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    present_mode: bevy::window::PresentMode::Mailbox,
+                    present_mode: hearth::window::PresentMode::Mailbox,
                     ..default()
                 }),
                 ..default()

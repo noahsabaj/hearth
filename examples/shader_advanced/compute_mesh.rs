@@ -11,7 +11,7 @@
 
 use std::ops::Not;
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     color::palettes::tailwind::{RED_400, SKY_400},
     core_pipeline::schedule::camera_driver,
@@ -88,7 +88,7 @@ fn setup(
     // a truly empty mesh will error if used in Mesh3d
     // so we set up the data to be what we want the compute shader to output
     // We're using 36 indices and 24 vertices which is directly taken from
-    // the Bevy Cuboid mesh implementation.
+    // the Hearth Cuboid mesh implementation.
     //
     // We allocate 50 spots for each attribute here because
     // it is *very important* that the amount of data allocated here is

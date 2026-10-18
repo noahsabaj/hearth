@@ -1,17 +1,17 @@
 [package]
-name = "bevy_mobile_example"
+name = "hearth_mobile_example"
 version = "0.0.0"
 edition = "2024"
-description = "Example for building an iOS or Android app with Bevy"
+description = "Example for building an iOS or Android app with Hearth"
 publish = false
 license = "MIT OR Apache-2.0"
 
 [lib]
-name = "bevy_mobile_example"
+name = "hearth_mobile_example"
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-bevy = { path = "../../", features = ["android-game-activity"] }
+hearth = { path = "../../", features = ["android-game-activity"] }
 
 [lints]
 workspace = true

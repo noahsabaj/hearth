@@ -5,7 +5,7 @@
 //! behavior that results from the scattering and absorption of the directional
 //! light.
 
-use bevy::{
+use hearth::{
     camera::Hdr,
     light::{FogVolume, VolumetricFog, VolumetricLight},
     math::vec3,
@@ -17,7 +17,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Fog Volumes Example".into(),
+                title: "Hearth Fog Volumes Example".into(),
                 ..default()
             }),
             ..default()

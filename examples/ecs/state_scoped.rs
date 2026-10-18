@@ -8,7 +8,7 @@
 //! that you don't have to worry about duplicate [`DespawnOnExit`] and
 //! [`DespawnOnEnter`] components deep in your hierarchy.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

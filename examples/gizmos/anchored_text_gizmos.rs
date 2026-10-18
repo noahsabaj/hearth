@@ -3,8 +3,8 @@
 //! The anchor selects which part of the text is aligned to the isometry’s position:
 //! `(0, 0)` center, `(-0.5, 0.0)` left edge, `(0.0, 0.5)` top edge.
 
-use bevy::color::palettes::css::{BLUE, GREEN, ORANGE, RED, YELLOW};
-use bevy::prelude::*;
+use hearth::color::palettes::css::{BLUE, GREEN, ORANGE, RED, YELLOW};
+use hearth::prelude::*;
 
 fn main() {
     App::new()

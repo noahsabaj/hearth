@@ -4,7 +4,7 @@
 
 # Examples
 
-These examples demonstrate the main features of Bevy and how to use them.
+These examples demonstrate the main features of Hearth and how to use them.
 To run an example, use the command `cargo run --example <Example>`, and add the option `--features x11` or `--features wayland` to force the example to run on a specific window compositor, e.g.
 
 ```sh
@@ -13,12 +13,12 @@ cargo run --features wayland --example hello_world
 
 **⚠️ Note: for users of releases on crates.io!**
 
-There are often large differences and incompatible API changes between the latest [crates.io](https://crates.io/crates/bevy) release and the development version of Bevy in the git main branch!
+There are often large differences and incompatible API changes between the latest crates.io release and the development version of Hearth in the git main branch!
 
-If you are using a released version of Bevy, you need to make sure you are viewing the correct version of the examples!
+If you are using a released version of Hearth, you need to make sure you are viewing the correct version of the examples!
 
-- Latest release: [https://github.com/bevyengine/bevy/tree/latest/examples](https://github.com/bevyengine/bevy/tree/latest/examples)
-- Specific version, such as `0.4`: [https://github.com/bevyengine/bevy/tree/v0.4.0/examples](https://github.com/bevyengine/bevy/tree/v0.4.0/examples)
+- Latest release: [https://github.com/noahsabaj/hearth/tree/main/examples](https://github.com/noahsabaj/hearth/tree/main/examples)
+- Specific version, such as `0.4`: [https://github.com/noahsabaj/hearth/tree/main/examples](https://github.com/noahsabaj/hearth/tree/main/examples)
 
 When you clone the repo locally to run the examples, use `git checkout` to get the correct version:
 
@@ -147,7 +147,7 @@ Example | Description
 [3D Viewport To World](../examples/3d/3d_viewport_to_world.rs) | Demonstrates how to use the `Camera::viewport_to_world` method
 [Animated Material](../examples/3d/animated_material.rs) | Shows how to animate material properties
 [Anisotropy](../examples/3d/anisotropy.rs) | Displays an example model with anisotropy
-[Anti-aliasing](../examples/3d/anti_aliasing.rs) | Compares different anti-aliasing techniques supported by Bevy
+[Anti-aliasing](../examples/3d/anti_aliasing.rs) | Compares different anti-aliasing techniques supported by Hearth
 [Atmosphere](../examples/3d/atmosphere.rs) | A scene showcasing pbr atmospheric scattering
 [Atmospheric Fog](../examples/3d/atmospheric_fog.rs) | A scene showcasing the atmospheric fog effect
 [Auto Exposure](../examples/3d/auto_exposure.rs) | A scene showcasing auto exposure
@@ -194,7 +194,7 @@ Example | Description
 [Shadow Biases](../examples/3d/shadow_biases.rs) | Demonstrates how shadow biases affect shadows in a 3d scene
 [Shadow Caster and Receiver](../examples/3d/shadow_caster_receiver.rs) | Demonstrates how to prevent meshes from casting/receiving shadows in a 3d scene
 [Skybox](../examples/3d/skybox.rs) | Load a cubemap texture onto a cube like a skybox and cycle through different compressed texture formats.
-[Solari](../examples/3d/solari.rs) | Demonstrates realtime dynamic raytraced lighting using Bevy Solari.
+[Solari](../examples/3d/solari.rs) | Demonstrates realtime dynamic raytraced lighting using Hearth Solari.
 [Specular Tint](../examples/3d/specular_tint.rs) | Demonstrates specular tints and maps
 [Spherical Area Lights](../examples/3d/spherical_area_lights.rs) | Demonstrates how point light radius values affect light behavior
 [Split Screen](../examples/3d/split_screen.rs) | Demonstrates how to render two cameras to the same window to accomplish "split screen"
@@ -231,12 +231,12 @@ Example | Description
 
 Example | Description
 --- | ---
-[Advanced log layers](../examples/app/log_layers_ecs.rs) | Illustrate how to transfer data between log layers and Bevy's ECS
+[Advanced log layers](../examples/app/log_layers_ecs.rs) | Illustrate how to transfer data between log layers and Hearth's ECS
 [Custom Loop](../examples/app/custom_loop.rs) | Demonstrates how to create a custom runner (to update an app manually)
 [Drag and Drop](../examples/app/drag_and_drop.rs) | An example that shows how to handle drag and drop in an app
 [Empty](../examples/app/empty.rs) | An empty application (does nothing)
 [Empty with Defaults](../examples/app/empty_defaults.rs) | An empty application with default plugins
-[Externally Driven Headless Renderer](../examples/app/externally_driven_headless_renderer.rs) | Using bevy with manually driven update to render images
+[Externally Driven Headless Renderer](../examples/app/externally_driven_headless_renderer.rs) | Using hearth with manually driven update to render images
 [Headless](../examples/app/headless.rs) | An application that runs without default plugins
 [Headless Renderer](../examples/app/headless_renderer.rs) | An application that runs with no window, but renders into image file
 [Log layers](../examples/app/log_layers.rs) | Illustrate how to add custom log layers
@@ -244,8 +244,8 @@ Example | Description
 [No Renderer](../examples/app/no_renderer.rs) | An application that runs with default plugins and displays an empty window, but without an actual renderer
 [Plugin](../examples/app/plugin.rs) | Demonstrates the creation and registration of a custom plugin
 [Plugin Group](../examples/app/plugin_group.rs) | Demonstrates the creation and registration of a custom plugin group
-[Render Recovery](../examples/app/render_recovery.rs) | Demonstrates how bevy can recover from rendering failures.
-[Return after Run](../examples/app/return_after_run.rs) | Show how to return to main after the Bevy app has exited
+[Render Recovery](../examples/app/render_recovery.rs) | Demonstrates how hearth can recover from rendering failures.
+[Return after Run](../examples/app/return_after_run.rs) | Show how to return to main after the Hearth app has exited
 [Save Window Position](../examples/window/persisting_window_settings.rs) | Demonstrates saving window position settings
 [Settings](../examples/app/settings.rs) | Demonstrates persistence of settings
 [Thread Pool Resources](../examples/app/thread_pool_resources.rs) | Creates and customizes the internal thread pool
@@ -300,7 +300,7 @@ Example | Description
 
 Example | Description
 --- | ---
-[2D on Bevy UI](../examples/camera/2d_on_ui.rs) | Shows how to render 2D objects on top of Bevy UI
+[2D on Hearth UI](../examples/camera/2d_on_ui.rs) | Shows how to render 2D objects on top of Hearth UI
 [2D top-down camera](../examples/camera/2d_top_down_camera.rs) | A 2D top-down camera smoothly following player movements
 [Camera Orbit](../examples/camera/camera_orbit.rs) | Shows how to orbit a static scene using pitch, yaw, and roll.
 [Custom Projection](../examples/camera/custom_projection.rs) | Shows how to create custom camera projections.
@@ -319,10 +319,10 @@ Example | Description
 --- | ---
 [Extract Schedule Data](../examples/dev_tools/schedule_data.rs) | Extracts the schedule data from a default app and writes it to a file
 [FPS overlay](../examples/dev_tools/fps_overlay.rs) | Demonstrates FPS overlay
-[Infinite grid](../examples/dev_tools/infinite_grid.rs) | Demonstrates Bevy's infinite grid, suitable as a ground plane for editors
-[Infinite grid 2D](../examples/dev_tools/infinite_grid_2d.rs) | Demonstrates Bevy's infinite grid in a 2D scene
-[Local Inspector](../examples/inspector/local_inspector.rs) | Inspects the app's own world with the bevy_inspector entity tree panel
-[Remote Inspector](../examples/inspector/remote_inspector.rs) | Inspects a separate running app with the bevy_inspector panels over the Bevy Remote Protocol
+[Infinite grid](../examples/dev_tools/infinite_grid.rs) | Demonstrates Hearth's infinite grid, suitable as a ground plane for editors
+[Infinite grid 2D](../examples/dev_tools/infinite_grid_2d.rs) | Demonstrates Hearth's infinite grid in a 2D scene
+[Local Inspector](../examples/inspector/local_inspector.rs) | Inspects the app's own world with the hearth_inspector entity tree panel
+[Remote Inspector](../examples/inspector/remote_inspector.rs) | Inspects a separate running app with the hearth_inspector panels over the Hearth Remote Protocol
 
 ### Diagnostics
 
@@ -345,7 +345,7 @@ Example | Description
 [Custom Schedule](../examples/ecs/custom_schedule.rs) | Demonstrates how to add custom schedules
 [Delayed Commands](../examples/ecs/delayed_commands.rs) | Demonstrates how to schedule ECS commands with a delay
 [Dynamic ECS](../examples/ecs/dynamic.rs) | Dynamically create components, spawn entities with those components and query those components
-[ECS Guide](../examples/ecs/ecs_guide.rs) | Full guide to Bevy's ECS
+[ECS Guide](../examples/ecs/ecs_guide.rs) | Full guide to Hearth's ECS
 [Entity disabling](../examples/ecs/entity_disabling.rs) | Demonstrates how to hide entities from the ECS without deleting them
 [Error handling](../examples/ecs/error_handling.rs) | How to return and handle errors across the ECS
 [Extraction](../examples/ecs/extraction.rs) | Demonstrates different ways of extracting components, copying them from the main world to the render world
@@ -384,11 +384,11 @@ Example | Description
 --- | ---
 [Alien Cake Addict](../examples/showcase/alien_cake_addict.rs) | Eat the cakes. Eat them all. An example 3D game
 [Breakout](../examples/showcase/breakout.rs) | An implementation of the classic game "Breakout".
-[Contributors](../examples/showcase/contributors.rs) | Displays each contributor as a bouncy bevy-ball!
-[Desk Toy](../examples/showcase/desk_toy.rs) | Bevy logo as a desk toy using transparent windows! Now with Googly Eyes!
+[Contributors](../examples/showcase/contributors.rs) | Displays each contributor as a bouncy hearth-ball!
+[Desk Toy](../examples/showcase/desk_toy.rs) | Hearth logo as a desk toy using transparent windows! Now with Googly Eyes!
 [Game Menu](../examples/showcase/game_menu.rs) | A simple game menu
 [Loading Screen](../examples/showcase/loading_screen.rs) | Demonstrates how to create a loading screen that waits for all assets to be loaded and render pipelines to be compiled.
-[Mines](../examples/showcase/mines.rs) | A simple minesweeper-style game in Bevy UI
+[Mines](../examples/showcase/mines.rs) | A simple minesweeper-style game in Hearth UI
 
 ### Gizmos
 
@@ -461,7 +461,7 @@ Example | Description
 [Function Reflection](../examples/reflection/function_reflection.rs) | Demonstrates how functions can be called dynamically using reflection
 [Generic Reflection](../examples/reflection/generic_reflection.rs) | Registers concrete instances of generic types that may be used with reflection
 [Mutation by Reflection](../examples/reflection/mutation_by_reflection.rs) | Demonstrates how to mutate abstract or non-Rust data at runtime using reflection
-[Reflection](../examples/reflection/reflection.rs) | Demonstrates how reflection in Bevy provides a way to dynamically interact with Rust types
+[Reflection](../examples/reflection/reflection.rs) | Demonstrates how reflection in Hearth provides a way to dynamically interact with Rust types
 [Reflection Types](../examples/reflection/reflection_types.rs) | Illustrates the various reflection types available
 [Serialization](../examples/reflection/serialization.rs) | Demonstrates serialization and deserialization using reflection without serde's Serialize/Deserialize traits
 [Type Data](../examples/reflection/type_data.rs) | Demonstrates how to create and use type data
@@ -470,10 +470,10 @@ Example | Description
 
 Example | Description
 --- | ---
-[App Under Test](../examples/remote/app_under_test.rs) | A Bevy app that you can connect to with the BRP and control
-[Integration Test](../examples/remote/integration_test.rs) | Connects to a running Bevy app via BRP, finds a button, and clicks it
-[client](../examples/remote/client.rs) | A simple command line client that can control Bevy apps via the BRP
-[server](../examples/remote/server.rs) | A Bevy app that you can connect to with the BRP and edit
+[App Under Test](../examples/remote/app_under_test.rs) | A Hearth app that you can connect to with the HRP and control
+[Integration Test](../examples/remote/integration_test.rs) | Connects to a running Hearth app via HRP, finds a button, and clicks it
+[client](../examples/remote/client.rs) | A simple command line client that can control Hearth apps via the HRP
+[server](../examples/remote/server.rs) | A Hearth app that you can connect to with the HRP and edit
 
 ### Scene
 
@@ -493,7 +493,7 @@ There are also compute shaders which are used for more general processing levera
 Example | Description
 --- | ---
 [Animated](../examples/shader/animate_shader.rs) | A shader that uses dynamic data like the time since startup
-[Array Texture](../examples/shader/array_texture.rs) | A shader that shows how to reuse the core bevy PBR shading functionality in a custom material that obtains the base color from an array texture.
+[Array Texture](../examples/shader/array_texture.rs) | A shader that shows how to reuse the core hearth PBR shading functionality in a custom material that obtains the base color from an array texture.
 [Compute - Game of Life](../examples/shader/compute_shader_game_of_life.rs) | A compute shader that simulates Conway's Game of Life
 [Compute Shader Mesh](../examples/shader_advanced/compute_mesh.rs) | A compute shader that generates a mesh that is controlled by a Handle
 [Custom Render Phase](../examples/shader_advanced/custom_render_phase.rs) | Shows how to make a complete render phase
@@ -514,7 +514,7 @@ Example | Description
 [Pipeline Constants](../examples/shader/pipeline_constants.rs) | Demonstrates pipeline-overridable constants (WGSL `override`) by compiling the same shader into multiple variants with different posterization levels
 [Post Processing - Custom Render Pass](../examples/shader_advanced/custom_post_processing.rs) | A custom post processing effect, using a custom render pass that runs after the main pass
 [Render Depth to Texture](../examples/shader_advanced/render_depth_to_texture.rs) | Demonstrates how to use depth-only cameras
-[Shader Defs](../examples/shader/shader_defs.rs) | A shader that uses "shaders defs" (a bevy tool to selectively toggle parts of a shader)
+[Shader Defs](../examples/shader/shader_defs.rs) | A shader that uses "shaders defs" (a hearth tool to selectively toggle parts of a shader)
 [Specialized Mesh Pipeline](../examples/shader_advanced/specialized_mesh_pipeline.rs) | Demonstrates how to write a specialized mesh pipeline
 [Sprite Material](../examples/shader/sprite_material.rs) | A custom shader for sprites
 [Storage Buffer](../examples/shader/storage_buffer.rs) | A shader that shows how to bind a storage buffer using a custom material.
@@ -550,8 +550,8 @@ cargo run --release --example <example name>
 
 Example | Description
 --- | ---
-[Bevymark](../examples/stress_tests/bevymark.rs) | A heavy sprite rendering workload to benchmark your system with Bevy
-[Bevymark 3D](../examples/stress_tests/bevymark_3d.rs) | A heavy 3D cube rendering workload to benchmark your system with Bevy
+[Hearthmark](../examples/stress_tests/hearthmark.rs) | A heavy sprite rendering workload to benchmark your system with Hearth
+[Hearthmark 3D](../examples/stress_tests/hearthmark_3d.rs) | A heavy 3D cube rendering workload to benchmark your system with Hearth
 [Many Animated Materials](../examples/stress_tests/many_materials.rs) | Benchmark to test rendering many animated materials
 [Many Animated Sprites](../examples/stress_tests/many_animated_sprites.rs) | Displays many animated sprites in a grid arrangement with slight offsets to their animation timers. Used for performance testing.
 [Many Buttons](../examples/stress_tests/many_buttons.rs) | Test rendering of many UI elements
@@ -585,7 +585,7 @@ Example | Description
 --- | ---
 [Editor](../examples/tools/editor.rs) | The Hearth editor, editing the scenes in this repository's assets folder
 [Gamepad Viewer](../examples/tools/gamepad_viewer.rs) | Shows a visualization of gamepad buttons, sticks, and triggers
-[Scene Viewer](../examples/tools/scene_viewer/main.rs) | A simple way to view glTF models with Bevy. Just run `cargo run --release --example scene_viewer /path/to/model.gltf#Scene0`, replacing the path as appropriate. With no arguments it will load the FieldHelmet glTF model from the repository assets subdirectory
+[Scene Viewer](../examples/tools/scene_viewer/main.rs) | A simple way to view glTF models with Hearth. Just run `cargo run --release --example scene_viewer /path/to/model.gltf#Scene0`, replacing the path as appropriate. With no arguments it will load the FieldHelmet glTF model from the repository assets subdirectory
 
 ### Transforms
 
@@ -640,11 +640,11 @@ Example | Description
 [Relative Cursor Position](../examples/ui/relative_cursor_position.rs) | Showcases the RelativeCursorPosition component
 [Render UI to Texture](../examples/ui/render_ui_to_texture.rs) | An example of rendering UI as a part of a 3D world
 [Scroll](../examples/ui/scroll_and_overflow/scroll.rs) | Demonstrates scrolling UI containers
-[Scrollbars](../examples/ui/scroll_and_overflow/scrollbars.rs) | Demonstrates use of core scrollbar in Bevy UI
+[Scrollbars](../examples/ui/scroll_and_overflow/scrollbars.rs) | Demonstrates use of core scrollbar in Hearth UI
 [Size Constraints](../examples/ui/layout/size_constraints.rs) | Demonstrates how the to use the size constraints to control the size of a UI node.
 [Stacked Gradients](../examples/ui/styling/stacked_gradients.rs) | An example demonstrating stacked gradients
-[Standard Widgets](../examples/ui/widgets/standard_widgets.rs) | Demonstrates use of core (headless) widgets in Bevy UI
-[Standard Widgets (w/Observers)](../examples/ui/widgets/standard_widgets_observers.rs) | Demonstrates use of core (headless) widgets in Bevy UI, with Observers
+[Standard Widgets](../examples/ui/widgets/standard_widgets.rs) | Demonstrates use of core (headless) widgets in Hearth UI
+[Standard Widgets (w/Observers)](../examples/ui/widgets/standard_widgets_observers.rs) | Demonstrates use of core (headless) widgets in Hearth UI, with Observers
 [Strikethrough and Underline](../examples/ui/text/strikethrough_and_underline.rs) | Demonstrates how to display text with strikethrough and underline.
 [System Fonts](../examples/ui/text/system_fonts.rs) | Demonstrates how to use system fonts
 [Tab Navigation](../examples/ui/widgets/tab_navigation.rs) | Demonstration of Tab Navigation between UI elements
@@ -684,7 +684,7 @@ Example | Description
 --- | ---
 [Clear Color](../examples/window/clear_color.rs) | Creates a solid color window
 [Custom Cursor Image](../examples/window/custom_cursor_image.rs) | Demonstrates creating an animated custom cursor from an image
-[Low Power](../examples/window/low_power.rs) | Demonstrates settings to reduce power use for bevy applications
+[Low Power](../examples/window/low_power.rs) | Demonstrates settings to reduce power use for hearth applications
 [Monitor info](../examples/window/monitor_info.rs) | Displays information about available monitors (displays).
 [Multiple Windows](../examples/window/multiple_windows.rs) | Demonstrates creating multiple windows, and rendering to them
 [Scale Factor Override](../examples/window/scale_factor_override.rs) | Illustrates how to customize the default window settings
@@ -717,7 +717,7 @@ Example | Description
 
 ## Platform-Specific Examples
 
-`bevy_mobile_example` sets `strip = true` in the workspace `Cargo.toml` to keep app bundles reasonable. Remove the `strip` override if you need native debug symbols.
+`hearth_mobile_example` sets `strip = true` in the workspace `Cargo.toml` to keep app bundles reasonable. Remove the `strip` override if you need native debug symbols.
 
 ### Android
 
@@ -746,7 +746,7 @@ The following commands are run from the `examples/mobile` directory.
 
 **⚠️ Note:** In order to run this example on `x86_64`, you may need to use the `--release` flag.
 
-**⚠️ Note:** The `-P 26` flag is currently required for building the example. It sets the correct API level required by `bevy_audio`.
+**⚠️ Note:** The `-P 26` flag is currently required for building the example. It sets the correct API level required by `hearth_audio`.
 
 1. Build shared object files for the target architecture with `cargo-ndk`:
 
@@ -815,7 +815,7 @@ The following commands are run from the `examples/mobile` directory.
 You can view the logs with the following command:
 
 ```sh
-adb logcat | grep 'RustStdoutStderr\|bevy\|wgpu'
+adb logcat | grep 'RustStdoutStderr\|hearth\|wgpu'
 ```
 
 In case of an error getting a GPU or setting it up, you can try settings logs of `wgpu_hal` to `DEBUG` to get more information.
@@ -823,20 +823,20 @@ In case of an error getting a GPU or setting it up, you can try settings logs of
 Sometimes, running the app complains about an unknown activity. This may be fixed by uninstalling the application:
 
 ```sh
-adb uninstall org.bevyengine.example
+adb uninstall org.hearthengine.example
 ```
 
 #### Old phones
 
-**⚠️ Note:** If you are using `bevy_audio` the minimum supported Android API version is 26 (Android 8/Oreo).
+**⚠️ Note:** If you are using `hearth_audio` the minimum supported Android API version is 26 (Android 8/Oreo).
 
-In its example, Bevy uses Android API 37 as `targetSdk` to be able to benefit from security and performance improvements. For backwards compatibility, the example specifies Android API 26 as `minSdk`. This approach is recommended in the [Android Developers documentation](https://developer.android.com/google/play/requirements/target-sdk#why-target).
+In its example, Hearth uses Android API 37 as `targetSdk` to be able to benefit from security and performance improvements. For backwards compatibility, the example specifies Android API 26 as `minSdk`. This approach is recommended in the [Android Developers documentation](https://developer.android.com/google/play/requirements/target-sdk#why-target).
 
 If you want to support older APIs, you can set a lower `minSdk`. You should however make sure that dependencies in `android/gradle/libs.versions.toml` support your API. You might also have to migrate to `NativeActivity`.
 
 ##### [`GameActivity`](https://developer.android.com/games/agdk/game-activity) vs [`NativeActivity`](https://developer.android.com/reference/android/app/NativeActivity)
 
-Bevy uses `GameActivity`, which only works for Android API 23 and higher.
+Hearth uses `GameActivity`, which only works for Android API 23 and higher.
 
 Quoting from [Android Developers](https://developer.android.com/games/agdk/game-activity), the major differences are as follows:
 
@@ -863,8 +863,8 @@ If you still want to use `NativeActivity`, please see the next section.
     --- a/examples/mobile/Cargo.toml
     +++ b/examples/mobile/Cargo.toml
     [dependencies]
-    -bevy = { version = "0.19", features = ["android-game-activity"] }
-    +bevy = { version = "0.19", features = ["android-native-activity"] }
+    -hearth = { version = "0.19", features = ["android-game-activity"] }
+    +hearth = { version = "0.19", features = ["android-native-activity"] }
     ```
 
     </details>
@@ -877,7 +877,7 @@ If you still want to use `NativeActivity`, please see the next section.
     +++ b/examples/mobile/android/gradle/libs.versions.toml
     [versions]
     ...
-    -gamesActivity = "..." # Note: This must be compatible with `android-activity` crate used by bevy.
+    -gamesActivity = "..." # Note: This must be compatible with `android-activity` crate used by hearth.
     ...
 
     [libraries]
@@ -909,9 +909,9 @@ If you still want to use `NativeActivity`, please see the next section.
     <summary>Required Changes (Example)</summary>
 
     ```diff
-    --- a/examples/mobile/android/app/src/main/kotlin/org/bevyengine/example/MainActivity.kt
-    +++ b/examples/mobile/android/app/src/main/kotlin/org/bevyengine/example/MainActivity.kt
-    package org.bevyengine.example
+    --- a/examples/mobile/android/app/src/main/kotlin/org/hearthengine/example/MainActivity.kt
+    +++ b/examples/mobile/android/app/src/main/kotlin/org/hearthengine/example/MainActivity.kt
+    package org.hearthengine.example
 
     +import android.app.NativeActivity
     import android.os.Bundle
@@ -970,7 +970,7 @@ DEVICE_ID=${YOUR_DEVICE_ID} make run
 If you'd like to see xcode do stuff, you can run
 
 ```sh
-open bevy_mobile_example.xcodeproj/
+open hearth_mobile_example.xcodeproj/
 ```
 
 which will open xcode. You then must push the zoom zoom play button and wait
@@ -1017,11 +1017,11 @@ ruby -run -ehttpd examples/wasm
 
 ##### WebGL2 and WebGPU
 
-Bevy support for WebGPU is being worked on, but is currently experimental.
+Hearth support for WebGPU is being worked on, but is currently experimental.
 
 To build for WebGPU, you'll need to enable the `webgpu` feature. This will override the `webgl2` feature, and builds with the `webgpu` feature enabled won't be able to run on browsers that don't support WebGPU.
 
-Bevy has a helper to build its examples:
+Hearth has a helper to build its examples:
 
 - Build for WebGL2: `cargo run -p build-wasm-example -- --api webgl2 load_gltf`
 - Build for WebGPU: `cargo run -p build-wasm-example -- --api webgpu load_gltf`
@@ -1039,7 +1039,7 @@ In browsers, audio is not authorized to start without being triggered by an user
 
 On the web, it's useful to reduce the size of the files that are distributed.
 With Rust, there are many ways to improve your executable sizes, starting with
-the steps described in [the quick-start guide](https://bevy.org/learn/quick-start/getting-started/setup/#compile-with-performance-optimizations).
+the steps described in [the quick-start guide](https://github.com/noahsabaj/hearth).
 
 Now, when building the executable, use `--profile wasm-release` instead of `--release`:
 

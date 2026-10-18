@@ -1,7 +1,7 @@
 //! Demonstrates picking for sprites and sprite atlases.
 //! By default, the sprite picking backend considers a sprite only when a pointer is over an opaque pixel.
 
-use bevy::{prelude::*, sprite::Anchor};
+use hearth::{prelude::*, sprite::Anchor};
 use std::fmt::Debug;
 
 fn main() {
@@ -69,7 +69,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 commands
                     .spawn((
                         Sprite {
-                            image: asset_server.load("branding/bevy_bird_dark.png"),
+                            image: asset_server.load("branding/hearth_mark.png"),
                             custom_size: Some(sprite_size),
                             color: Color::srgb(1.0, 0.0, 0.0),
                             ..default()

@@ -1,7 +1,7 @@
 //! This example demonstrates how to use font variations to control variable font axes.
 
-use bevy::prelude::*;
-use bevy::text::{FontVariationTag, FontVariations};
+use hearth::prelude::*;
+use hearth::text::{FontVariationTag, FontVariations};
 
 fn main() {
     App::new()

@@ -1,7 +1,7 @@
 //! This example tests scale factor, dragging and scrolling
 
-use bevy::color::palettes::css::RED;
-use bevy::prelude::*;
+use hearth::color::palettes::css::RED;
+use hearth::prelude::*;
 
 #[derive(Component)]
 struct ScrollableNode;

@@ -1,6 +1,6 @@
 //! A simple scene to demonstrate picking events for UI and mesh entities.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -31,7 +31,7 @@ fn setup_scene(
         })
         .observe(|over: On<PointerOver>, mut texts: Query<&mut TextColor>| {
             let mut color = texts.get_mut(over.entity).unwrap();
-            color.0 = bevy::color::palettes::tailwind::CYAN_400.into();
+            color.0 = hearth::color::palettes::tailwind::CYAN_400.into();
         });
 
     // Base

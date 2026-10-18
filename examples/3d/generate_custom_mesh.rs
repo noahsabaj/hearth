@@ -2,14 +2,14 @@
 //! assign a custom UV mapping for a custom texture,
 //! and how to change the UV mapping at run-time.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     mesh::{Indices, VertexAttributeValues},
     prelude::*,
     render::render_resource::PrimitiveTopology,
 };
 
-// Define a "marker" component to mark the custom mesh. Marker components are often used in Bevy for
+// Define a "marker" component to mark the custom mesh. Marker components are often used in Hearth for
 // filtering entities in queries with `With`, they're usually not queried directly since they don't
 // contain information within them.
 #[derive(Component)]
@@ -210,7 +210,7 @@ fn create_cube_mesh() -> Mesh {
     // To construct a triangle, we need the indices of its 3 defined vertices, adding them one
     // by one, in a counter-clockwise order (relative to the position of the viewer, the order
     // should appear counter-clockwise from the front of the triangle, in this case from outside the cube).
-    // Read more about how to correctly build a mesh manually in the Bevy documentation of a Mesh,
+    // Read more about how to correctly build a mesh manually in the Hearth documentation of a Mesh,
     // further examples and the implementation of the built-in shapes.
     //
     // The first two defined triangles look like this (marked with the vertex indices,

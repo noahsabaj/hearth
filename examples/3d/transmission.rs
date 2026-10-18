@@ -21,7 +21,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::{Exposure, Hdr},
     color::palettes::css::*,
     core_pipeline::{prepass::DepthPrepass, tonemapping::Tonemapping},
@@ -40,7 +40,7 @@ use bevy::{
 // it _greatly enhances_ the look of the resulting blur effects.
 // Sadly, it's not available under WebGL.
 #[cfg(any(feature = "webgpu", not(target_arch = "wasm32")))]
-use bevy::anti_alias::taa::TemporalAntiAliasing;
+use hearth::anti_alias::taa::TemporalAntiAliasing;
 
 use rand::random;
 

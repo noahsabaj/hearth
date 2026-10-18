@@ -1,6 +1,6 @@
 //! This example demonstrates UI text with a background color
 
-use bevy::{
+use hearth::{
     color::palettes::css::{BLUE, DARK_CYAN, GREEN, PURPLE, RED, YELLOW},
     prelude::*,
 };

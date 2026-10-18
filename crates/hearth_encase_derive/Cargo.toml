@@ -1,0 +1,27 @@
+[package]
+name = "hearth_encase_derive"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Hearth derive macro for encase"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+hearth_macro_utils = { path = "../hearth_macro_utils", version = "0.20.0-dev" }
+encase_derive_impl = "0.13"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

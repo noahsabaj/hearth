@@ -12,7 +12,7 @@
 //!
 //! For more details on the [`QueryData`] derive macro, see the trait documentation.
 
-use bevy::{
+use hearth::{
     ecs::query::{QueryData, QueryFilter},
     prelude::*,
 };

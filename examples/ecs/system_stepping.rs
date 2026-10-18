@@ -1,8 +1,8 @@
 //! Demonstrate stepping through systems in order of execution.
 //!
-//! To run this example, you must enable the `bevy_debug_stepping` feature.
+//! To run this example, you must enable the `hearth_debug_stepping` feature.
 
-use bevy::{ecs::schedule::Stepping, log::LogPlugin, prelude::*};
+use hearth::{ecs::schedule::Stepping, log::LogPlugin, prelude::*};
 
 fn main() {
     let mut app = App::new();

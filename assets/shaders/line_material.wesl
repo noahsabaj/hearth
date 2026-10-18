@@ -1,4 +1,4 @@
-import bevy_pbr::render::forward_io::VertexOutput;
+import hearth_pbr::render::forward_io::VertexOutput;
 
 struct LineMaterial {
     color: vec4<f32>,

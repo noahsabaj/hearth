@@ -2,7 +2,7 @@
 
 use std::{f32::consts::PI, ops::Range};
 
-use bevy::{
+use hearth::{
     camera::ScalingMode,
     input::mouse::{AccumulatedMouseScroll, MouseScrollPixelsPerLine},
     prelude::*,

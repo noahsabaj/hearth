@@ -5,7 +5,7 @@
 
 use std::{f32::consts::FRAC_PI_2, ops::Range};
 
-use bevy::{input::mouse::AccumulatedMouseMotion, prelude::*};
+use hearth::{input::mouse::AccumulatedMouseMotion, prelude::*};
 
 #[derive(Debug, Resource)]
 struct CameraSettings {

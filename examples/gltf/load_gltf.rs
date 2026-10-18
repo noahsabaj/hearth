@@ -1,6 +1,6 @@
 //! Loads and renders a glTF file as a scene.
 
-use bevy::{
+use hearth::{
     light::{CascadeShadowConfigBuilder, DirectionalLightShadowMap},
     prelude::*,
 };

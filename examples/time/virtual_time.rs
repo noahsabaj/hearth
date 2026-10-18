@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use bevy::{
+use hearth::{
     color::palettes::css::*, input::common_conditions::input_just_pressed, prelude::*,
     time::common_conditions::on_real_timer,
 };

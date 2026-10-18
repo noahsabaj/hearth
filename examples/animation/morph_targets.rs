@@ -2,7 +2,7 @@
 //!
 //! Also illustrates how to read morph target names in `name_morphs`.
 
-use bevy::{prelude::*, world_serialization::WorldInstanceReady};
+use hearth::{prelude::*, world_serialization::WorldInstanceReady};
 use std::f32::consts::PI;
 
 const GLTF_PATH: &str = "models/animated/MorphStressTest.gltf";

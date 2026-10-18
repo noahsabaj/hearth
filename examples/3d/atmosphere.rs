@@ -1,9 +1,9 @@
 //! This example showcases pbr atmospheric scattering
 #[cfg(feature = "free_camera")]
-use bevy::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
+use hearth::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     camera::Exposure,
     color::palettes::css::BLACK,

@@ -2,8 +2,8 @@
 name = "compile_fail_utils"
 edition = "2024"
 description = "Utils for compile tests used in the engine"
-homepage = "https://bevy.org"
-repository = "https://github.com/bevyengine/bevy"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
 license = "MIT OR Apache-2.0"
 publish = false
 

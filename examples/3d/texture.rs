@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -19,7 +19,7 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // load a texture and retrieve its aspect ratio
-    let texture_handle = asset_server.load("branding/bevy_logo_dark_big.png");
+    let texture_handle = asset_server.load("branding/hearth_logo_dark_big.png");
     let aspect = 0.25;
 
     // create a new quad mesh. this is what we will apply the texture to

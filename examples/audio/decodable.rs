@@ -1,12 +1,12 @@
 //! Shows how to create a custom [`Decodable`] type by implementing a Sine wave.
 
-use bevy::{
+use core::time::Duration;
+use hearth::{
     audio::{AddAudioSource, AudioPlugin, ChannelCount, SampleRate, Source, Volume},
     math::ops,
     prelude::*,
     reflect::TypePath,
 };
-use core::time::Duration;
 
 // This struct usually contains the data for the audio being played.
 // This is where data read from an audio file would be stored, for example.
@@ -51,7 +51,7 @@ impl Iterator for SineDecoder {
         Some(ops::sin(self.period * self.current_progress))
     }
 }
-// `Source` is what allows the audio source to be played by bevy.
+// `Source` is what allows the audio source to be played by hearth.
 // This trait provides information on the audio.
 impl Source for SineDecoder {
     fn current_span_len(&self) -> Option<usize> {

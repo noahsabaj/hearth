@@ -2,10 +2,10 @@
 name = "simple-ecs-test"
 edition = "2024"
 
-# We depend on bevy in both normal and dev dependencies to verify that the proc macros still work.
+# We depend on hearth in both normal and dev dependencies to verify that the proc macros still work.
 
 [dependencies]
-bevy = { path = "../../" }
+hearth = { path = "../../" }
 
 [dev-dependencies]
-bevy = { path = "../../" }
+hearth = { path = "../../" }

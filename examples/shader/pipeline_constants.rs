@@ -8,7 +8,7 @@
 //! substituted into the shader source before compilation, allowing the driver to optimize each
 //! variant independently. Unlike uniforms, pipeline constants cannot change at draw time.
 
-use bevy::{
+use hearth::{
     mesh::MeshVertexBufferLayoutRef,
     prelude::*,
     reflect::TypePath,

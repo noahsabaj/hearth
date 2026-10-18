@@ -1,6 +1,6 @@
 //! A scene showcasing screen space ambient occlusion.
 
-use bevy::{
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     camera::Hdr,
     math::ops,

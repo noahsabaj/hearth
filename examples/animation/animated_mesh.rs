@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     light::CascadeShadowConfigBuilder, prelude::*, world_serialization::WorldInstanceReady,
 };
 

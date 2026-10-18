@@ -1,4 +1,4 @@
-import bevy_sprite_render::{mesh2d::vertex_output::VertexOutput, sprite_mesh::functions as sprite_fn};
+import hearth_sprite_render::{mesh2d::vertex_output::VertexOutput, sprite_mesh::functions as sprite_fn};
 
 struct DissolveMaterial {
     burn_edge_color: vec4<f32>,
@@ -44,10 +44,10 @@ fn fragment(input: VertexOutput) -> @location(0) vec4<f32> {
     return color;
 }
 
-/// An implementation of the simplex noise algorithm to generate noise for the dissolve effect. Credit to <https://crates.io/crates/noisy_bevy>.
+/// An implementation of the simplex noise algorithm to generate noise for the dissolve effect. Credit to <https://crates.io/crates/noisy_hearth>.
 ///
 /// Note that usually sampling the noise from a prebaked texture is better for performance.
-/// However, to avoid increasing the size of the bevy git repository, we generate the noise in the shader.
+/// However, to avoid increasing the size of the hearth git repository, we generate the noise in the shader.
 fn simplex_noise_2d(v: vec2<f32>) -> f32 {
     let C = vec4(
         0.211324865405187, // (3.0 - sqrt(3.0)) / 6.0

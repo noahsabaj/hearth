@@ -1,0 +1,33 @@
+[package]
+name = "{{name}}"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hearth = {{hearth}}
+
+# Both default features are for development. Build the release you ship with
+# `--no-default-features`.
+[features]
+default = ["remote", "dynamic_linking"]
+# Lets the `hearth` CLI inspect and drive the app while it runs, over the Hearth Remote Protocol.
+remote = ["hearth/hearth_remote"]
+# Links the engine as a shared library, so that a change to the game relinks only the game: a few
+# seconds instead of half a minute.
+dynamic_linking = ["hearth/dynamic_linking"]
+
+# `hearth editor` builds the editor with this package's library linked in, and calls this function
+# of the library with the editor's `App` at startup, so the editor knows the game's types.
+[package.metadata.hearth]
+editor-hook = "register_types"
+
+# Compile your code with some optimization, so the game runs smoothly while you work on it.
+[profile.dev]
+opt-level = 1
+
+# Compile dependencies, including the engine, with full optimization. They rarely change, so this
+# costs time only on the first build. Keeping only line tables in their debug info still gives
+# backtraces with file and line, and makes every link, and so every rebuild, about 3x faster.
+[profile.dev.package."*"]
+opt-level = 3
+debug = "line-tables-only"

@@ -1,7 +1,7 @@
-diff --git a/crates/bevy_window/src/window.rs b/crates/bevy_window/src/window.rs
+diff --git a/crates/hearth_window/src/window.rs b/crates/hearth_window/src/window.rs
 index f578658cd..ffac22062 100644
---- a/crates/bevy_window/src/window.rs
-+++ b/crates/bevy_window/src/window.rs
+--- a/crates/hearth_window/src/window.rs
++++ b/crates/hearth_window/src/window.rs
 @@ -318,7 +318,7 @@ impl Default for Window {
              name: None,
              present_mode: Default::default(),

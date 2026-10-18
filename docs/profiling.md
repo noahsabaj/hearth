@@ -21,7 +21,7 @@
 
 ### Overview
 
-Bevy has built-in [tracing](https://github.com/tokio-rs/tracing) spans to make it cheap and easy to profile Bevy ECS systems, render logic, engine internals, and user app code. Enable the `trace` cargo feature to enable Bevy's built-in spans.
+Hearth has built-in [tracing](https://github.com/tokio-rs/tracing) spans to make it cheap and easy to profile Hearth ECS systems, render logic, engine internals, and user app code. Enable the `trace` cargo feature to enable Hearth's built-in spans.
 
 Your tracing level needs to be at least `info` for this to work, so make sure that you don't set the `max_level(_release)_[warn/error]` features of the `tracing` crate nor filter it out using `LogPlugin`'s `filter` member. Note that `wgpu` and `naga` spans are filtered out by default. If you want to include them, you can either change your `LogPlugin`'s `filter` member or override it by setting the `RUST_LOG=info` environment variable when running your application.
 
@@ -32,13 +32,13 @@ You also need to select a `tracing` backend using one of the cargo features desc
 >
 > See the section on GPU profiling for determining what GPU work is the bottleneck.
 >
-> You can find more details in the docs for [`prepare_windows`](https://docs.rs/bevy/latest/bevy/render/view/fn.prepare_windows.html).
+> You can find more details in the docs for `prepare_windows`.
 
-![prepare_windows span bug](https://github.com/bevyengine/bevy/assets/2771466/15c0819b-0e07-4665-aa1e-579caa24fece)
+![prepare_windows span bug](https://github.com/noahsabaj/hearth/assets/2771466/15c0819b-0e07-4665-aa1e-579caa24fece)
 
 ### Adding your own spans
 
-Add spans to your app like this (these are in `bevy::prelude::*` and `bevy::log::*`, just like the normal logging macros).
+Add spans to your app like this (these are in `hearth::prelude::*` and `hearth::log::*`, just like the normal logging macros).
 
 ```rust
 {
@@ -77,16 +77,16 @@ The [Tracy profiling tool](https://github.com/wolfpld/tracy) is:
 2. Start the Tracy UI (called `tracy-profiler` in prebuilt binaries)
 3. In the Tracy UI, click `connect` to wait for a connection.
    - Starting the Tracy UI first and letting it wait for connection ensures it doesn't have to catch up
-4. Run your bevy app with `--features bevy/trace_tracy --release`
+4. Run your hearth app with `--features hearth/trace_tracy --release`
    - `--release` as theres little point to profiling unoptimized code
-   - You can capture memory usage as well with `--features bevy/trace_tracy_memory`, at the cost of increased overhead.
-   - To see debug names for Bevy's own systems, add the `bevy/debug` feature with `--features bevy/trace_tracy,bevy/debug`.
+   - You can capture memory usage as well with `--features hearth/trace_tracy_memory`, at the cost of increased overhead.
+   - To see debug names for Hearth's own systems, add the `hearth/debug` feature with `--features hearth/trace_tracy,hearth/debug`.
 
 #### Finding the correct Tracy version
 
 To determine which Tracy version to install
 
-1. Run `cargo tree --features bevy/trace_tracy | grep tracy` in your Bevy workspace root to see which tracy dep versions are used
+1. Run `cargo tree --features hearth/trace_tracy | grep tracy` in your Hearth workspace root to see which tracy dep versions are used
 2. Cross reference the tracy dep versions with the [Version Support Table](https://github.com/nagisa/rust_tracy_client?tab=readme-ov-file#version-support-table)
 
 #### Commandline capture (less overhead)
@@ -100,7 +100,7 @@ In a terminal, run:
 `./tracy-capture -o my_capture.tracy`
 This will sit and wait for a tracy-instrumented application to start, and when it does, it will automatically connect and start capturing.
 
-Then run your application, enabling the `trace_tracy` feature: `cargo run --release --features bevy/trace_tracy`. If you also want to track memory allocations, at the cost of increased runtime overhead, then enable the `trace_tracy_memory` feature instead: `cargo run --release --features bevy/trace_tracy_memory`.
+Then run your application, enabling the `trace_tracy` feature: `cargo run --release --features hearth/trace_tracy`. If you also want to track memory allocations, at the cost of increased runtime overhead, then enable the `trace_tracy_memory` feature instead: `cargo run --release --features hearth/trace_tracy_memory`.
 
 After running your app, you can open the captured profile file (`my_capture.tracy` in the example above) in the Tracy GUI application to see a timeline of the executed spans, or open multiple files to compare them.
 
@@ -108,7 +108,7 @@ After running your app, you can open the captured profile file (`my_capture.trac
 
 You'll see your trace in the GUI window:
 
-![Tracy timeline demonstrating the performance breakdown of a Bevy app](https://user-images.githubusercontent.com/302146/163988636-25c017ab-64bc-4da7-a897-a80098b667ef.png)
+![Tracy timeline demonstrating the performance breakdown of a Hearth app](https://user-images.githubusercontent.com/302146/163988636-25c017ab-64bc-4da7-a897-a80098b667ef.png)
 
 There is a button to display statistics of mean time per call (MTPC) for all systems:
 
@@ -130,7 +130,7 @@ If you save more than one trace, you can compare the spans between both of them 
 
 ### Chrome tracing format
 
-`cargo run --release --features bevy/trace_chrome`
+`cargo run --release --features hearth/trace_chrome`
 
 After running your app a `json` file in the "chrome tracing format" will be produced. You can open this file in your browser using <https://ui.perfetto.dev>. It will look something like this:
 
@@ -180,11 +180,11 @@ Follow the steps below to start GPU debugging on macOS. There is no need to crea
    ![Xcode's menu bar open to Debug > Debug Executable...](https://github.com/user-attachments/assets/efdc5037-0957-4227-b29d-9a789ba17a0a)
 
 2. Select your executable from your project’s target folder.
-3. The Scheme Editor will open. If your assets are not located next to your executable, you can go to the Arguments tab and set `BEVY_ASSET_ROOT` to the absolute path for your project (the parent of your assets folder). The rest of the defaults should be fine.
+3. The Scheme Editor will open. If your assets are not located next to your executable, you can go to the Arguments tab and set `HEARTH_ASSET_ROOT` to the absolute path for your project (the parent of your assets folder). The rest of the defaults should be fine.
 
    ![Xcode's Schema Editor opened to an environment variable configuration](https://github.com/user-attachments/assets/29cafb05-0c49-4777-8d41-8643812e8f6a)
 
-4. Click the play button in the top left and this should start your bevy app.
+4. Click the play button in the top left and this should start your hearth app.
 
    ![A cursor hovering over the play button in XCode](https://github.com/user-attachments/assets/859580e2-779b-4db8-8ea6-73cf4ef696c9)
 
@@ -202,7 +202,7 @@ These instructions were created for Xcode 16.4.
 
 While it doesn't provide as much detail as vendor-specific tooling, Tracy can also be used to coarsely measure GPU performance.
 
-When you compile with Bevy's `trace_tracy` feature, GPU spans will show up in a separate row at the top of Tracy, labeled as `RenderQueue`.
+When you compile with Hearth's `trace_tracy` feature, GPU spans will show up in a separate row at the top of Tracy, labeled as `RenderQueue`.
 
 > [!NOTE]
 > Due to dynamic clock speeds, GPU timings will have large frame-to-frame variance, unless you use an external tool to lock your GPU clocks to base speeds. When measuring GPU performance via Tracy, only look at the MTPC column of Tracy's statistics panel, or the span distribution/median, and not at any individual frame data.
@@ -210,7 +210,7 @@ When you compile with Bevy's `trace_tracy` feature, GPU spans will show up in a 
 <!-- markdownlint-disable MD028 -->
 
 > [!NOTE]
-> Unlike ECS systems, Bevy will not automatically add GPU profiling spans. You will need to add GPU timing spans yourself for any custom rendering work. See the [`RenderDiagnosticsPlugin`](https://docs.rs/bevy/latest/bevy/render/diagnostic/struct.RenderDiagnosticsPlugin.html) docs for more details.
+> Unlike ECS systems, Hearth will not automatically add GPU profiling spans. You will need to add GPU timing spans yourself for any custom rendering work. See the `RenderDiagnosticsPlugin` docs for more details.
 
 ## Compile time
 
@@ -236,13 +236,13 @@ This will show how much time each crate in your app's dependency tree took to bu
 
 Cargo can generate a self-profile when building a crate. This is an unstable feature, but it can be used on a stable toolchain with `RUSTC_BOOTSTRAP`.
 
-The following command will generate a self-profile for the `bevy_render` crate:
+The following command will generate a self-profile for the `hearth_render` crate:
 
 ```sh
-RUSTC_BOOTSTRAP=1 cargo rustc --package bevy_render --  -Z self-profile -Z self-profile-events=default,args
+RUSTC_BOOTSTRAP=1 cargo rustc --package hearth_render --  -Z self-profile -Z self-profile-events=default,args
 ```
 
-This will generate a file named something like `bevy_render-<id>>.mm_profdata` in the current directory. You can convert this file to a Chrome profiler trace with [`crox`](https://github.com/rust-lang/measureme/blob/master/crox/README.md) and view the resulting trace in [perfetto](https://ui.perfetto.dev/).
+This will generate a file named something like `hearth_render-<id>>.mm_profdata` in the current directory. You can convert this file to a Chrome profiler trace with [`crox`](https://github.com/rust-lang/measureme/blob/master/crox/README.md) and view the resulting trace in [perfetto](https://ui.perfetto.dev/).
 
 ![rustc self-profile](https://github.com/user-attachments/assets/12645add-c647-4611-b533-9145cbcbac1c)
 

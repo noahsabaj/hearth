@@ -1,10 +1,10 @@
-//! Illustrates how "reflection" works in Bevy.
+//! Illustrates how "reflection" works in Hearth.
 //!
 //! Reflection provides a way to dynamically interact with Rust types, such as accessing fields
-//! by their string name. Reflection is a core part of Bevy and enables a number of interesting
+//! by their string name. Reflection is a core part of Hearth and enables a number of interesting
 //! features (like scenes).
 
-use bevy::{
+use hearth::{
     prelude::*,
     reflect::{
         serde::{ReflectDeserializer, ReflectSerializer},

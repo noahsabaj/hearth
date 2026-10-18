@@ -9,10 +9,10 @@
 //!
 //! For further documentation refer to:
 //! - [`Query::contiguous_iter`]
-//! - [`ContiguousQueryData`](`bevy::ecs::query::ContiguousQueryData`)
-//! - [`ArchetypeFilter`](`bevy::ecs::query::ArchetypeFilter`)
+//! - [`ContiguousQueryData`](`hearth::ecs::query::ContiguousQueryData`)
+//! - [`ArchetypeFilter`](`hearth::ecs::query::ArchetypeFilter`)
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Component)]
 /// When the value reaches 0.0 the entity dies

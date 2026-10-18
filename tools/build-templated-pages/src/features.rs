@@ -47,7 +47,7 @@ fn parse_features(panic_on_missing: bool) -> Vec<Feature> {
                     .flat_map(|v| v.as_str())
                     .collect::<Vec<_>>()
                     .join(", ");
-                let description = format!("The full default Bevy experience. This is a combination of the following profiles: {values}");
+                let description = format!("The full default Hearth experience. This is a combination of the following profiles: {values}");
 
                 Some(Feature {
                     is_profile: true,

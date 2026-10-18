@@ -1,6 +1,6 @@
 //! Simple example showing vertical and horizontal slider widgets with snap behavior and value labels
 
-use bevy::{
+use hearth::{
     input_focus::tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin},
     picking::hover::Hovered,
     prelude::*,

@@ -1,13 +1,14 @@
 //! Demonstrates how to enqueue custom draw commands in a render phase.
 //!
 //! This example shows how to use the built-in
-//! [`bevy_render::render_phase::BinnedRenderPhase`] functionality with a
+//! [`hearth_render::render_phase::BinnedRenderPhase`] functionality with a
 //! custom [`RenderCommand`] to allow inserting arbitrary GPU drawing logic
-//! into Bevy's pipeline. This is not the only way to add custom rendering code
-//! into Bevy — render nodes are another, lower-level method — but it does allow
-//! for better reuse of parts of Bevy's built-in mesh rendering logic.
+//! into Hearth's pipeline. This is not the only way to add custom rendering code
+//! into Hearth — render nodes are another, lower-level method — but it does allow
+//! for better reuse of parts of Hearth's built-in mesh rendering logic.
 
-use bevy::{
+use bytemuck::{Pod, Zeroable};
+use hearth::{
     camera::{
         primitives::Aabb,
         visibility::{self, VisibilityClass},
@@ -40,14 +41,13 @@ use bevy::{
         Render, RenderApp, RenderSystems,
     },
 };
-use bytemuck::{Pod, Zeroable};
 
 /// A marker component that represents an entity that is to be rendered using
 /// our custom phase item.
 ///
 /// Note the [`ExtractComponent`] trait implementation: this is necessary to
-/// tell Bevy that this object should be pulled into the render world. Also note
-/// the `on_add` hook, which is needed to tell Bevy's `check_visibility` system
+/// tell Hearth that this object should be pulled into the render world. Also note
+/// the `on_add` hook, which is needed to tell Hearth's `check_visibility` system
 /// that entities with this component need to be examined for visibility.
 #[derive(Clone, Component, ExtractComponent)]
 #[require(VisibilityClass)]
@@ -151,7 +151,7 @@ impl Vertex {
     }
 }
 
-/// The custom draw commands that Bevy executes for each entity we enqueue into
+/// The custom draw commands that Hearth executes for each entity we enqueue into
 /// the render phase.
 type DrawCustomPhaseItemCommands = (SetItemPipeline, DrawCustomPhaseItem);
 
@@ -289,7 +289,7 @@ fn queue_custom_phase_item(
 
             // Add the custom render item. We use the
             // [`BinnedRenderPhaseType::NonMesh`] type to skip the special
-            // handling that Bevy has for meshes (preprocessing, indirect
+            // handling that Hearth has for meshes (preprocessing, indirect
             // draws, etc.)
             //
             // The asset ID is arbitrary; we simply use [`AssetId::default`],
@@ -390,7 +390,7 @@ impl Specializer<RenderPipeline> for CustomPhaseSpecializer {
         &self,
         key: Self::Key,
         descriptor: &mut RenderPipelineDescriptor,
-    ) -> Result<Canonical<Self::Key>, BevyError> {
+    ) -> Result<Canonical<Self::Key>, HearthError> {
         descriptor.multisample.count = key.0.samples();
         Ok(key)
     }

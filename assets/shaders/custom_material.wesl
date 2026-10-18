@@ -1,4 +1,4 @@
-import bevy_pbr::render::forward_io::VertexOutput;
+import hearth_pbr::render::forward_io::VertexOutput;
 // we can import items from shader modules in the assets folder with a relative path
 import super::custom_material_import::COLOR_MULTIPLIER;
 

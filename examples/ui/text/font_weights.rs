@@ -1,6 +1,6 @@
 //! This example demonstrates how to use font weights with text.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

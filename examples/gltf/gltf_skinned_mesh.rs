@@ -3,7 +3,7 @@
 
 use std::f32::consts::*;
 
-use bevy::{math::ops, mesh::skinning::SkinnedMesh, prelude::*};
+use hearth::{math::ops, mesh::skinning::SkinnedMesh, prelude::*};
 
 fn main() {
     App::new()

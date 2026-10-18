@@ -1,7 +1,7 @@
 //! Rendering a scene with baked lightmaps.
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     core_pipeline::prepass::{DeferredPrepass, DepthPrepass, MotionVectorPrepass},
     gltf::GltfMeshName,
     pbr::{DefaultOpaqueRendererMethod, Lightmap},

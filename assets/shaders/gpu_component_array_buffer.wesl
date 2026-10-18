@@ -1,5 +1,5 @@
-import bevy_pbr::render::{forward_io::VertexOutput, mesh_bindings::mesh};
-import bevy_render::bindless::{bindless_samplers_filtering, bindless_textures_2d};
+import hearth_pbr::render::{forward_io::VertexOutput, mesh_bindings::mesh};
+import hearth_render::bindless::{bindless_samplers_filtering, bindless_textures_2d};
 
 /// The custom data that we extract from the ECS and expose to this shader.
 struct CustomMaterialData {
@@ -9,7 +9,7 @@ struct CustomMaterialData {
     pad: u32,
 }
 
-/// The array of material data that Bevy supplies.
+/// The array of material data that Hearth supplies.
 ///
 /// We need to declare this type because
 /// `binding_array<array<CustomMaterialData>>` isn't currently accepted by Naga.
@@ -67,7 +67,7 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     //
     // Note that there are two levels of arrays here: the binding array and the
     // data array. The binding array should only have one element in this case,
-    // but Bevy still supplies a binding array because it's legal for different
+    // but Hearth still supplies a binding array because it's legal for different
     // materials to have different `ShaderBuffer` bindings, even though in our
     // case all materials are bound to the same buffer. The data array contains
     // all of the instance data and is indexed by the tag.

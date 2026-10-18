@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     color::palettes::basic::{BLUE, LIME, RED},
     light::{CascadeShadowConfigBuilder, NotShadowCaster, NotShadowReceiver},
     prelude::*,

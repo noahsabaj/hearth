@@ -1,14 +1,14 @@
 //! Demonstrates blending between multiple reflection probes.
 //!
 //! This example shows a reflective sphere that moves between two rooms, each of
-//! which contains a reflection probe with a falloff range. Bevy performs a
+//! which contains a reflection probe with a falloff range. Hearth performs a
 //! blend between the two reflection probes as the sphere moves.
 
 use std::f32::consts::{FRAC_PI_4, PI};
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
 use crate::theme::basic_example_theme;
-use bevy::{
+use hearth::{
     camera::Hdr,
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     color::palettes::css::{CORNFLOWER_BLUE, CRIMSON, TAN, WHITE},
@@ -112,7 +112,7 @@ const LIGHT_PROBE_FALLOFF: f32 = 0.5;
 /// side length. Since the light probe is scaled by `LIGHT_PROBE_SIDE_LENGTH`,
 /// we divide the room side length by the light probe side length to get this
 /// value, and multiply by 0.5 to convert from a full extent to a half-extent.
-/// That way, when Bevy applies the `LIGHT_PROBE_SIDE_LENGTH` scale, the light
+/// That way, when Hearth applies the `LIGHT_PROBE_SIDE_LENGTH` scale, the light
 /// probe side length factor cancels, and we're left with a parallax correction
 /// side length of `ROOM_SIDE_LENGTH` in world space.
 ///
@@ -157,7 +157,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Light Probe Blending Example".into(),
+                    title: "Hearth Light Probe Blending Example".into(),
                     ..default()
                 }),
                 ..default()
@@ -622,10 +622,10 @@ Blue: Parallax correction bounds",
 /// The files are expected to be in the `light_probe_blending` directory in the
 /// [repository].
 ///
-/// [repository]: https://github.com/bevyengine/bevy_asset_files
+/// [repository]: https://github.com/noahsabaj/hearth_asset_files
 fn get_web_asset_url(name: &str) -> String {
     format!(
-        "https://raw.githubusercontent.com/bevyengine/bevy_asset_files/refs/heads/main/\
+        "https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/refs/heads/main/\
 light_probe_blending/{}",
         name
     )

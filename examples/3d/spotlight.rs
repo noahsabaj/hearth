@@ -2,14 +2,14 @@
 
 use std::f32::consts::*;
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     camera::Hdr,
     color::palettes::basic::{MAROON, RED},
     light::NotShadowCaster,
     math::ops,
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 const INSTRUCTIONS: &str = "\

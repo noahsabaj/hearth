@@ -7,7 +7,7 @@
 //! In this case, we're transitioning from a `Menu` state to an `InGame` state, at which point we create
 //! a substate called `IsPaused` to track whether the game is paused or not.
 
-use bevy::{
+use hearth::{
     dev_tools::states::*,
     picking::hover::Hovered,
     prelude::*,

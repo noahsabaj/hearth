@@ -1,9 +1,9 @@
-//! This example demonstrates the `LetterSpacing` component in Bevy's text system.
+//! This example demonstrates the `LetterSpacing` component in Hearth's text system.
 //!
 //! Use the left and right arrow keys to adjust the letter spacing of the text.
 
-use bevy::prelude::*;
-use bevy::text::{LetterSpacing, RemSize};
+use hearth::prelude::*;
+use hearth::text::{LetterSpacing, RemSize};
 
 #[derive(Component)]
 struct LetterSpacingLabel;

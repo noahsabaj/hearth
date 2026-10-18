@@ -16,7 +16,7 @@
 
 use core::time::Duration;
 
-use bevy::{
+use hearth::{
     camera::NormalizedRenderTarget,
     input_focus::{
         directional_navigation::{AutoNavigationConfig, DirectionalNavigationPlugin},
@@ -69,9 +69,9 @@ fn main() {
         .run();
 }
 
-const NORMAL_BUTTON: Srgba = bevy::color::palettes::tailwind::BLUE_400;
-const PRESSED_BUTTON: Srgba = bevy::color::palettes::tailwind::BLUE_500;
-const FOCUSED_BORDER: Srgba = bevy::color::palettes::tailwind::BLUE_50;
+const NORMAL_BUTTON: Srgba = hearth::color::palettes::tailwind::BLUE_400;
+const PRESSED_BUTTON: Srgba = hearth::color::palettes::tailwind::BLUE_500;
+const FOCUSED_BORDER: Srgba = hearth::color::palettes::tailwind::BLUE_50;
 
 /// Marker component for the text that displays the currently focused button
 #[derive(Component, Clone, Default)]

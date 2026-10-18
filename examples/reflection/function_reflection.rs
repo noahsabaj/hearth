@@ -6,7 +6,7 @@
 //! This can be used for things like adding scripting support to your application,
 //! processing deserialized reflection data, or even just storing type-erased versions of your functions.
 
-use bevy::reflect::{
+use hearth::reflect::{
     func::{
         ArgList, DynamicFunction, DynamicFunctionMut, FunctionResult, IntoFunction,
         IntoFunctionMut, Return, SignatureInfo,
@@ -36,7 +36,7 @@ fn main() {
 
     // However, you'll notice that we have to know the types of the arguments and return value at compile time.
     // This means there's not really a way to store or call these functions dynamically at runtime.
-    // Luckily, Bevy's reflection crate comes with a set of tools for doing just that!
+    // Luckily, Hearth's reflection crate comes with a set of tools for doing just that!
     // We do this by first converting our function into the reflection-based `DynamicFunction` type
     // using the `IntoFunction` trait.
     let function: DynamicFunction<'static> = dbg!(add.into_function());

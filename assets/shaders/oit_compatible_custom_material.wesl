@@ -3,11 +3,11 @@
 //! See examples/3d/order_independent_transpatency.rs
 
 // As an hard-coded always transparent material it is only meant to be forward rendered
-import bevy_pbr::render::forward_io::{VertexOutput, FragmentOutput};
-import bevy_pbr::render::utils;
+import hearth_pbr::render::forward_io::{VertexOutput, FragmentOutput};
+import hearth_pbr::render::utils;
 
 @if(MATERIAL_OIT_ENABLED)
-import bevy_core_pipeline::oit::draw::oit_draw;
+import hearth_core_pipeline::oit::draw::oit_draw;
 
 @group(constants::MATERIAL_BIND_GROUP) @binding(0) var<uniform> material_color: vec4<f32>;
 

@@ -5,7 +5,7 @@
 mod helpers;
 
 use argh::FromArgs;
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 use helpers::Next;
 
@@ -80,13 +80,13 @@ fn main() {
         Some(scene) => app.insert_state(scene),
     };
 
-    #[cfg(feature = "bevy_ui_debug")]
+    #[cfg(feature = "hearth_ui_debug")]
     {
         app.add_systems(OnEnter(Scene::DebugOutlines), debug_outlines::setup);
         app.add_systems(OnExit(Scene::DebugOutlines), debug_outlines::teardown);
     }
 
-    #[cfg(feature = "bevy_ci_testing")]
+    #[cfg(feature = "hearth_ci_testing")]
     app.add_systems(Update, helpers::switch_scene_in_ci::<Scene>);
 
     app.run();
@@ -111,7 +111,7 @@ enum Scene {
     LinearGradient,
     RadialGradient,
     Transformations,
-    #[cfg(feature = "bevy_ui_debug")]
+    #[cfg(feature = "hearth_ui_debug")]
     DebugOutlines,
     ViewportCoords,
     ViewportNode,
@@ -143,7 +143,7 @@ impl Scene {
         Scene::LinearGradient,
         Scene::RadialGradient,
         Scene::Transformations,
-        #[cfg(feature = "bevy_ui_debug")]
+        #[cfg(feature = "hearth_ui_debug")]
         Scene::DebugOutlines,
         Scene::ViewportCoords,
         Scene::ViewportNode,
@@ -196,8 +196,8 @@ fn switch_scene(
 }
 
 mod image {
-    use bevy::color::palettes::css::DARK_GREY;
-    use bevy::prelude::*;
+    use hearth::color::palettes::css::DARK_GREY;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Image)));
@@ -212,7 +212,7 @@ mod image {
             })
             .with_children(|parent| {
                 for [b, p] in [[0, 0], [10, 0], [0, 10], [10, 10]] {
-                    for image_path in ["branding/icon.png", "branding/bevy_logo_dark.png"] {
+                    for image_path in ["branding/icon.png", "branding/hearth_logo_dark.png"] {
                         parent
                             .spawn(Node {
                                 justify_content: JustifyContent::SpaceAround,
@@ -253,7 +253,7 @@ mod image {
 }
 
 mod image_measure {
-    use bevy::{
+    use hearth::{
         color::palettes::css::{GREEN, RED},
         prelude::*,
     };
@@ -377,7 +377,7 @@ mod image_measure {
 }
 
 mod text {
-    use bevy::{color::palettes::css::*, prelude::*, text::FontSmoothing};
+    use hearth::{color::palettes::css::*, prelude::*, text::FontSmoothing};
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Text)));
@@ -862,7 +862,7 @@ mod text {
 }
 
 mod font_lists {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     const FONT_ASSETS: &[&str] = &[
         "fonts/FiraSans-Bold.ttf",
@@ -1009,7 +1009,7 @@ mod font_lists {
     }
 }
 mod text_measurement {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::TextMeasurement)));
@@ -1130,7 +1130,7 @@ mod text_measurement {
 }
 
 mod grid {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Grid)));
@@ -1190,7 +1190,7 @@ mod grid {
 }
 
 mod borders {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Borders)));
@@ -1283,7 +1283,7 @@ mod borders {
 }
 
 mod elliptical_border_radius {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands, assets: Res<AssetServer>) {
         commands.spawn((
@@ -1800,7 +1800,7 @@ mod elliptical_border_radius {
 }
 
 mod box_shadow {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::BoxShadow)));
@@ -1883,7 +1883,7 @@ mod box_shadow {
 }
 
 mod text_wrap {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::TextWrap)));
@@ -1925,7 +1925,7 @@ mod text_wrap {
 }
 
 mod overflow {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Overflow)));
@@ -1988,7 +1988,7 @@ mod overflow {
 }
 
 mod slice {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Slice)));
@@ -2067,11 +2067,11 @@ mod slice {
                                     ..default()
                                 },
                                 Outline {
-                                    color: bevy::color::palettes::css::DARK_CYAN.into(),
+                                    color: hearth::color::palettes::css::DARK_CYAN.into(),
                                     width: px(2.),
                                     ..default()
                                 },
-                                BackgroundColor(bevy::color::palettes::css::NAVY.into()),
+                                BackgroundColor(hearth::color::palettes::css::NAVY.into()),
                             ));
                         });
                 }
@@ -2080,7 +2080,7 @@ mod slice {
 }
 
 mod layout_rounding {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::LayoutRounding)));
@@ -2123,38 +2123,38 @@ mod layout_rounding {
 }
 
 mod linear_gradient {
-    use bevy::camera::Camera2d;
-    use bevy::color::palettes::css::BLUE;
-    use bevy::color::palettes::css::LIME;
-    use bevy::color::palettes::css::RED;
-    use bevy::color::palettes::css::YELLOW;
-    use bevy::color::Color;
-    use bevy::ecs::prelude::*;
-    use bevy::state::state_scoped::DespawnOnExit;
-    use bevy::text::TextFont;
-    use bevy::ui::widget::Text;
-    use bevy::ui::AlignItems;
-    use bevy::ui::BackgroundGradient;
-    use bevy::ui::ColorStop;
-    use bevy::ui::GridPlacement;
-    use bevy::ui::InterpolationColorSpace;
-    use bevy::ui::JustifyContent;
-    use bevy::ui::LinearGradient;
-    use bevy::ui::Node;
-    use bevy::ui::PositionType;
-    use bevy::utils::default;
+    use hearth::camera::Camera2d;
+    use hearth::color::palettes::css::BLUE;
+    use hearth::color::palettes::css::LIME;
+    use hearth::color::palettes::css::RED;
+    use hearth::color::palettes::css::YELLOW;
+    use hearth::color::Color;
+    use hearth::ecs::prelude::*;
+    use hearth::state::state_scoped::DespawnOnExit;
+    use hearth::text::TextFont;
+    use hearth::ui::widget::Text;
+    use hearth::ui::AlignItems;
+    use hearth::ui::BackgroundGradient;
+    use hearth::ui::ColorStop;
+    use hearth::ui::GridPlacement;
+    use hearth::ui::InterpolationColorSpace;
+    use hearth::ui::JustifyContent;
+    use hearth::ui::LinearGradient;
+    use hearth::ui::Node;
+    use hearth::ui::PositionType;
+    use hearth::utils::default;
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::LinearGradient)));
         commands
             .spawn((
                 Node {
-                    flex_direction: bevy::ui::FlexDirection::Column,
-                    width: bevy::ui::percent(100),
-                    height: bevy::ui::percent(100),
+                    flex_direction: hearth::ui::FlexDirection::Column,
+                    width: hearth::ui::percent(100),
+                    height: hearth::ui::percent(100),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
-                    row_gap: bevy::ui::px(5),
+                    row_gap: hearth::ui::px(5),
                     ..default()
                 },
                 DespawnOnExit(super::Scene::LinearGradient),
@@ -2163,9 +2163,9 @@ mod linear_gradient {
                 let mut i = 0;
                 commands
                     .spawn(Node {
-                        display: bevy::ui::Display::Grid,
-                        row_gap: bevy::ui::px(4),
-                        column_gap: bevy::ui::px(4),
+                        display: hearth::ui::Display::Grid,
+                        row_gap: hearth::ui::px(4),
+                        column_gap: hearth::ui::px(4),
                         ..Default::default()
                     })
                     .with_children(|commands| {
@@ -2223,8 +2223,8 @@ mod linear_gradient {
                                     },
                                     children![(
                                         Node {
-                                            height: bevy::ui::px(30),
-                                            width: bevy::ui::px(300),
+                                            height: hearth::ui::px(30),
+                                            width: hearth::ui::px(300),
                                             justify_content: JustifyContent::Center,
                                             ..Default::default()
                                         },
@@ -2251,10 +2251,10 @@ mod linear_gradient {
 }
 
 mod radial_gradient {
-    use bevy::color::palettes::css::RED;
-    use bevy::color::palettes::tailwind::GRAY_700;
-    use bevy::prelude::*;
-    use bevy::ui::ColorStop;
+    use hearth::color::palettes::css::RED;
+    use hearth::color::palettes::tailwind::GRAY_700;
+    use hearth::prelude::*;
+    use hearth::ui::ColorStop;
 
     const CELL_SIZE: f32 = 80.;
     const GAP: f32 = 10.;
@@ -2346,7 +2346,7 @@ mod radial_gradient {
 }
 
 mod transformations {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Transformations)));
@@ -2429,9 +2429,9 @@ mod transformations {
     }
 }
 
-#[cfg(feature = "bevy_ui_debug")]
+#[cfg(feature = "hearth_ui_debug")]
 mod debug_outlines {
-    use bevy::{
+    use hearth::{
         color::palettes::css::{BLUE, GRAY, RED},
         prelude::*,
         ui_render::UiDebugOptions,
@@ -2681,7 +2681,7 @@ mod debug_outlines {
 }
 
 mod viewport_coords {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     const PALETTE: [Srgba; 9] = [RED, WHITE, BEIGE, AQUA, CRIMSON, NAVY, AZURE, LIME, BLACK];
 
@@ -2766,7 +2766,7 @@ mod viewport_coords {
 }
 
 mod viewport_node {
-    use bevy::{
+    use hearth::{
         camera::RenderTarget, prelude::*, render::render_resource::TextureFormat,
         ui::widget::ViewportNode,
     };
@@ -2826,7 +2826,7 @@ mod viewport_node {
 }
 
 mod outer_color {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands) {
         let radius = CornerRadius::from(percent(33.));
@@ -2865,7 +2865,7 @@ mod outer_color {
                                 border,
                                 ..default()
                             },
-                            BorderColor::all(bevy::color::palettes::css::RED),
+                            BorderColor::all(hearth::color::palettes::css::RED),
                         ))
                         .insert_if(BackgroundColor(Color::WHITE), || !invert)
                         .insert_if(OuterColor(Color::WHITE), || invert);
@@ -2875,8 +2875,8 @@ mod outer_color {
 }
 
 mod boxed_content {
-    use bevy::color::palettes::css::RED;
-    use bevy::prelude::*;
+    use hearth::color::palettes::css::RED;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::BoxedContent)));
@@ -3060,12 +3060,12 @@ mod boxed_content {
 }
 
 mod editable_text {
-    use bevy::color::palettes::css::YELLOW;
-    use bevy::prelude::*;
-    use bevy::text::EditableText;
-    use bevy::text::TextCursorStyle;
-    use bevy::text::TextEdit;
-    use bevy::ui_widgets::TextInput;
+    use hearth::color::palettes::css::YELLOW;
+    use hearth::prelude::*;
+    use hearth::text::EditableText;
+    use hearth::text::TextCursorStyle;
+    use hearth::text::TextEdit;
+    use hearth::ui_widgets::TextInput;
 
     const DUMMY_TEXT: &str = "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten";
     const LOREM_TEXT: &str = concat!(
@@ -3565,7 +3565,7 @@ mod editable_text {
 }
 
 mod node_material {
-    use bevy::{
+    use hearth::{
         color::palettes::tailwind::{CYAN_100, RED_500, YELLOW_100},
         prelude::*,
         render::render_resource::AsBindGroup,
@@ -3585,7 +3585,7 @@ mod node_material {
         color: Vec4,
         /// Represents how much of the image is visible
         /// Goes from 0 to 1
-        /// A `Vec4` is used here because Bevy with webgl2 requires that uniforms are 16-byte aligned but only the first component is read.
+        /// A `Vec4` is used here because Hearth with webgl2 requires that uniforms are 16-byte aligned but only the first component is read.
         #[uniform(1)]
         slider: Vec4,
         /// Image used to represent the slider
@@ -3653,7 +3653,7 @@ mod node_material {
                         ..default()
                     },
                 ),
-                // Default UI material (just white with the default ui_material.wgsl shader for the bevy_ui crate)
+                // Default UI material (just white with the default ui_material.wgsl shader for the hearth_ui crate)
                 material_label("'ui_material.wgsl' default material"),
                 (material_node.clone(), MaterialNode(default_material),),
                 // Custom UI material, 1./3 full.
@@ -3770,7 +3770,7 @@ mod node_material {
 }
 
 mod font_relative_units {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::FontRelativeUnits)));
@@ -3918,7 +3918,7 @@ mod font_relative_units {
 
 mod change_detection {
     use super::node_material::DefaultUiMaterial;
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     const DELAY: u32 = 10;
     const SIZE: f32 = 200.;
@@ -3997,7 +3997,7 @@ mod change_detection {
                                 },
                                 MaterialNode(material.clone()),
                                 BoxShadow::from(ShadowStyle {
-                                    color: bevy::color::palettes::css::NAVY.into(),
+                                    color: hearth::color::palettes::css::NAVY.into(),
                                     ..default()
                                 }),
                             ),
@@ -4011,7 +4011,7 @@ mod change_detection {
                                     stops: vec![
                                         ColorStop::auto(Color::BLACK),
                                         ColorStop::new(Color::WHITE, px(20)),
-                                        ColorStop::auto(bevy::color::palettes::css::RED),
+                                        ColorStop::auto(hearth::color::palettes::css::RED),
                                     ],
                                     ..default()
                                 }),
@@ -4026,7 +4026,7 @@ mod change_detection {
                                     stops: vec![
                                         ColorStop::auto(Color::BLACK),
                                         ColorStop::new(Color::WHITE, px(20)),
-                                        ColorStop::auto(bevy::color::palettes::css::RED),
+                                        ColorStop::auto(hearth::color::palettes::css::RED),
                                     ],
                                     ..default()
                                 }),
@@ -4072,7 +4072,7 @@ mod change_detection {
 }
 
 mod block {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Block)));
@@ -4155,7 +4155,7 @@ mod block {
 }
 
 mod inline_image {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::InlineImage)));
@@ -4166,7 +4166,7 @@ mod inline_image {
                 (TextSpan::new("before image "),),
                 (InlineImage {
                     color: Color::WHITE,
-                    image: asset_server.load("branding/bevy_logo_dark.png"),
+                    image: asset_server.load("branding/hearth_logo_dark.png"),
                     height: Some(20.),
                     flip_x: true,
                     ..default()

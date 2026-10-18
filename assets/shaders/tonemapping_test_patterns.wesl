@@ -1,12 +1,12 @@
-import bevy_pbr::render::{
+import hearth_pbr::render::{
     mesh_view_bindings,
     forward_io::VertexOutput,
 };
 
-import bevy_render::maths::PI;
+import hearth_render::maths::PI;
 
 @if(TONEMAP_IN_SHADER)
-import bevy_core_pipeline::tonemapping::tone_mapping;
+import hearth_core_pipeline::tonemapping::tone_mapping;
 
 /// Sweep across hues on y axis with value from 0.0 to +15EV across x axis
 /// quantized into 24 steps for both axis.

@@ -4,7 +4,7 @@ authors: ["@jbuehler23"]
 pull_requests: [25987]
 ---
 
-`bevy_feathers` now has styled tabs built on the headless `TabList` and `Tab` widgets. `FeathersTabList` is the strip and `FeathersTab` is a tab header whose caption can hold text, icons or your own controls. Tabs are themed for hover, selection, focus, dragging and disabled states. The selected tab gets an accent stripe and shares the pane body's background, flaring into it at the bottom corners.
+`hearth_feathers` now has styled tabs built on the headless `TabList` and `Tab` widgets. `FeathersTabList` is the strip and `FeathersTab` is a tab header whose caption can hold text, icons or your own controls. Tabs are themed for hover, selection, focus, dragging and disabled states. The selected tab gets an accent stripe and shares the pane body's background, flaring into it at the bottom corners.
 
 Put your own controls at either end of the strip with `FeathersTabListStartAdornment` and `FeathersTabListEndAdornment` children. When the strip has a start adornment, `FeathersTabList::child_index` turns a `TabMoved` index into a child index.
 

@@ -1,6 +1,6 @@
-//! This example demonstrates the use of dynamic types in Bevy's reflection system.
+//! This example demonstrates the use of dynamic types in Hearth's reflection system.
 
-use bevy::reflect::{
+use hearth::reflect::{
     array::DynamicArray,
     enums::{DynamicEnum, DynamicVariant},
     list::DynamicList,

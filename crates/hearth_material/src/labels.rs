@@ -1,0 +1,32 @@
+use hearth_ecs::define_label;
+use hearth_ecs::intern::Interned;
+pub use hearth_material_macros::ShaderLabel;
+
+define_label!(
+    #[diagnostic::on_unimplemented(
+        note = "consider annotating `{Self}` with `#[derive(ShaderLabel)]`"
+    )]
+    /// Labels used to uniquely identify types of material shaders
+    ShaderLabel,
+);
+
+/// A shorthand for `Interned<dyn RenderSubGraph>`.
+pub type InternedShaderLabel = Interned<dyn ShaderLabel>;
+
+pub use hearth_material_macros::DrawFunctionLabel;
+
+define_label!(
+    #[diagnostic::on_unimplemented(
+        note = "consider annotating `{Self}` with `#[derive(DrawFunctionLabel)]`"
+    )]
+    /// Labels used to uniquely identify types of material shaders
+    DrawFunctionLabel,
+);
+
+pub type InternedDrawFunctionLabel = Interned<dyn DrawFunctionLabel>;
+
+// TODO: make this generic?
+/// An identifier for a `Draw`
+/// function stored in `DrawFunctions`.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord, Hash)]
+pub struct DrawFunctionId(pub u32);

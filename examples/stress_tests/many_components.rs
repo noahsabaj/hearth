@@ -12,7 +12,7 @@
 //!
 //! If no valid number is provided, for each argument there's a reasonable default.
 
-use bevy::{
+use hearth::{
     diagnostic::{
         DiagnosticPath, DiagnosticsPlugin, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin,
     },

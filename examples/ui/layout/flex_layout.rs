@@ -1,5 +1,5 @@
 //! Demonstrates how the `AlignItems` and `JustifyContent` properties can be composed to layout text.
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 const ALIGN_ITEMS_COLOR: Color = Color::srgb(1., 0.066, 0.349);
 const JUSTIFY_CONTENT_COLOR: Color = Color::srgb(0.102, 0.522, 1.);
@@ -9,7 +9,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Flex Layout Example".to_string(),
+                title: "Hearth Flex Layout Example".to_string(),
                 ..Default::default()
             }),
             ..Default::default()

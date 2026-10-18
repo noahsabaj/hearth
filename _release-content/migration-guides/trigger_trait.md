@@ -22,7 +22,7 @@ pub struct MyTrigger {
     // ...
 }
 
-// Bevy 0.20
+// Hearth 0.20
 unsafe impl<E: Event<Trigger = Self>> Trigger<E> for MyTrigger {
     unsafe fn trigger(
         &mut self,
@@ -35,7 +35,7 @@ unsafe impl<E: Event<Trigger = Self>> Trigger<E> for MyTrigger {
     }
 }
 
-// Bevy 0.21
+// Hearth 0.21
 impl<E: Event<Trigger = Self>> Trigger<E> for MyTrigger {
     type State<'input> = Self;
     type View<'input> = Self;
@@ -63,7 +63,7 @@ pub struct MyStatefulTrigger {
     thing: bool,
 }
 
-// Bevy 0.19
+// Hearth 0.19
 unsafe impl<E: Event<Trigger = Self>> Trigger<E> for MyStatefulTrigger {
     unsafe fn trigger(
         &mut self,
@@ -76,7 +76,7 @@ unsafe impl<E: Event<Trigger = Self>> Trigger<E> for MyStatefulTrigger {
     }
 }
 
-// Bevy 0.21
+// Hearth 0.21
 impl<E: Event<Trigger = Self>> Trigger<E> for MyStatefulTrigger {
     type State<'input> = Self;
     type View<'input> = &'input mut Self;
@@ -104,7 +104,7 @@ pub struct MyTrigger<'a> {
     thing: &'a mut bool,
 }
 
-// Bevy 0.19
+// Hearth 0.19
 unsafe impl<'a, E: Event<Trigger = Self>> Trigger<E> for MyTrigger<'a> {
     unsafe fn trigger(
         &mut self,
@@ -117,7 +117,7 @@ unsafe impl<'a, E: Event<Trigger = Self>> Trigger<E> for MyTrigger<'a> {
     }
 }
 
-// Bevy 0.21
+// Hearth 0.21
 impl<E: Event<Trigger = Self>> Trigger<E> for MyTrigger<'_> {
     type State<'input> = MyTrigger<'input>;
     type View<'input> = MyTrigger<'input>;

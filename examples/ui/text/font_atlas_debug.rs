@@ -1,7 +1,7 @@
 //! This example illustrates how `FontAtlas`'s are populated.
-//! Bevy uses `FontAtlas`'s under the hood to optimize text rendering.
+//! Hearth uses `FontAtlas`'s under the hood to optimize text rendering.
 
-use bevy::{color::palettes::basic::YELLOW, prelude::*, text::FontAtlasSet};
+use hearth::{color::palettes::basic::YELLOW, prelude::*, text::FontAtlasSet};
 
 use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};

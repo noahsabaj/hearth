@@ -1,11 +1,11 @@
 //! Example demonstrating text gizmos.
 
-use bevy::color::palettes::css::{BLUE, GREEN, RED, YELLOW};
-use bevy::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
-use bevy::math::Isometry2d;
-use bevy::prelude::*;
-use bevy::window::{PresentMode, WindowResolution};
-use bevy::winit::WinitSettings;
+use hearth::color::palettes::css::{BLUE, GREEN, RED, YELLOW};
+use hearth::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use hearth::math::Isometry2d;
+use hearth::prelude::*;
+use hearth::window::{PresentMode, WindowResolution};
+use hearth::winit::WinitSettings;
 
 const TEXT_COUNT: usize = 50;
 const START_X: f32 = -800.0;

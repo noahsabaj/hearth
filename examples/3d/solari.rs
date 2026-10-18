@@ -1,7 +1,8 @@
-//! Demonstrates realtime dynamic raytraced lighting using Bevy Solari.
+//! Demonstrates realtime dynamic raytraced lighting using Hearth Solari.
 
 use argh::FromArgs;
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     camera::CameraMainTextureUsages,
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     diagnostic::{Diagnostic, DiagnosticPath, DiagnosticsStore},
@@ -17,19 +18,18 @@ use bevy::{
     },
     world_serialization::WorldInstanceReady,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 use std::f32::consts::PI;
 
 #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-use bevy::{
+use hearth::{
     anti_alias::dlss::{
         Dlss, DlssProjectId, DlssRayReconstructionFeature, DlssRayReconstructionSupported,
     },
     render::camera::{MipBias, TemporalJitter},
 };
 
-/// `bevy_solari` demo.
+/// `hearth_solari` demo.
 #[derive(FromArgs, Resource, Clone, Copy)]
 struct Args {
     /// use the reference pathtracer instead of the realtime lighting system.
@@ -46,7 +46,7 @@ fn main() {
     let mut app = App::new();
 
     #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-    app.insert_resource(DlssProjectId(bevy_asset::uuid::uuid!(
+    app.insert_resource(DlssProjectId(hearth_asset::uuid::uuid!(
         "5417916c-0291-4e3f-8f65-326c1858ab96" // Don't copy paste this - generate your own UUID!
     )));
 
@@ -94,7 +94,7 @@ fn setup_pica_pica(
             WorldAssetRoot(
                 asset_server.load(
                     GltfAssetLabel::Scene(0)
-                        .from_asset("https://github.com/bevyengine/bevy_asset_files/raw/2a5950295a8b6d9d051d59c0df69e87abcda58c3/pica_pica/mini_diorama_01.glb")
+                        .from_asset("https://github.com/noahsabaj/hearth_asset_files/raw/2a5950295a8b6d9d051d59c0df69e87abcda58c3/pica_pica/mini_diorama_01.glb")
                 ),
             ),
             Transform::from_scale(Vec3::splat(10.0)),
@@ -104,7 +104,7 @@ fn setup_pica_pica(
     commands
         .spawn((
             WorldAssetRoot(asset_server.load(
-                GltfAssetLabel::Scene(0).from_asset("https://github.com/bevyengine/bevy_asset_files/raw/2a5950295a8b6d9d051d59c0df69e87abcda58c3/pica_pica/robot_01.glb")
+                GltfAssetLabel::Scene(0).from_asset("https://github.com/noahsabaj/hearth_asset_files/raw/2a5950295a8b6d9d051d59c0df69e87abcda58c3/pica_pica/robot_01.glb")
             )),
             Transform::from_scale(Vec3::splat(2.0))
                 .with_translation(Vec3::new(-2.0, 0.05, -2.1))

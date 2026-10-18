@@ -1,6 +1,6 @@
 //! Test bed for Solari reflections.
 
-use bevy::{
+use hearth::{
     camera::{CameraMainTextureUsages, Exposure},
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     diagnostic::{Diagnostic, DiagnosticPath, DiagnosticsStore},
@@ -20,7 +20,7 @@ use bevy::{
 };
 
 #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-use bevy::{
+use hearth::{
     anti_alias::dlss::{
         Dlss, DlssProjectId, DlssRayReconstructionFeature, DlssRayReconstructionSupported,
     },
@@ -31,7 +31,7 @@ fn main() {
     let mut app = App::new();
 
     #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-    app.insert_resource(DlssProjectId(bevy_asset::uuid::uuid!(
+    app.insert_resource(DlssProjectId(hearth_asset::uuid::uuid!(
         "3f6c1d28-9b04-4a71-bd52-7e8a5c0f1d93"
     )));
 

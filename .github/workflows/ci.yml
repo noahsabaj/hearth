@@ -117,8 +117,8 @@ jobs:
           components: miri
       - name: CI job
         # To run the tests one item at a time for troubleshooting, use
-        # cargo --quiet test --lib -- --list | sed 's/: test$//' | MIRIFLAGS="-Zmiri-disable-isolation -Zmiri-disable-weak-memory-emulation" xargs -n1 cargo miri test -p bevy_ecs --lib -- --exact
-        run: cargo miri test -p bevy_ecs --features bevy_utils/debug
+        # cargo --quiet test --lib -- --list | sed 's/: test$//' | MIRIFLAGS="-Zmiri-disable-isolation -Zmiri-disable-weak-memory-emulation" xargs -n1 cargo miri test -p hearth_ecs --lib -- --exact
+        run: cargo miri test -p hearth_ecs --features hearth_utils/debug
         env:
           # -Zrandomize-layout makes sure we dont rely on the layout of anything that might change
           RUSTFLAGS: -Zrandomize-layout
@@ -183,12 +183,12 @@ jobs:
       - name: Install Linux dependencies
         uses: $/.github/actions/install-linux-deps
       - name: Check Compile
-        run: cargo check -p bevy --no-default-features --features default_no_std --target x86_64-unknown-none
+        run: cargo check -p hearth --no-default-features --features default_no_std --target x86_64-unknown-none
       # Check for regression in "web" feature breaking no_std builds.
       # This is not a separate CI job because the added feature should mostly have no effect
       # and be able to reuse the prior build.
       - name: Check Compile with --features=web
-        run: cargo check -p bevy --no-default-features --features default_no_std,web --target x86_64-unknown-none
+        run: cargo check -p hearth --no-default-features --features default_no_std,web --target x86_64-unknown-none
 
   check-compiles-no-std-portable-atomic:
     runs-on: ubuntu-latest
@@ -218,7 +218,7 @@ jobs:
       - name: Install Linux dependencies
         uses: $/.github/actions/install-linux-deps
       - name: Check Compile
-        run: cargo check -p bevy --no-default-features --features default_no_std --target thumbv6m-none-eabi
+        run: cargo check -p hearth --no-default-features --features default_no_std --target thumbv6m-none-eabi
 
   check-compiles-no-std-examples:
     runs-on: ubuntu-latest
@@ -404,11 +404,11 @@ jobs:
         # See tools/ci/src/main.rs for the commands this runs
         run: cargo run -p ci -- doc
       # This currently report a lot of false positives
-      # Enable it again once it's fixed - https://github.com/bevyengine/bevy/issues/1983
+      # Enable it again once it's fixed - upstream issue #1983
       # - name: Installs cargo-deadlinks
       #   run: cargo install --force cargo-deadlinks
       # - name: Checks dead links
-      #   run: cargo deadlinks --dir target/doc/bevy
+      #   run: cargo deadlinks --dir target/doc/hearth
       #   continue-on-error: true
 
   check-missing-examples-in-docs:
@@ -496,7 +496,7 @@ jobs:
       - name: get MSRV
         id: msrv
         run: |
-          msrv=`cargo metadata --no-deps --format-version 1 | jq --raw-output '.packages[] | select(.name=="bevy") | .rust_version'`
+          msrv=`cargo metadata --no-deps --format-version 1 | jq --raw-output '.packages[] | select(.name=="hearth") | .rust_version'`
           echo "msrv=$msrv" >> $GITHUB_OUTPUT
       - uses: $/.github/actions/install-rust
         with:
@@ -531,27 +531,27 @@ jobs:
           name: msrv
           path: msrv/
 
-  check-bevy-internal-imports:
+  check-hearth-internal-imports:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Check for internal Bevy imports
+      - name: Check for internal Hearth imports
         shell: bash
         run: |
           errors=""
           for file in $(find examples tests -name '*.rs' -not -path 'examples/mobile/*'); do
-              if grep -q "use bevy_" "$file"; then
-                  errors+="ERROR: Detected internal Bevy import in $file\n"
+              if grep -q "use hearth_" "$file"; then
+                  errors+="ERROR: Detected internal Hearth import in $file\n"
               fi
           done
           if [ -n "$errors" ]; then
               echo -e "$errors"
-              echo " Avoid importing internal Bevy crates, they should not be used directly"
-              echo " Fix the issue by replacing 'bevy_*' with 'bevy'"
-              echo " Example: 'use bevy::sprite::Mesh2d;' instead of 'bevy_internal::sprite::Mesh2d;'"
+              echo " Avoid importing internal Hearth crates, they should not be used directly"
+              echo " Fix the issue by replacing 'hearth_*' with 'hearth'"
+              echo " Example: 'use hearth::sprite::Mesh2d;' instead of 'hearth_internal::sprite::Mesh2d;'"
               exit 1
           fi
 
@@ -575,7 +575,7 @@ jobs:
             exit 1
           fi
 
-  bevy_ecs-fuzz-prepare:
+  hearth_ecs-fuzz-prepare:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -587,17 +587,17 @@ jobs:
       - name: List fuzz targets
         id: list
         run: |
-          targets=$(ls crates/bevy_ecs/fuzz/fuzz_targets/*.rs | xargs -n1 basename -s .rs | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          targets=$(ls crates/hearth_ecs/fuzz/fuzz_targets/*.rs | xargs -n1 basename -s .rs | jq -R -s -c 'split("\n") | map(select(. != ""))')
           echo "targets=$targets" >> $GITHUB_OUTPUT
 
-  bevy_ecs-fuzz:
+  hearth_ecs-fuzz:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: bevy_ecs-fuzz-prepare
+    needs: hearth_ecs-fuzz-prepare
     strategy:
       fail-fast: false
       matrix:
-        target: ${{ fromJson(needs.bevy_ecs-fuzz-prepare.outputs.targets) }}
+        target: ${{ fromJson(needs.hearth_ecs-fuzz-prepare.outputs.targets) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -608,7 +608,7 @@ jobs:
       - name: Install cargo-fuzz
         run: cargo install cargo-fuzz
       - name: Run fuzz target
-        working-directory: crates/bevy_ecs/fuzz
+        working-directory: crates/hearth_ecs/fuzz
         env:
           FUZZ_TARGET: ${{ matrix.target }}
         run: cargo fuzz run "$FUZZ_TARGET" -- -runs=100000

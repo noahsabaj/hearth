@@ -1,6 +1,6 @@
-//! This example displays each contributor to the bevy source code as a bouncing bevy-ball.
+//! This example displays each contributor to the hearth source code as a bouncing hearth-ball.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
@@ -362,7 +362,7 @@ fn contributors_or_fallback() -> Contributors {
             .collect()
     };
 
-    if cfg!(feature = "bevy_ci_testing") {
+    if cfg!(feature = "hearth_ci_testing") {
         return get_default();
     }
 

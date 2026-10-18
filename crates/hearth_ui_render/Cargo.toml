@@ -1,0 +1,70 @@
+[package]
+name = "hearth_ui_render"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides rendering functionality for Hearth UI"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_color = { path = "../hearth_color", version = "0.20.0-dev" }
+hearth_core_pipeline = { path = "../hearth_core_pipeline", version = "0.20.0-dev" }
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_extract = { path = "../hearth_extract", version = "0.20.0-dev" }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev" }
+hearth_input_focus = { path = "../hearth_input_focus", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_mesh = { path = "../hearth_mesh", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_shader = { path = "../hearth_shader", version = "0.20.0-dev" }
+hearth_render = { path = "../hearth_render", version = "0.20.0-dev" }
+hearth_sprite = { path = "../hearth_sprite", version = "0.20.0-dev" }
+hearth_sprite_render = { path = "../hearth_sprite_render", version = "0.20.0-dev", features = [
+  "hearth_text",
+] }
+hearth_transform = { path = "../hearth_transform", version = "0.20.0-dev" }
+hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "std",
+] }
+hearth_ui = { path = "../hearth_ui", version = "0.20.0-dev" }
+hearth_text = { path = "../hearth_text", version = "0.20.0-dev" }
+hearth_a11y = { path = "../hearth_a11y", version = "0.20.0-dev" }
+
+# other
+bytemuck = { version = "1.5", features = ["derive"] }
+derive_more = { version = "2", default-features = false, features = ["from"] }
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+indexmap = { version = "2" }
+smallvec = { version = "1", default-features = false }
+
+[features]
+default = ["hearth_ui_debug"]
+serialize = ["hearth_math/serialize", "hearth_platform/serialize"]
+hearth_ui_debug = []
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true
+
+[package.metadata.wgsl-analyzer]
+edition = "2026_pre"
+root = "src"
+
+[package.metadata.wgsl-analyzer.dependencies]
+hearth_render = { path = "../hearth_render" }
+constants = { path = "../../constants" }

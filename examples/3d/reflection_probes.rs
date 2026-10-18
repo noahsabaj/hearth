@@ -10,7 +10,7 @@
 //!
 //! Reflection probes don't work on WebGL 2 or WebGPU.
 
-use bevy::{
+use hearth::{
     camera::{Exposure, Hdr},
     core_pipeline::tonemapping::Tonemapping,
     light::{ParallaxCorrection, Skybox},

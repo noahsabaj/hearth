@@ -1,6 +1,7 @@
 //! This example demonstrates immutable components.
 
-use bevy::{
+use core::alloc::Layout;
+use hearth::{
     ecs::{
         component::{ComponentCloneBehavior, ComponentDescriptor, ComponentId, StorageType},
         lifecycle::HookContext,
@@ -10,10 +11,9 @@ use bevy::{
     prelude::*,
     ptr::OwningPtr,
 };
-use core::alloc::Layout;
 
 /// This component is mutable, the default case. This is indicated by components
-/// implementing [`Component`] where [`Component::Mutability`] is [`Mutable`](bevy::ecs::component::Mutable).
+/// implementing [`Component`] where [`Component::Mutability`] is [`Mutable`](hearth::ecs::component::Mutable).
 #[derive(Component)]
 pub struct MyMutableComponent(bool);
 
@@ -45,7 +45,7 @@ fn demo_1(world: &mut World) {
     entity.insert(my_immutable_component);
 }
 
-/// This is an example of a component like [`Name`](bevy::prelude::Name), but immutable.
+/// This is an example of a component like [`Name`](hearth::prelude::Name), but immutable.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Component, Reflect)]
 #[reflect(Hash, Component)]
 #[component(

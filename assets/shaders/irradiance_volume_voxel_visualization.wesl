@@ -1,8 +1,8 @@
-import bevy_pbr::render::forward_io::VertexOutput;
-import bevy_pbr::render::mesh_view_bindings;
-import bevy_pbr::render::clustered_forward;
+import hearth_pbr::render::forward_io::VertexOutput;
+import hearth_pbr::render::mesh_view_bindings;
+import hearth_pbr::render::clustered_forward;
 
-@if (IRRADIANCE_VOLUME) import bevy_pbr::light_probe::irradiance_volume;
+@if (IRRADIANCE_VOLUME) import hearth_pbr::light_probe::irradiance_volume;
 
 struct VoxelVisualizationIrradianceVolumeInfo {
     world_from_voxel: mat4x4<f32>,

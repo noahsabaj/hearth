@@ -3,7 +3,8 @@
 
 use std::{f32::consts::PI, time::Duration};
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     asset::io::web::WebAssetPlugin,
     camera::Hdr,
     color::palettes::css::{CRIMSON, GOLD},
@@ -13,7 +14,6 @@ use bevy::{
     prelude::*,
     ui_widgets::{radio_self_update, ValueChange},
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
@@ -26,7 +26,7 @@ mod radio;
 /// We cache these for efficiency.
 #[derive(Resource)]
 struct AppTextures {
-    /// The base color that all our decals have (the Bevy logo).
+    /// The base color that all our decals have (the Hearth logo).
     decal_base_color_texture: Handle<Image>,
 
     /// A normal map that all our decals have.
@@ -42,7 +42,7 @@ struct AppTextures {
 
     /// The emissive texture that can optionally be enabled.
     ///
-    /// This causes the white bird to glow.
+    /// This causes the mark to glow.
     decal_emissive_texture: Handle<Image>,
 }
 
@@ -51,16 +51,16 @@ impl FromWorld for AppTextures {
         // Load all the decal textures.
         let asset_server = world.resource::<AssetServer>();
         AppTextures {
-            decal_base_color_texture: asset_server.load("branding/bevy_bird_dark.png"),
+            decal_base_color_texture: asset_server.load("branding/hearth_mark.png"),
             decal_normal_map_texture: asset_server
                 .load_builder()
                 .with_settings(|settings: &mut ImageLoaderSettings| settings.is_srgb = false)
-                .load(get_web_asset_url("BevyLogo-Normal.png")),
+                .load(get_web_asset_url("HearthLogo-Normal.png")),
             decal_metallic_roughness_map_texture: asset_server
                 .load_builder()
                 .with_settings(|settings: &mut ImageLoaderSettings| settings.is_srgb = false)
-                .load(get_web_asset_url("BevyLogo-MetallicRoughness.png")),
-            decal_emissive_texture: asset_server.load(get_web_asset_url("BevyLogo-Emissive.png")),
+                .load(get_web_asset_url("HearthLogo-MetallicRoughness.png")),
+            decal_emissive_texture: asset_server.load(get_web_asset_url("HearthLogo-Emissive.png")),
         }
     }
 }
@@ -144,7 +144,7 @@ fn main() {
                 })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        title: "Bevy Clustered Decal Maps Example".into(),
+                        title: "Hearth Clustered Decal Maps Example".into(),
                         ..default()
                     }),
                     ..default()
@@ -412,10 +412,10 @@ fn handle_emission_type_change(
 /// The files are expected to be in the `clustered_decal_maps` directory in the
 /// [repository].
 ///
-/// [repository]: https://github.com/bevyengine/bevy_asset_files
+/// [repository]: https://github.com/noahsabaj/hearth_asset_files
 fn get_web_asset_url(name: &str) -> String {
     format!(
-        "https://raw.githubusercontent.com/bevyengine/bevy_asset_files/refs/heads/main/\
+        "https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/refs/heads/main/\
 clustered_decal_maps/{}",
         name
     )

@@ -1,0 +1,45 @@
+[package]
+name = "hearth_mikktspace"
+version = "0.20.0-dev"
+edition = "2024"
+authors = [
+  "Morten S. Mikkelsen <mmikk@users.noreply.github.com>",
+  "Benjamin Wasty <benny.wasty@gmail.com>",
+  "David Harvey-Macaulay <alteous@outlook.com>",
+  "Layl Bongers <LaylBongers@users.noreply.github.com>",
+  "Atlas Dostal <email@atlasdostal.com>",
+  "Zac Harrold <zac@harrold.com.au>",
+]
+description = "Safe Rust implementation of the Mikkelsen tangent space algorithm"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "Zlib AND (MIT OR Apache-2.0)"
+keywords = ["3D", "graphics", "algorithm", "tangent"]
+
+[dependencies]
+# This space is intentionally left blank
+
+[dev-dependencies]
+libm = "0.2"
+
+[features]
+default = ["std"]
+std = []
+
+# The below features will cause the resulting values to differ from the original
+# C implementation.
+
+# Corrects a sorting bug in the original C implementation.
+# See https://github.com/mmikk/MikkTSpace/issues/5 for details
+corrected-edge-sorting = []
+
+# Uses a BTreeMap to weld vertices which is guaranteed to use the smallest vertex
+# indices.
+# This handles `NaN` values differently to the C implementation, so will produce
+# different results for poor geometry.
+# For typical geometry, this should produce identical results.
+corrected-vertex-welding = []
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ['cfg(mikktspace_rs_more_assertions)']

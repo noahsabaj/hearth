@@ -1,4 +1,4 @@
-//! Tool used to build the templated pages of the Bevy website.
+//! Tool that builds the templated pages: the examples README and the list of cargo features.
 
 use bitflags::bitflags;
 

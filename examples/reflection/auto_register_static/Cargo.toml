@@ -11,7 +11,7 @@ crate-type = ["lib"]
 name = "auto_register_static"
 
 [dependencies]
-bevy = { path = "../../../", default-features = false, features = ["trace"] }
+hearth = { path = "../../../", default-features = false, features = ["trace"] }
 
 [lints]
 workspace = true

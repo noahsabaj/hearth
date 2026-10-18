@@ -1,4 +1,4 @@
-# Bevy Credits
+# Hearth Credits
 
 ## Adapted Code
 

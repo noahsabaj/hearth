@@ -1,7 +1,7 @@
 //! Illustrates how to create parent-child relationships between entities and how parent transforms
 //! are propagated to their descendants.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

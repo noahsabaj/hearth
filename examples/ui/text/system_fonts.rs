@@ -1,7 +1,7 @@
 //! This example displays a scrollable list of all available system fonts.
 //! Demonstrates querying system fonts via `FontCx`.
 
-use bevy::{
+use hearth::{
     diagnostic::FrameTimeDiagnosticsPlugin, input::mouse::MouseScrollUnit, prelude::*, text::FontCx,
 };
 

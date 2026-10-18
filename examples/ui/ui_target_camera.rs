@@ -1,10 +1,10 @@
 //! Demonstrates how to use `UiTargetCamera` and camera ordering.
 
-use bevy::color::palettes::css::BLUE;
-use bevy::color::palettes::css::GREEN;
-use bevy::color::palettes::css::RED;
-use bevy::color::palettes::css::YELLOW;
-use bevy::prelude::*;
+use hearth::color::palettes::css::BLUE;
+use hearth::color::palettes::css::GREEN;
+use hearth::color::palettes::css::RED;
+use hearth::color::palettes::css::YELLOW;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -67,7 +67,7 @@ fn setup(mut commands: Commands) {
                     border: px(0.1 * BOX_SIZE).into(),
                     ..default()
                 },
-                // Bevy UI doesn't support `RenderLayers`. Each UI layout can only have one render target, selected using `UiTargetCamera`.
+                // Hearth UI doesn't support `RenderLayers`. Each UI layout can only have one render target, selected using `UiTargetCamera`.
                 UiTargetCamera(camera_entity),
                 BackgroundColor(Color::BLACK),
                 BorderColor::all(YELLOW),

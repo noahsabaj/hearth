@@ -1,5 +1,5 @@
 //! This example illustrates how to resize windows, and how to respond to a window being resized.
-use bevy::{prelude::*, window::WindowResized};
+use hearth::{prelude::*, window::WindowResized};
 
 fn main() {
     App::new()

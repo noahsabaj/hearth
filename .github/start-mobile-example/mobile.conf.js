@@ -8,8 +8,8 @@ exports.config = {
 
   capabilities: [
     {
-      project: "Bevy Example",
-      build: "Bevy Example Runner",
+      project: "Hearth Example",
+      build: "Hearth Example Runner",
       name: "run_example",
       device: process.env.DEVICE || "Samsung Galaxy S23",
       os_version: process.env.OS_VERSION || "13.0",

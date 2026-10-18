@@ -1,5 +1,5 @@
 /// Helpers to create a [`Node`] appropriate for the outer main UI node as a `Scene`.
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 /// Returns a [`Node`] appropriate for the outer main UI node as a `Scene`.
 ///

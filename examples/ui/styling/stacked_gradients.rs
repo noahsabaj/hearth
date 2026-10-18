@@ -1,10 +1,10 @@
 //! An example demonstrating overlaid gradients
 
-use bevy::color::palettes::css::BLUE;
-use bevy::color::palettes::css::RED;
-use bevy::color::palettes::css::YELLOW;
-use bevy::prelude::*;
 use core::f32::consts::TAU;
+use hearth::color::palettes::css::BLUE;
+use hearth::color::palettes::css::RED;
+use hearth::color::palettes::css::YELLOW;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

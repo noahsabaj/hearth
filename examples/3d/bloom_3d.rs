@@ -1,6 +1,6 @@
 //! Illustrates bloom post-processing using HDR and emissive materials.
 
-use bevy::{
+use hearth::{
     core_pipeline::tonemapping::Tonemapping,
     math::ops,
     post_process::bloom::{Bloom, BloomCompositeMode},

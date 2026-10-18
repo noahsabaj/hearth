@@ -1,6 +1,6 @@
 //! Demonstrates generating mipmaps for an in-memory test image.
 
-use bevy::{
+use hearth::{
     prelude::*,
     render::render_resource::{
         Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,

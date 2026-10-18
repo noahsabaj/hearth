@@ -1,7 +1,7 @@
 //! Demonstrates how to use transparency in 2D.
-//! Shows 3 bevy logos on top of each other, each with a different amount of transparency.
+//! Shows 3 hearth logos on top of each other, each with a different amount of transparency.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

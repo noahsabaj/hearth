@@ -4,7 +4,7 @@
 //! This example demonstrates use of the [`MipGenerationJobs`] resource to
 //! generate mipmap levels for a texture at runtime. It generates the first
 //! mipmap level of a texture on CPU, which consists of two ellipses with
-//! randomly chosen colors. Then it invokes Bevy's mipmap generation pass to
+//! randomly chosen colors. Then it invokes Hearth's mipmap generation pass to
 //! generate the remaining mipmap levels for the texture on the GPU. You can use
 //! the UI to regenerate the texture and adjust its size to prove that the
 //! texture, and its mipmaps, are truly being generated at runtime and aren't
@@ -12,7 +12,8 @@
 
 use std::array;
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     asset::RenderAssetUsages,
     core_pipeline::{
         mip_generation::{
@@ -42,7 +43,6 @@ use bevy::{
     ui_widgets::{radio_self_update, Activate, ValueChange},
     window::{PrimaryWindow, WindowResized},
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
@@ -212,7 +212,7 @@ fn main() {
     app.add_plugins((
         DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Dynamic Mipmap Generation Example".into(),
+                title: "Hearth Dynamic Mipmap Generation Example".into(),
                 ..default()
             }),
             ..default()

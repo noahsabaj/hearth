@@ -4,29 +4,29 @@
 
 ## Cargo Features
 
-Bevy exposes many Cargo features to customize the engine. Enabling them adds functionality but may come at the cost of longer compilation times
+Hearth exposes many Cargo features to customize the engine. Enabling them adds functionality but may come at the cost of longer compilation times
 and extra dependencies.
 
 ### Profiles
 
-"Profiles" are high-level groups of cargo features that provide the full Bevy experience, but scoped to a specific domain.
-These exist to be paired with `default-features = false`, enabling compiling only the subset of Bevy that you need.
+"Profiles" are high-level groups of cargo features that provide the full Hearth experience, but scoped to a specific domain.
+These exist to be paired with `default-features = false`, enabling compiling only the subset of Hearth that you need.
 This can cut down compile times and shrink your final binary size.
 
-For example, you can compile only the "2D" Bevy features (without the 3D features) like this:
+For example, you can compile only the "2D" Hearth features (without the 3D features) like this:
 
 ```toml
-bevy = { version = "0.18", default-features = false, features = ["2d"] }
+hearth = { version = "0.18", default-features = false, features = ["2d"] }
 ```
 
 |Profile|Description|
 |-|-|
-|default|The full default Bevy experience. This is a combination of the following profiles: 2d, 3d, ui, audio|
-|2d|The default 2D Bevy experience. This includes the core Bevy framework, 2D functionality, scenes and picking.|
-|3d|The default 3D Bevy experience. This includes the core Bevy framework, 3D functionality, scenes and picking.|
-|ui|The default Bevy UI experience. This includes the core Bevy framework, Bevy UI, scenes, and picking.|
+|default|The full default Hearth experience. This is a combination of the following profiles: 2d, 3d, ui, audio|
+|2d|The default 2D Hearth experience. This includes the core Hearth framework, 2D functionality, scenes and picking.|
+|3d|The default 3D Hearth experience. This includes the core Hearth framework, 3D functionality, scenes and picking.|
+|ui|The default Hearth UI experience. This includes the core Hearth framework, Hearth UI, scenes, and picking.|
 
-By default, the `bevy` crate enables the  features.
+By default, the `hearth` crate enables the  features.
 
 ### Collections
 
@@ -36,25 +36,25 @@ collections to build your own "profile" equivalent, without needing to manually 
 
 |Collection|Description|
 |-|-|
-|dev|Enable this feature during development to improve the development experience. This adds features like asset hot-reloading and debugging tools. This should not be enabled for published apps! **Feature set:** `debug`, `bevy_dev_tools`, `render_dev_tools`, `file_watcher`.|
-|audio|Features used to build audio Bevy apps. **Feature set:** `bevy_audio`, `vorbis`.|
-|audio-all-formats|Enables audio features and all supported formats. **Feature set:** `bevy_audio`, `aac`, `flac`, `mp3`, `mp4`, `vorbis`, `wav`.|
-|scene|Features used to compose Bevy scenes. **Feature set:** `bevy_world_serialization`, `bevy_scene`.|
-|picking|Enables picking with all backends. **Feature set:** `bevy_picking`, `mesh_picking`, `sprite_picking`, `ui_picking`.|
-|default_app|The core pieces that most apps need. This serves as a baseline feature set for other higher level feature collections (such as "2d" and "3d"). It is also useful as a baseline feature set for scenarios like headless apps that require no rendering (ex: command line tools, servers, etc). **Feature set:** `async_executor`, `bevy_asset`, `bevy_log`, `bevy_state`, `reflect_auto_register`.|
-|default_platform|These are platform support features, such as OS support/features, windowing and input backends, etc. **Feature set:** `std`, `bevy_gilrs`, `bevy_winit`, `bevy_clipboard`, `default_font`, `multi_threaded`, `webgl2`, `x11`, `wayland`, `custom_cursor`, `sysinfo_plugin`.|
-|common_api|Default scene definition features. Note that this does not include an actual renderer, such as bevy_render (Bevy's default render backend). **Feature set:** `bevy_animation`, `bevy_camera`, `bevy_color`, `bevy_curve`, `bevy_gizmos`, `bevy_image`, `bevy_mesh`, `bevy_shader`, `bevy_material`, `bevy_text`, `bevy_window`, `hdr`, `png`.|
-|2d_api|Features used to build 2D Bevy apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `common_api`, `bevy_sprite`.|
-|2d_bevy_render|Bevy's built-in 2D renderer, built on top of `bevy_render`. **Feature set:** `2d_api`, `bevy_render`, `bevy_core_pipeline`, `bevy_post_process`, `bevy_sprite_render`, `bevy_gizmos_render`.|
-|3d_api|Features used to build 3D Bevy apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `common_api`, `bevy_light`, `bevy_mikktspace`, `ktx2`, `morph_animation`, `morph`, `smaa_luts`, `tonemapping_luts`, `zstd_rust`.|
-|3d_bevy_render|Bevy's built-in 3D renderer, built on top of `bevy_render`. **Feature set:** `3d_api`, `bevy_render`, `bevy_core_pipeline`, `bevy_gizmos_render`, `bevy_anti_alias`, `bevy_gltf`, `bevy_pbr`, `bevy_post_process`, `gltf_animation`.|
-|ui_api|Features used to build UI Bevy apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `default_app`, `common_api`, `bevy_input_focus`, `bevy_ui`.|
-|ui_bevy_render|Bevy's built-in UI renderer, built on top of `bevy_render`. **Feature set:** `ui_api`, `bevy_render`, `bevy_core_pipeline`, `bevy_ui_render`.|
-|default_no_std|Recommended defaults for `no_std` applications. **Feature set:** `libm`, `critical-section`, `bevy_color`, `bevy_state`.|
+|dev|Enable this feature during development to improve the development experience. This adds features like asset hot-reloading and debugging tools. This should not be enabled for published apps! **Feature set:** `debug`, `hearth_dev_tools`, `render_dev_tools`, `file_watcher`.|
+|audio|Features used to build audio Hearth apps. **Feature set:** `hearth_audio`, `vorbis`.|
+|audio-all-formats|Enables audio features and all supported formats. **Feature set:** `hearth_audio`, `aac`, `flac`, `mp3`, `mp4`, `vorbis`, `wav`.|
+|scene|Features used to compose Hearth scenes. **Feature set:** `hearth_world_serialization`, `hearth_scene`.|
+|picking|Enables picking with all backends. **Feature set:** `hearth_picking`, `mesh_picking`, `sprite_picking`, `ui_picking`.|
+|default_app|The core pieces that most apps need. This serves as a baseline feature set for other higher level feature collections (such as "2d" and "3d"). It is also useful as a baseline feature set for scenarios like headless apps that require no rendering (ex: command line tools, servers, etc). **Feature set:** `async_executor`, `hearth_asset`, `hearth_log`, `hearth_state`, `reflect_auto_register`.|
+|default_platform|These are platform support features, such as OS support/features, windowing and input backends, etc. **Feature set:** `std`, `hearth_gilrs`, `hearth_winit`, `hearth_clipboard`, `default_font`, `multi_threaded`, `webgl2`, `x11`, `wayland`, `custom_cursor`, `sysinfo_plugin`.|
+|common_api|Default scene definition features. Note that this does not include an actual renderer, such as hearth_render (Hearth's default render backend). **Feature set:** `hearth_animation`, `hearth_camera`, `hearth_color`, `hearth_curve`, `hearth_gizmos`, `hearth_image`, `hearth_mesh`, `hearth_shader`, `hearth_material`, `hearth_text`, `hearth_window`, `hdr`, `png`.|
+|2d_api|Features used to build 2D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `common_api`, `hearth_sprite`.|
+|2d_hearth_render|Hearth's built-in 2D renderer, built on top of `hearth_render`. **Feature set:** `2d_api`, `hearth_render`, `hearth_core_pipeline`, `hearth_post_process`, `hearth_sprite_render`, `hearth_gizmos_render`.|
+|3d_api|Features used to build 3D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `common_api`, `hearth_light`, `hearth_mikktspace`, `ktx2`, `morph_animation`, `morph`, `smaa_luts`, `tonemapping_luts`, `zstd_rust`.|
+|3d_hearth_render|Hearth's built-in 3D renderer, built on top of `hearth_render`. **Feature set:** `3d_api`, `hearth_render`, `hearth_core_pipeline`, `hearth_gizmos_render`, `hearth_anti_alias`, `hearth_gltf`, `hearth_pbr`, `hearth_post_process`, `gltf_animation`.|
+|ui_api|Features used to build UI Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `default_app`, `common_api`, `hearth_input_focus`, `hearth_ui`.|
+|ui_hearth_render|Hearth's built-in UI renderer, built on top of `hearth_render`. **Feature set:** `ui_api`, `hearth_render`, `hearth_core_pipeline`, `hearth_ui_render`.|
+|default_no_std|Recommended defaults for `no_std` applications. **Feature set:** `libm`, `critical-section`, `hearth_color`, `hearth_state`.|
 
 ### Feature List
 
-This is the complete `bevy` cargo feature list, without "profiles" or "collections" (sorted by name):
+This is the complete `hearth` cargo feature list, without "profiles" or "collections" (sorted by name):
 
 |Feature|Description|
 |-|-|
@@ -67,56 +67,56 @@ This is the complete `bevy` cargo feature list, without "profiles" or "collectio
 |async-io|Use async-io's implementation of block_on instead of futures-lite's implementation. This is preferred if your application uses async-io.|
 |async_executor|Uses `async-executor` as a task execution backend.|
 |basis-universal|Basis Universal compressed texture support|
-|bevy_animation|Provides animation functionality|
-|bevy_anti_alias|Provides various anti-aliasing solutions|
-|bevy_asset|Provides asset functionality|
-|bevy_audio|Provides audio functionality|
-|bevy_bsn|Provides BSN AST / parsing functionality|
-|bevy_camera|Provides camera and visibility types, as well as culling primitives.|
-|bevy_camera_controller|Provides a collection of prebuilt camera controllers|
-|bevy_ci_testing|Enable systems that allow for automated testing on CI|
-|bevy_clipboard|Clipboard resource and management. See `system_clipboard` for OS-integrated clipboard support.|
-|bevy_color|Provides shared color types and operations|
-|bevy_core_pipeline|Provides cameras and other basic render pipeline features|
-|bevy_curve|Provides mathematical curve functionality|
-|bevy_debug_stepping|Enable stepping-based debugging of Bevy systems|
-|bevy_dev_tools|Provides a collection of developer tools|
-|bevy_editor|The Hearth editor: scenes, a 3D viewport, and a live link to the running game.|
-|bevy_extract|Provides the ability to extract entities from an ECS main world to a sub world|
-|bevy_feathers|Feathers widget collection.|
-|bevy_gilrs|Adds gamepad support|
-|bevy_gizmos|Adds support for gizmos|
-|bevy_gizmos_render|Adds support for rendering gizmos|
-|bevy_gltf|[glTF](https://www.khronos.org/gltf/) support|
-|bevy_image|Load and access image data. Usually added by an image format|
-|bevy_input_focus|Enable input focus subsystem|
-|bevy_inspector|Entity inspector built on bevy_ui and bevy_feathers.|
-|bevy_light|Provides light types such as point lights, directional lights, spotlights.|
-|bevy_log|Enable integration with `tracing` and `log`|
-|bevy_material|Provides materials.|
-|bevy_mesh|Provides a mesh format and some primitive meshing routines.|
-|bevy_mikktspace|Provides vertex tangent generation for use with bevy_mesh.|
-|bevy_pbr|Adds PBR rendering|
-|bevy_picking|Provides picking functionality without any backend|
-|bevy_post_process|Provides post process effects such as depth of field, bloom, chromatic aberration.|
-|bevy_remote|Enable the Bevy Remote Protocol|
-|bevy_remote_client|Enable a native client for calling a running app over the Bevy Remote Protocol, used by in-engine tools like the inspector and by the remote examples|
-|bevy_render|Provides rendering functionality|
-|bevy_scene|Provides scene functionality|
-|bevy_settings|Load and save settings|
-|bevy_shader|Provides shaders usable through asset handles.|
-|bevy_solari|Provides raytraced lighting (experimental)|
-|bevy_sprite|Provides sprite functionality|
-|bevy_sprite_render|Provides sprite rendering functionality|
-|bevy_state|Enable built in global state machines|
-|bevy_text|Provides text functionality|
-|bevy_ui|A custom ECS-driven UI framework|
-|bevy_ui_debug|Provides a debug overlay for Bevy UI|
-|bevy_ui_render|Provides rendering functionality for bevy_ui|
-|bevy_ui_widgets|Headless widget collection for Bevy UI.|
-|bevy_window|Windowing layer|
-|bevy_winit|winit window and input backend|
-|bevy_world_serialization|Provides ECS serialization functionality|
+|hearth_animation|Provides animation functionality|
+|hearth_anti_alias|Provides various anti-aliasing solutions|
+|hearth_asset|Provides asset functionality|
+|hearth_audio|Provides audio functionality|
+|hearth_bsn|Provides BSN AST / parsing functionality|
+|hearth_camera|Provides camera and visibility types, as well as culling primitives.|
+|hearth_camera_controller|Provides a collection of prebuilt camera controllers|
+|hearth_ci_testing|Enable systems that allow for automated testing on CI|
+|hearth_clipboard|Clipboard resource and management. See `system_clipboard` for OS-integrated clipboard support.|
+|hearth_color|Provides shared color types and operations|
+|hearth_core_pipeline|Provides cameras and other basic render pipeline features|
+|hearth_curve|Provides mathematical curve functionality|
+|hearth_debug_stepping|Enable stepping-based debugging of Hearth systems|
+|hearth_dev_tools|Provides a collection of developer tools|
+|hearth_editor|The Hearth editor: scenes, a 3D viewport, and a live link to the running game.|
+|hearth_extract|Provides the ability to extract entities from an ECS main world to a sub world|
+|hearth_feathers|Feathers widget collection.|
+|hearth_gilrs|Adds gamepad support|
+|hearth_gizmos|Adds support for gizmos|
+|hearth_gizmos_render|Adds support for rendering gizmos|
+|hearth_gltf|[glTF](https://www.khronos.org/gltf/) support|
+|hearth_image|Load and access image data. Usually added by an image format|
+|hearth_input_focus|Enable input focus subsystem|
+|hearth_inspector|Entity inspector built on hearth_ui and hearth_feathers.|
+|hearth_light|Provides light types such as point lights, directional lights, spotlights.|
+|hearth_log|Enable integration with `tracing` and `log`|
+|hearth_material|Provides materials.|
+|hearth_mesh|Provides a mesh format and some primitive meshing routines.|
+|hearth_mikktspace|Provides vertex tangent generation for use with hearth_mesh.|
+|hearth_pbr|Adds PBR rendering|
+|hearth_picking|Provides picking functionality without any backend|
+|hearth_post_process|Provides post process effects such as depth of field, bloom, chromatic aberration.|
+|hearth_remote|Enable the Hearth Remote Protocol|
+|hearth_remote_client|Enable a native client for calling a running app over the Hearth Remote Protocol, used by in-engine tools like the inspector and by the remote examples|
+|hearth_render|Provides rendering functionality|
+|hearth_scene|Provides scene functionality|
+|hearth_settings|Load and save settings|
+|hearth_shader|Provides shaders usable through asset handles.|
+|hearth_solari|Provides raytraced lighting (experimental)|
+|hearth_sprite|Provides sprite functionality|
+|hearth_sprite_render|Provides sprite rendering functionality|
+|hearth_state|Enable built in global state machines|
+|hearth_text|Provides text functionality|
+|hearth_ui|A custom ECS-driven UI framework|
+|hearth_ui_debug|Provides a debug overlay for Hearth UI|
+|hearth_ui_render|Provides rendering functionality for hearth_ui|
+|hearth_ui_widgets|Headless widget collection for Hearth UI.|
+|hearth_window|Windowing layer|
+|hearth_winit|winit window and input backend|
+|hearth_world_serialization|Provides ECS serialization functionality|
 |bluenoise_texture|Include spatio-temporal blue noise KTX2 file used by generated environment maps, Solari and atmosphere|
 |bmp|BMP image format support|
 |clipboard_image|Enables image copy/paste via the system clipboard. Not supported on WASM.|
@@ -133,42 +133,42 @@ This is the complete `bevy` cargo feature list, without "profiles" or "collectio
 |dfg_lut|Include a preintegrated BRDF Look Up Table for more accurate specular shading.|
 |dlss|NVIDIA Deep Learning Super Sampling|
 |dynamic_linking|Force dynamic linking, which improves iterative compile times|
-|embedded_watcher|Enables watching in memory asset providers for Bevy Asset hot-reloading|
+|embedded_watcher|Enables watching in memory asset providers for Hearth Asset hot-reloading|
 |equirectangular_cubemap|Equirectangular (lat-long) panorama to cubemap conversion|
 |experimental_pbr_pcss|Enable support for PCSS, at the risk of blowing past the global, per-shader sampler limit on older/lower-end GPUs|
 |exr|EXR image format support|
 |ff|Farbfeld image format support|
-|file_watcher|Enables watching the filesystem for Bevy Asset hot-reloading|
+|file_watcher|Enables watching the filesystem for Hearth Asset hot-reloading|
 |flac|FLAC audio format support (through `claxon`)|
 |force_disable_dlss|Forcibly disable DLSS so that `cargo build --all-features` works without the DLSS SDK being installed. Not meant for users.|
-|free_camera|Enables the free cam from bevy_camera_controller|
-|gamepad|Gamepad support. Automatically enabled by `bevy_gilrs`.|
-|gestures|Gestures support. Automatically enabled by `bevy_window`.|
+|free_camera|Enables the free cam from hearth_camera_controller|
+|gamepad|Gamepad support. Automatically enabled by `hearth_gilrs`.|
+|gestures|Gestures support. Automatically enabled by `hearth_window`.|
 |gif|GIF image format support|
 |glam_assert|Enable assertions to check the validity of parameters passed to glam|
 |gltf_animation|Enable glTF animation loading|
 |gltf_meshopt|Enables loading glTF files that use KHR_meshopt_compression or EXT_meshopt_compression|
 |hdr|HDR image format support|
-|hotpatching|Enable hotpatching of Bevy systems|
+|hotpatching|Enable hotpatching of Hearth systems|
 |http|Enables downloading assets from HTTP sources. Warning: there are security implications. Read the docs on WebAssetPlugin.|
 |https|Enables downloading assets from HTTPS sources. Warning: there are security implications. Read the docs on WebAssetPlugin.|
 |ico|ICO image format support|
 |jpeg|JPEG image format support|
-|keyboard|Keyboard support. Automatically enabled by `bevy_window`.|
+|keyboard|Keyboard support. Automatically enabled by `hearth_window`.|
 |ktx2|KTX2 compressed texture support|
 |libm|Uses the `libm` maths library instead of the one provided in `std` and `core`.|
 |linux_game_mode|Enable Feral Interactive's `GameMode` integration on Linux|
 |mesh_picking|Provides an implementation for picking meshes|
 |meshlet|Enables the meshlet renderer for dense high-poly scenes (experimental)|
-|meshlet_processor|Enables processing meshes into meshlet meshes for `bevy_pbr`|
-|morph|Enables support for morph target weights in bevy_mesh|
-|morph_animation|Enables bevy_mesh and bevy_animation morph weight support|
-|mouse|Mouse support. Automatically enabled by `bevy_window`.|
+|meshlet_processor|Enables processing meshes into meshlet meshes for `hearth_pbr`|
+|morph|Enables support for morph target weights in hearth_mesh|
+|morph_animation|Enables hearth_mesh and hearth_animation morph weight support|
+|mouse|Mouse support. Automatically enabled by `hearth_window`.|
 |mp3|MP3 audio format support (through `symphonia`)|
 |mp4|MP4 audio format support (through `symphonia`). It also enables AAC support.|
 |multi_threaded|Enables multithreaded parallelism in the engine. Disabling it forces all engine tasks to run on a single thread.|
-|pan_camera|Enables the pan camera from bevy_camera_controller|
-|pan_orbit_camera|Enables the pan orbit camera from bevy_camera_controller|
+|pan_camera|Enables the pan camera from hearth_camera_controller|
+|pan_orbit_camera|Enables the pan orbit camera from hearth_camera_controller|
 |pan_orbit_gizmo|Enables the pan orbit camera anchor indicator gizmo|
 |pbr_anisotropy_texture|Enable support for anisotropy texture in the `StandardMaterial`, at the risk of blowing past the global, per-shader texture limit on older/lower-end GPUs|
 |pbr_clustered_decals|Enable support for Clustered Decals|
@@ -182,7 +182,7 @@ This is the complete `bevy` cargo feature list, without "profiles" or "collectio
 |raw_vulkan_init|Forces the wgpu instance to be initialized using the raw Vulkan HAL, enabling additional configuration|
 |reflect_auto_register|Enable automatic reflect registration|
 |reflect_auto_register_static|Enable automatic reflect registration without inventory. See `reflect::load_type_registrations` for more info.|
-|reflect_documentation|Enables `bevy_reflect` to access documentation comments of Rust code at runtime|
+|reflect_documentation|Enables `hearth_reflect` to access documentation comments of Rust code at runtime|
 |reflect_functions|Enable function reflection|
 |render_dev_tools|Enable systems that allow for renderable dev tools|
 |schedule_data|Enable collecting schedule data from the app.|
@@ -202,7 +202,7 @@ This is the complete `bevy` cargo feature list, without "profiles" or "collectio
 |tga|TGA image format support|
 |tiff|TIFF image format support|
 |tonemapping_luts|Include tonemapping Look Up Tables KTX2 files. If everything is pink, you need to enable this feature or change the `Tonemapping` method for your `Camera2d` or `Camera3d`.|
-|touch|Touch support. Automatically enabled by `bevy_window`.|
+|touch|Touch support. Automatically enabled by `hearth_window`.|
 |trace|Tracing support|
 |trace_chrome|Tracing support, saving a file in Chrome Tracing format|
 |trace_tracy|Tracing support, exposing a port for Tracy|
@@ -215,7 +215,7 @@ This is the complete `bevy` cargo feature list, without "profiles" or "collectio
 |wayland|Wayland display server support|
 |web|Enables use of browser APIs. Note this is currently only applicable on `wasm32` architectures.|
 |web_asset_cache|Enable caching downloaded assets on the filesystem. NOTE: this cache currently never invalidates entries!|
-|webgl2|Enable some limitations to be able to use WebGL2. Please refer to the [WebGL2 and WebGPU](https://github.com/bevyengine/bevy/tree/latest/examples#webgl2-and-webgpu) section of the examples README for more information on how to run Wasm builds with WebGPU.|
+|webgl2|Enable some limitations to be able to use WebGL2. Please refer to the [WebGL2 and WebGPU](https://github.com/noahsabaj/hearth/tree/main/examples#webgl2-and-webgpu) section of the examples README for more information on how to run Wasm builds with WebGPU.|
 |webgpu|Enable support for WebGPU in Wasm. When enabled, this feature will override the `webgl2` feature and you won't be able to run Wasm builds with WebGL2, only with WebGPU.|
 |webp|WebP image format support|
 |x11|X11 display server support|

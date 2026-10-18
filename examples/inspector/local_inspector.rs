@@ -1,12 +1,12 @@
-//! Shows the `bevy_inspector` entity tree and details panels inspecting the app's own world.
+//! Shows the `hearth_inspector` entity tree and details panels inspecting the app's own world.
 //! Editing the showcase tint and shape updates the object in the scene.
 //!
-//! Run with the `bevy_inspector` feature enabled, and `debug` for readable names of unregistered types:
+//! Run with the `hearth_inspector` feature enabled, and `debug` for readable names of unregistered types:
 //! ```bash
-//! cargo run --example local_inspector --features="bevy_inspector,debug"
+//! cargo run --example local_inspector --features="hearth_inspector,debug"
 //! ```
 
-use bevy::{
+use hearth::{
     feathers::{
         controls::{FeathersPane, FeathersSplitPane, FeathersSplitPaneHandle},
         dark_theme::create_dark_theme,

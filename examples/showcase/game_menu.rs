@@ -1,8 +1,8 @@
-//! This example will display a simple menu using Bevy UI where you can start a new game,
+//! This example will display a simple menu using Hearth UI where you can start a new game,
 //! change some settings or quit. There is no actual game, it will just display the current
 //! settings for 5 seconds before going back to the menu.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
@@ -49,11 +49,11 @@ fn setup(mut commands: Commands) {
 }
 
 mod splash {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     use super::GameState;
 
-    // This plugin will display a splash screen with Bevy logo for 1 second before switching to the menu
+    // This plugin will display a splash screen with Hearth logo for 1 second before switching to the menu
     pub fn splash_plugin(app: &mut App) {
         // As this plugin is managing the splash screen, it will focus on the state `GameState::Splash`
         app
@@ -111,7 +111,7 @@ mod splash {
 }
 
 mod game {
-    use bevy::{
+    use hearth::{
         color::palettes::basic::{BLUE, LIME},
         prelude::*,
     };
@@ -225,7 +225,7 @@ mod game {
 }
 
 mod menu {
-    use bevy::{
+    use hearth::{
         app::AppExit,
         color::palettes::css::CRIMSON,
         ecs::component::Mutable,
@@ -459,7 +459,7 @@ mod menu {
                 children![
                     // Display the game name
                     (
-                        Text::new("Bevy Game Menu UI"),
+                        Text::new("Hearth Game Menu UI"),
                         TextFont {
                             font_size: FontSize::Px(67.0),
                             ..default()

@@ -12,14 +12,14 @@
 //! You can toggle wireframes with a Feathers checkbox except on wasm. Wasm does not support
 //! `POLYGON_MODE_LINE` on the gpu.
 
-use bevy::prelude::*;
+use checkbox::feathers_option_checkbox;
+use hearth::prelude::*;
 #[cfg(not(target_arch = "wasm32"))]
-use bevy::sprite_render::{Wireframe2dConfig, Wireframe2dPlugin};
-use bevy::{
+use hearth::sprite_render::{Wireframe2dConfig, Wireframe2dPlugin};
+use hearth::{
     feathers::{controls::FeathersCheckbox, theme::UiTheme, FeathersPlugins},
     ui_widgets::{checkbox_self_update, ValueChange},
 };
-use checkbox::feathers_option_checkbox;
 use scene::{bottom_left_scene, top_left_scene};
 
 #[path = "../helpers/checkbox.rs"]

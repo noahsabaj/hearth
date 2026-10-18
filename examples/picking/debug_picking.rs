@@ -1,13 +1,13 @@
 //! A simple scene to demonstrate picking events for UI and mesh entities,
 //! Demonstrates how to change debug settings
 
-use bevy::dev_tools::picking_debug::{DebugPickingMode, DebugPickingPlugin};
-use bevy::prelude::*;
+use hearth::dev_tools::picking_debug::{DebugPickingMode, DebugPickingPlugin};
+use hearth::prelude::*;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(bevy::log::LogPlugin {
-            filter: "bevy_dev_tools=trace".into(), // Show picking logs trace level and up
+        .add_plugins(DefaultPlugins.set(hearth::log::LogPlugin {
+            filter: "hearth_dev_tools=trace".into(), // Show picking logs trace level and up
             ..default()
         }))
         .add_plugins((MeshPickingPlugin, DebugPickingPlugin))
@@ -23,9 +23,9 @@ fn main() {
                     DebugPickingMode::Noisy => DebugPickingMode::Disabled,
                 }
             })
-            .distributive_run_if(bevy::input::common_conditions::input_just_pressed(
-                KeyCode::F3,
-            )),
+            .distributive_run_if(
+                hearth::input::common_conditions::input_just_pressed(KeyCode::F3),
+            ),
         )
         .run();
 }
@@ -55,7 +55,7 @@ fn setup_scene(
         .observe(
             |over: On<PointerOver>, mut texts: Query<&mut TextColor>| {
                 let mut color = texts.get_mut(over.entity).unwrap();
-                color.0 = bevy::color::palettes::tailwind::CYAN_400.into();
+                color.0 = hearth::color::palettes::tailwind::CYAN_400.into();
             },
         );
 

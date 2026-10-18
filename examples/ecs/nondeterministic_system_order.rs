@@ -1,4 +1,4 @@
-//! By default, Bevy systems run in parallel with each other.
+//! By default, Hearth systems run in parallel with each other.
 //! Unless the order is explicitly specified, their relative order is nondeterministic.
 //!
 //! In many cases, this doesn't matter and is in fact desirable!
@@ -12,7 +12,7 @@
 //!
 //! This example demonstrates how you might detect and resolve (or silence) these ambiguities.
 
-use bevy::{
+use hearth::{
     ecs::schedule::{LogLevel, ScheduleBuildSettings},
     prelude::*,
 };

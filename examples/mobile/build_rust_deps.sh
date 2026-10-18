@@ -58,10 +58,10 @@ for arch in $ARCHS; do
       fi
   esac
 
-  cargo build $RELFLAG --target $TARGET --bin bevy_mobile_example
+  cargo build $RELFLAG --target $TARGET --bin hearth_mobile_example
 
   # Collect the executables
-  EXECUTABLES="$EXECUTABLES $DERIVED_FILE_DIR/cargo/$TARGET/$PROFILE/bevy_mobile_example"
+  EXECUTABLES="$EXECUTABLES $DERIVED_FILE_DIR/cargo/$TARGET/$PROFILE/hearth_mobile_example"
 done
 
 # Combine executables, and place them at the output path excepted by Xcode

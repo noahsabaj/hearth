@@ -1,6 +1,6 @@
 //! Demonstrates a startup system (one that runs once when the app starts up).
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

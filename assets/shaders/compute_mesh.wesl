@@ -22,7 +22,7 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     // `192` is used because arrayLength on const arrays doesn't work
     for (var i = 0u; i < 192; i++) {
         // The vertex_data buffer is bigger than just the mesh we're
-        // processing because Bevy stores meshes in the mesh_allocator
+        // processing because Hearth stores meshes in the mesh_allocator
         // which allocates slabs that each can contain multiple meshes.
         // This buffer is one slab, and data_range.vertex_start is the
         // starting offset for the mesh we care about.

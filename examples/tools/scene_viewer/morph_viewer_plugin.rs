@@ -9,7 +9,7 @@
 //! Also illustrates how to read morph target names in [`detect_morphs`].
 
 use crate::scene_viewer_plugin::SceneHandle;
-use bevy::prelude::*;
+use hearth::prelude::*;
 use std::fmt;
 
 const FONT_SIZE: FontSize = FontSize::Px(13.0);

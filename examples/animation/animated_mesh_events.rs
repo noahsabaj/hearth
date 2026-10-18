@@ -2,13 +2,13 @@
 
 use std::{f32::consts::PI, time::Duration};
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     animation::{AnimationEvent, AnimationTargetId},
     color::palettes::css::WHITE,
     light::CascadeShadowConfigBuilder,
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 const FOX_PATH: &str = "models/animated/Fox.glb";

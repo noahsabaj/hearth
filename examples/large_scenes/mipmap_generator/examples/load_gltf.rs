@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use argh::FromArgs;
-use bevy::{asset::UnapprovedPathMode, prelude::*};
+use hearth::{asset::UnapprovedPathMode, prelude::*};
 use mipmap_generator::{
     generate_mipmaps, MipmapGeneratorDebugTextPlugin, MipmapGeneratorPlugin,
     MipmapGeneratorSettings,
@@ -29,7 +29,7 @@ fn main() {
     App::new()
         .insert_resource(ClearColor(Color::srgb(0.1, 0.1, 0.1)))
         .add_plugins(DefaultPlugins.set(AssetPlugin {
-            // Needed to load from the parent bevy assets folder
+            // Needed to load from the parent hearth assets folder
             unapproved_path_mode: UnapprovedPathMode::Allow,
             ..default()
         }))
@@ -69,7 +69,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn(WorldAssetRoot(
         asset_server.load(
-            // This seems to be the correct path but bevy doesn't resolve it.
+            // This seems to be the correct path but hearth doesn't resolve it.
             GltfAssetLabel::Scene(0)
                 .from_asset("../../../../assets/models/FlightHelmet/FlightHelmet.gltf"),
         ),

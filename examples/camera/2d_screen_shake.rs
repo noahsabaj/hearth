@@ -15,7 +15,7 @@
 //! |:---------------------------------|:---------------------------|
 //! | Space (pressed repeatedly)       | Increase camera trauma     |
 
-use bevy::{
+use hearth::{
     input::common_conditions::input_just_pressed, math::ops::powf, prelude::*,
     sprite_render::MeshMaterial2d,
 };
@@ -62,7 +62,7 @@ fn main() {
             increase_trauma.run_if(input_just_pressed(KeyCode::Space)),
         )
         // Just before the end of the frame, apply the shake.
-        // This is ordered so that the transform propagation produces correct values for the global transform, which is used by Bevy's rendering.
+        // This is ordered so that the transform propagation produces correct values for the global transform, which is used by Hearth's rendering.
         .add_systems(PostUpdate, shake_camera.before(TransformSystems::Propagate))
         .run();
 }

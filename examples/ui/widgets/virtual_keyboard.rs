@@ -1,6 +1,6 @@
 //! Virtual keyboard example
 
-use bevy::{
+use hearth::{
     color::palettes::css::{NAVY, WHITE},
     feathers::{
         controls::{VirtualKeyPressed, VirtualKeyboard},
@@ -47,7 +47,7 @@ fn on_virtual_key_pressed(
         key if key.len() == 1 => TextEdit::Insert(key.into()),
         _ => return,
     });
-    input_focus.set(entity_id, bevy::input_focus::FocusCause::Navigated);
+    input_focus.set(entity_id, hearth::input_focus::FocusCause::Navigated);
 }
 
 fn scene() -> impl SceneList {

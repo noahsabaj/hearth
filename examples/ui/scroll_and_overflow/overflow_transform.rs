@@ -1,9 +1,9 @@
 //! Displays a rotating node with text and images, clipped by multiple rotating ancestor nodes.
 
-use bevy::color::palettes::css::LIGHT_BLUE;
-use bevy::color::palettes::css::NAVY;
-use bevy::math::ops::sin;
-use bevy::prelude::*;
+use hearth::color::palettes::css::LIGHT_BLUE;
+use hearth::color::palettes::css::NAVY;
+use hearth::math::ops::sin;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -82,7 +82,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                             (
                                                 ImageNode::new(
                                                     asset_server
-                                                        .load("branding/bevy_logo_dark_big.png"),
+                                                        .load("branding/hearth_logo_dark_big.png"),
                                                 ),
                                                 Node {
                                                     width: px(400),

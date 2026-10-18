@@ -15,7 +15,8 @@ use anyhow::anyhow;
 use fast_image_resize::{ResizeAlg, ResizeOptions, Resizer};
 use tracing::warn;
 
-use bevy::{
+use futures_lite::future;
+use hearth::{
     asset::RenderAssetUsages,
     image::{ImageSampler, ImageSamplerDescriptor},
     pbr::{ExtendedMaterial, MaterialExtension},
@@ -24,7 +25,6 @@ use bevy::{
     render::render_resource::{Extent3d, TextureDataOrder, TextureDimension, TextureFormat},
     tasks::{AsyncComputeTaskPool, Task},
 };
-use futures_lite::future;
 use image::{imageops::FilterType, DynamicImage, ImageBuffer};
 
 #[derive(Resource, Deref)]
@@ -201,7 +201,7 @@ fn update_loading_text(
 ) {
     for (mut text, mut color) in &mut texts {
         text.0 = format!(
-            "bevy_mod_mipmap_generator progress: {} / {}\n{}",
+            "hearth_mod_mipmap_generator progress: {} / {}\n{}",
             progress.processed,
             progress.total,
             if progress.cached_data_size_bytes > 0 {
@@ -532,7 +532,7 @@ pub fn generate_mips(
         let mut compressed_image_data = None;
         #[cfg(feature = "compress")]
         if let Some(compression_speed) = settings.compression {
-            // https://github.com/bevyengine/bevy/issues/21490
+            // upstream issue #21490
             if width >= 4 && height >= 4 {
                 compressed_image_data = bcn_compress_dyn_image(
                     compression_speed,

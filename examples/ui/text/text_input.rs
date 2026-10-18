@@ -1,37 +1,37 @@
 //! Demonstrates a simple, unstyled [`TextInput`] widget.
 //!
-//! [`TextInput`] is a basic primitive for text input in Bevy UI.
+//! [`TextInput`] is a basic primitive for text input in Hearth UI.
 //! In most cases, this should be combined with other entities to create a compound widget
 //! that includes e.g. a background, border, and text label.
 //!
-//! Note that while Bevy does offer clipboard support, access to the system clipboard is gated
-//! behind an off-by-default feature (`system_clipboard` on `bevy_clipboard`).
+//! Note that while Hearth does offer clipboard support, access to the system clipboard is gated
+//! behind an off-by-default feature (`system_clipboard` on `hearth_clipboard`).
 //! When this is disabled, clipboard operations (copy, cut, paste) will operate on a simple in-memory buffer
 //! that is not shared with the operating system.
 //! This means that, unless you enable this feature,
 //! you will not be able to copy text from your application and paste it into another application, or vice versa.
 //!
 //! Most applications that use text input will want to enable system clipboard support to meet user expectations for copy/paste behavior.
-//! It is off by default to avoid forcing clipboard permissions on applications that do not need it but wish to use Bevy's UI solution for other widgets,
+//! It is off by default to avoid forcing clipboard permissions on applications that do not need it but wish to use Hearth's UI solution for other widgets,
 //! and to avoid including the `arboard` dependency on platforms where it is not supported or where clipboard access is not desired.
 //! While desktop platforms generally support clipboard access without special permissions, some platforms (notably web and mobile)
 //! may require additional permissions or user gestures to allow clipboard access;
 //! this approach allows developers to opt in to full clipboard support only when they genuinely need it.
 //!
 //! To test this example using the system feature, run `cargo run --example text_input --features="system_clipboard"`.
-//! To enable this feature in your own project, add the `system_clipboard` feature to your list of enabled features for `bevy` in your `Cargo.toml`.
+//! To enable this feature in your own project, add the `system_clipboard` feature to your list of enabled features for `hearth` in your `Cargo.toml`.
 //!
-//! See the module documentation for [`editable_text`](bevy::ui_widgets::editable_text) for more details.
-use bevy::color::palettes::css::DARK_GREY;
-use bevy::color::palettes::tailwind::SLATE_300;
-use bevy::input_focus::AutoFocus;
-use bevy::input_focus::{
+//! See the module documentation for [`editable_text`](hearth::ui_widgets::editable_text) for more details.
+use hearth::color::palettes::css::DARK_GREY;
+use hearth::color::palettes::tailwind::SLATE_300;
+use hearth::input_focus::AutoFocus;
+use hearth::input_focus::{
     tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin},
     InputFocus,
 };
-use bevy::prelude::*;
-use bevy::text::{EditableText, TextCursorStyle};
-use bevy::ui_widgets::TextInput;
+use hearth::prelude::*;
+use hearth::text::{EditableText, TextCursorStyle};
+use hearth::ui_widgets::TextInput;
 
 fn main() {
     App::new()

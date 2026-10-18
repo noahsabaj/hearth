@@ -1,6 +1,6 @@
 //! Benchmark to test rendering many animated materials
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
     window::{PresentMode, WindowResolution},

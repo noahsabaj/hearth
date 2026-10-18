@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use bevy::{
+use hearth::{
     prelude::*,
     window::{CursorIcon, CustomCursor, CustomCursorImage},
 };

@@ -1,10 +1,10 @@
 //! Illustrates how to make a single system from multiple functions running in sequence,
 //! passing the output of the first into the input of the next.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 use std::num::ParseIntError;
 
-use bevy::log::{debug, error, info, Level, LogPlugin};
+use hearth::log::{debug, error, info, Level, LogPlugin};
 
 fn main() {
     App::new()

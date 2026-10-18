@@ -1,7 +1,7 @@
 //! Demonstrates how to annotate reflected types with well-known annotations and read them back,
 //! the way an inspector or editor would.
 
-use bevy::{
+use hearth::{
     annotations::{DisplayName, ReadOnly, Step, Tooltip, Unit, ValueRange},
     prelude::*,
     reflect::{TypeInfo, TypeRegistration, TypeRegistry, Typed},

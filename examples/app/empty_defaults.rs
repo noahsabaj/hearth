@@ -1,6 +1,6 @@
 //! An empty application with default plugins.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new().add_plugins(DefaultPlugins).run();

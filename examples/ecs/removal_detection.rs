@@ -3,12 +3,12 @@
 //! When a [`Component`] is removed from an [`Entity`], all [`Observer`] with an [`Remove`] trigger for
 //! that [`Component`] will be notified. These observers will be called immediately after the
 //! [`Component`] is removed. For more info on observers, see the
-//! [observers example](https://github.com/bevyengine/bevy/blob/main/examples/ecs/observers.rs).
+//! [observers example](https://github.com/noahsabaj/hearth/blob/main/examples/ecs/observers.rs).
 //!
 //! Advanced users may also consider using a lifecycle hook
 //! instead of an observer, as it incurs less overhead for a case like this.
-//! See the [component hooks example](https://github.com/bevyengine/bevy/blob/main/examples/ecs/component_hooks.rs).
-use bevy::prelude::*;
+//! See the [component hooks example](https://github.com/noahsabaj/hearth/blob/main/examples/ecs/component_hooks.rs).
+use hearth::prelude::*;
 
 fn main() {
     App::new()

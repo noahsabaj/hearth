@@ -10,8 +10,8 @@
 
 mod pan_orbit_camera_custom_input_plugin;
 
-use bevy::camera_controller::pan_orbit_camera::prelude::*;
-use bevy::prelude::*;
+use hearth::camera_controller::pan_orbit_camera::prelude::*;
+use hearth::prelude::*;
 
 use crate::pan_orbit_camera_custom_input_plugin::CustomInputPlugin;
 
@@ -41,6 +41,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_xyz(0.0, 0.0, 1.0),
     ));
     commands.spawn(WorldAssetRoot(
-        asset_server.load("https://raw.githubusercontent.com/bevyengine/bevy_asset_files/refs/heads/main/PlaneEngine/scene.gltf#Scene0"),
+        asset_server.load("https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/refs/heads/main/PlaneEngine/scene.gltf#Scene0"),
     ));
 }

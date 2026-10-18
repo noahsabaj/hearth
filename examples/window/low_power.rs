@@ -3,23 +3,25 @@
 //! This is useful for making desktop applications, or any other program that doesn't need to be
 //! running the event loop non-stop.
 
-use bevy::{
+use core::time::Duration;
+use hearth::{
     prelude::*,
     window::{PresentMode, RequestRedraw, WindowPlugin},
     winit::{EventLoopProxyWrapper, WinitSettings, WinitUserEvent},
 };
-use core::time::Duration;
 
 fn main() {
     App::new()
-        // Continuous rendering for games - bevy's default.
+        // Continuous rendering for games - hearth's default.
         .insert_resource(WinitSettings::game())
         // Power-saving reactive rendering for applications.
         .insert_resource(WinitSettings::desktop_app())
         // You can also customize update behavior with the fields of [`WinitSettings`]
         .insert_resource(WinitSettings {
-            focused_mode: bevy::winit::UpdateMode::Continuous,
-            unfocused_mode: bevy::winit::UpdateMode::reactive_low_power(Duration::from_millis(10)),
+            focused_mode: hearth::winit::UpdateMode::Continuous,
+            unfocused_mode: hearth::winit::UpdateMode::reactive_low_power(Duration::from_millis(
+                10,
+            )),
         })
         .insert_resource(ExampleMode::Game)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
@@ -92,7 +94,7 @@ fn update_winit(
         }
         ApplicationWithWakeUp => {
             // Sending a `WakeUp` event is useful when you want the app to update the next
-            // frame regardless of any user input. This can be used from outside Bevy, see example
+            // frame regardless of any user input. This can be used from outside Hearth, see example
             // `window/custom_user_event.rs` for an example usage from outside.
             // Note that in this example the `WakeUp` winit event will make the app run in the same
             // way as continuous
@@ -106,7 +108,7 @@ fn update_winit(
 /// demonstrated features.
 pub(crate) mod test_setup {
     use crate::ExampleMode;
-    use bevy::{
+    use hearth::{
         color::palettes::basic::{LIME, YELLOW},
         prelude::*,
         window::RequestRedraw,

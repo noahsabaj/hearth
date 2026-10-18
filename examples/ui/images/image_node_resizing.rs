@@ -1,7 +1,7 @@
 //! This example demonstrates the behavior of `NodeImageMode::Auto` and `NodeImageMode::Stretch` by allowing keyboard input to resize an `ImageGroup` container.
 //! It visually shows how images are sized automatically versus stretched to fit their container.
 
-use bevy::{color::palettes::tailwind, prelude::*};
+use hearth::{color::palettes::tailwind, prelude::*};
 
 const MIN_RESIZE_VAL: f32 = 1.0;
 const IMAGE_GROUP_BOX_MIN_WIDTH: f32 = 50.0;

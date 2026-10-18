@@ -5,7 +5,7 @@
 mod helpers;
 
 use argh::FromArgs;
-use bevy::prelude::*;
+use hearth::prelude::*;
 use helpers::Next;
 
 #[derive(FromArgs)]
@@ -54,7 +54,7 @@ fn main() {
         Some(scene) => app.insert_state(scene),
     };
 
-    #[cfg(feature = "bevy_ci_testing")]
+    #[cfg(feature = "hearth_ci_testing")]
     app.add_systems(Update, helpers::switch_scene_in_ci::<Scene>);
 
     app.run();
@@ -128,7 +128,7 @@ fn switch_scene(
 mod light {
     use std::f32::consts::PI;
 
-    use bevy::{
+    use hearth::{
         color::palettes::css::{DEEP_PINK, LIME, RED},
         prelude::*,
     };
@@ -219,7 +219,7 @@ mod light {
 }
 
 mod bloom {
-    use bevy::{core_pipeline::tonemapping::Tonemapping, post_process::bloom::Bloom, prelude::*};
+    use hearth::{core_pipeline::tonemapping::Tonemapping, post_process::bloom::Bloom, prelude::*};
 
     const CURRENT_SCENE: super::Scene = super::Scene::Bloom;
 
@@ -265,7 +265,7 @@ mod bloom {
 }
 
 mod gltf {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     const CURRENT_SCENE: super::Scene = super::Scene::Gltf;
 
@@ -301,7 +301,7 @@ mod gltf {
 mod animation {
     use std::{f32::consts::PI, time::Duration};
 
-    use bevy::{prelude::*, world_serialization::WorldInstanceReady};
+    use hearth::{prelude::*, world_serialization::WorldInstanceReady};
 
     const CURRENT_SCENE: super::Scene = super::Scene::Animation;
     const FOX_PATH: &str = "models/animated/Fox.glb";
@@ -375,7 +375,7 @@ mod animation {
 }
 
 mod gizmos {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((
@@ -426,7 +426,7 @@ mod gizmos {
 }
 
 mod gltf_coordinate_conversion {
-    use bevy::{
+    use hearth::{
         color::palettes::basic::*,
         gltf::{convert_coordinates::GltfConvertCoordinates, GltfLoaderSettings},
         prelude::*,
@@ -509,7 +509,7 @@ mod gltf_coordinate_conversion {
 }
 
 mod white_furnace_solid_color_light {
-    use bevy::{
+    use hearth::{
         asset::RenderAssetUsages,
         camera::{Hdr, ScalingMode},
         core_pipeline::tonemapping::{DebandDither, Tonemapping},
@@ -622,7 +622,7 @@ mod white_furnace_solid_color_light {
 }
 
 mod white_furnace_environment_map_light {
-    use bevy::{
+    use hearth::{
         asset::RenderAssetUsages,
         camera::{Hdr, ScalingMode},
         core_pipeline::tonemapping::{DebandDither, Tonemapping},
@@ -740,7 +740,7 @@ mod white_furnace_environment_map_light {
 mod render_layers {
     const CURRENT_SCENE: super::Scene = super::Scene::RenderLayers;
 
-    use bevy::{
+    use hearth::{
         camera::{visibility::RenderLayers, Viewport},
         prelude::*,
         window::PrimaryWindow,

@@ -1,7 +1,7 @@
 //! This example demonstrates you can create a custom runner (to update an app manually). It reads
 //! lines from stdin and prints them from within the ecs.
 
-use bevy::{app::AppExit, prelude::*};
+use hearth::{app::AppExit, prelude::*};
 use std::io;
 
 #[derive(Resource)]

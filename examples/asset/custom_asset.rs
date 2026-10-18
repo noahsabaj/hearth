@@ -1,6 +1,6 @@
 //! Demonstrates creating a simple data asset that can be loaded from disk.
 
-use bevy::{
+use hearth::{
     asset::{common_loaders::ron::RonLoader, ReflectAsset},
     prelude::*,
 };

@@ -3,7 +3,7 @@
 //! Compute shaders use the GPU for computing arbitrary information, that may be independent of what
 //! is rendered to the screen.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     core_pipeline::schedule::camera_driver,
     prelude::*,
@@ -38,7 +38,7 @@ fn main() {
                     primary_window: Some(Window {
                         resolution: (SIZE * DISPLAY_FACTOR).into(),
                         // uncomment for unthrottled FPS
-                        // present_mode: bevy::window::PresentMode::AutoNoVsync,
+                        // present_mode: hearth::window::PresentMode::AutoNoVsync,
                         ..default()
                     }),
                     ..default()

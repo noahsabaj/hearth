@@ -3,7 +3,7 @@
 
 use std::fmt;
 
-use bevy::{image::ImageLoaderSettings, math::ops, prelude::*};
+use hearth::{image::ImageLoaderSettings, math::ops, prelude::*};
 
 fn main() {
     App::new()

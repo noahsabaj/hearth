@@ -1,6 +1,6 @@
 //! An example that illustrates how Time is handled in ECS.
 
-use bevy::{app::AppExit, prelude::*};
+use hearth::{app::AppExit, prelude::*};
 
 use std::{
     io::{self, BufRead},
@@ -8,7 +8,7 @@ use std::{
 };
 
 fn banner() {
-    println!("This example is meant to intuitively demonstrate how Time works in Bevy.");
+    println!("This example is meant to intuitively demonstrate how Time works in Hearth.");
     println!();
     println!("Time will be printed in three different schedules in the app:");
     println!("- PreUpdate: real time is printed");
@@ -23,7 +23,7 @@ fn help() {
     println!("The app reads commands line-by-line from standard input.");
     println!();
     println!("Commands:");
-    println!("  empty line: Run app.update() once on the Bevy App");
+    println!("  empty line: Run app.update() once on the Hearth App");
     println!("  q: Quit the app.");
     println!("  f: Set speed to fast, 2x");
     println!("  n: Set speed to normal, 1x");

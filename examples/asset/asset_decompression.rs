@@ -1,6 +1,7 @@
 //! Implements loader for a Gzip compressed asset.
 
-use bevy::{
+use flate2::read::GzDecoder;
+use hearth::{
     asset::{
         io::{Reader, VecReader},
         AssetLoader, ErasedLoadedAsset, LoadContext, LoadDirectError,
@@ -8,7 +9,6 @@ use bevy::{
     prelude::*,
     reflect::TypePath,
 };
-use flate2::read::GzDecoder;
 use std::{io::prelude::*, marker::PhantomData};
 use thiserror::Error;
 

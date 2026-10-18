@@ -1,0 +1,45 @@
+[package]
+# crate was originally published as hearth-settings and can't be renamed on crates.io
+name = "hearth-settings"
+version = "0.20.0-dev"
+edition = "2024"
+description = "User settings framework for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_ecs_macros = { path = "../hearth_ecs/macros", version = "0.20.0-dev" }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
+hearth_time = { path = "../hearth_time", version = "0.20.0-dev" }
+
+serde = "1.0.217"
+thiserror = "2.0.18"
+toml = { version = "1.1.0" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { version = "0.3", default-features = false, features = [
+  "Window",
+  "Storage",
+] }
+
+[features]
+default = []
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

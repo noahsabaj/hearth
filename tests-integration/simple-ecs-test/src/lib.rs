@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Component)]
 struct MyComponent {

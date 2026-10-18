@@ -1,22 +1,22 @@
 //! This example demonstrates how to write a custom phase
 //!
-//! Render phases in bevy are used whenever you need to draw a group of meshes in a specific way.
-//! For example, bevy's main pass has an opaque phase, a transparent phase for both 2d and 3d.
+//! Render phases in hearth are used whenever you need to draw a group of meshes in a specific way.
+//! For example, hearth's main pass has an opaque phase, a transparent phase for both 2d and 3d.
 //! Sometimes, you may want to only draw a subset of meshes before or after the builtin phase. In
 //! those situations you need to write your own phase.
 //!
-//! This example showcases how writing a custom phase to draw a stencil of a bevy mesh could look
+//! This example showcases how writing a custom phase to draw a stencil of a hearth mesh could look
 //! like. Some shortcuts have been used for simplicity.
 //!
 //! This example was made for 3d, but a 2d equivalent would be almost identical.
 
 use std::ops::Range;
 
-use bevy::camera::Viewport;
-use bevy::core_pipeline::core_3d::TransparentSortingInfo3d;
-use bevy::mesh::{MeshAttributeCompressionFlags, MeshCompressionArgs};
-use bevy::pbr::{self, MeshPipelineSystems, SetMeshViewEmptyBindGroup, ViewKeyCache};
-use bevy::{
+use hearth::camera::Viewport;
+use hearth::core_pipeline::core_3d::TransparentSortingInfo3d;
+use hearth::mesh::{MeshAttributeCompressionFlags, MeshCompressionArgs};
+use hearth::pbr::{self, MeshPipelineSystems, SetMeshViewEmptyBindGroup, ViewKeyCache};
+use hearth::{
     camera::MainPassResolutionOverride,
     core_pipeline::{core_3d::main_opaque_pass_3d, schedule::Core3d, Core3dSystems},
     ecs::{
@@ -173,9 +173,9 @@ impl Plugin for MeshStencilPhasePlugin {
 
 #[derive(Resource)]
 struct StencilPipeline {
-    /// The base mesh pipeline defined by bevy
+    /// The base mesh pipeline defined by hearth
     ///
-    /// Since we want to draw a stencil of an existing bevy mesh we want to reuse the default
+    /// Since we want to draw a stencil of an existing hearth mesh we want to reuse the default
     /// pipeline as much as possible
     mesh_pipeline: MeshPipeline,
     /// Stores the shader used for this pipeline directly on the pipeline.
@@ -226,7 +226,7 @@ impl SpecializedMeshPipeline for StencilPipeline {
             .get_view_layout(MeshPipelineViewLayoutKey::from(key));
         Ok(RenderPipelineDescriptor {
             label: Some("Specialized Mesh Pipeline".into()),
-            // We want to reuse the data from bevy so we use the same bind groups as the default
+            // We want to reuse the data from hearth so we use the same bind groups as the default
             // mesh pipeline
             layout: vec![
                 // Bind group 0 is the view uniform
@@ -265,7 +265,7 @@ impl SpecializedMeshPipeline for StencilPipeline {
     }
 }
 
-// We will reuse render commands already defined by bevy to draw a 3d mesh
+// We will reuse render commands already defined by hearth to draw a 3d mesh
 type DrawMesh3dStencil = (
     SetItemPipeline,
     // This will set the view bindings in group 0
@@ -278,7 +278,7 @@ type DrawMesh3dStencil = (
     DrawMesh,
 );
 
-// This is the data required per entity drawn in a custom phase in bevy. More specifically this is the
+// This is the data required per entity drawn in a custom phase in hearth. More specifically this is the
 // data required when using a ViewSortedRenderPhase. This would look differently if we wanted a
 // batched render phase. Sorted phases are a bit easier to implement, but a batched phase would
 // look similar.
@@ -377,7 +377,7 @@ impl CachedRenderPipelinePhaseItem for Stencil3d {
 
 impl GetBatchData for StencilPipeline {
     type Param = (SRes<RenderMeshInstances>, SRes<MeshAllocator>);
-    // Placing `AssetId<Mesh>` in the batch set compare data prevents Bevy from
+    // Placing `AssetId<Mesh>` in the batch set compare data prevents Hearth from
     // trying to multi-draw items with different meshes together. This is fine
     // for this simple example.
     type BatchSetCompareData = AssetId<Mesh>;

@@ -1,6 +1,6 @@
-//! Demonstrates how to trigger various rendering errors, and how bevy can recover from them.
+//! Demonstrates how to trigger various rendering errors, and how hearth can recover from them.
 
-use bevy::{
+use hearth::{
     input::keyboard::Key,
     prelude::*,
     render::{

@@ -3,7 +3,7 @@
 //! that texture in the shader by using a `MeshTag` component on the mesh
 //! entity.
 
-use bevy::{
+use hearth::{
     image::{ImageArrayLayout, ImageLoaderSettings},
     mesh::MeshTag,
     prelude::*,

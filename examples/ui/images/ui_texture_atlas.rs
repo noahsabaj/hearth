@@ -1,6 +1,6 @@
 //! This example illustrates how to use `TextureAtlases` within ui
 
-use bevy::{color::palettes::css::*, prelude::*};
+use hearth::{color::palettes::css::*, prelude::*};
 
 fn main() {
     App::new()

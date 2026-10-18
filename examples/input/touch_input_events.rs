@@ -1,6 +1,6 @@
 //! Prints out all touch inputs.
 
-use bevy::{input::touch::*, prelude::*};
+use hearth::{input::touch::*, prelude::*};
 
 fn main() {
     App::new()

@@ -1,10 +1,10 @@
 //! This example demonstrates how to use interpolation to make one entity smoothly follow another.
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     math::{prelude::*, vec3, NormedVectorSpace},
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::SeedableRng;
 
 fn main() {

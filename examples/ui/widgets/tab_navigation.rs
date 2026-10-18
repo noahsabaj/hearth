@@ -1,6 +1,6 @@
 //! This example illustrates the use of tab navigation.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::*,
     input_focus::{
         tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin},

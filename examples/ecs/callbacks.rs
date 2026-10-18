@@ -4,7 +4,7 @@
 //! This pattern trades some performance for flexibility and works well for things like cutscenes, scripted events,
 //! or one-off UI-driven interactions that don't need to run every frame.
 
-use bevy::{ecs::system::SystemId, prelude::*};
+use hearth::{ecs::system::SystemId, prelude::*};
 
 fn main() {
     let mut app = App::new();

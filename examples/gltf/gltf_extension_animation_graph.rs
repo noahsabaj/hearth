@@ -2,7 +2,8 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     animation::{AnimationEvent, AnimationTargetId},
     asset::LoadContext,
     ecs::entity::EntityHashSet,
@@ -12,7 +13,6 @@ use bevy::{
     prelude::*,
     world_serialization::WorldInstanceReady,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 /// An example asset that contains a mesh and animation.
@@ -129,7 +129,7 @@ struct GltfExtensionHandlerAnimationPlugin;
 impl Plugin for GltfExtensionHandlerAnimationPlugin {
     fn build(&self, app: &mut App) {
         #[cfg(target_family = "wasm")]
-        bevy::tasks::block_on(async {
+        hearth::tasks::block_on(async {
             app.world_mut()
                 .resource_mut::<GltfExtensionHandlers>()
                 .0
@@ -158,7 +158,7 @@ impl GltfExtensionHandler for GltfExtensionHandlerAnimation {
         Box::new((*self).clone())
     }
 
-    #[cfg(feature = "bevy_animation")]
+    #[cfg(feature = "hearth_animation")]
     fn on_animation(
         &mut self,
         _load_context: &mut LoadContext<'_>,
@@ -227,7 +227,7 @@ impl GltfExtensionHandler for GltfExtensionHandlerAnimation {
             );
         }
     }
-    #[cfg(feature = "bevy_animation")]
+    #[cfg(feature = "hearth_animation")]
     fn on_animations_collected(
         &mut self,
         _load_context: &mut LoadContext<'_>,

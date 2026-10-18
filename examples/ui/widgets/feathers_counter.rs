@@ -1,8 +1,8 @@
 //! This example shows how to setup a basic counter app using feathers
 //!
-//! To use feathers in your bevy app, you need to use the `bevy_feathers` feature
+//! To use feathers in your hearth app, you need to use the `hearth_feathers` feature
 
-use bevy::{
+use hearth::{
     feathers::{
         controls::FeathersButton,
         dark_theme::create_dark_theme,

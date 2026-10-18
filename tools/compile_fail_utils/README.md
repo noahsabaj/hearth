@@ -1,6 +1,6 @@
 # Helpers for compile fail tests
 
-This crate contains everything needed to set up compile tests for the Bevy repo. The `CI` workflow executes these tests on the stable Rust toolchain (see [tools/ci](../../tools/ci/src/main.rs)).
+This crate contains everything needed to set up compile tests for the Hearth repo. The `CI` workflow executes these tests on the stable Rust toolchain (see [tools/ci](../../tools/ci/src/main.rs)).
 
 ## Writing new test cases
 
@@ -29,7 +29,7 @@ An example of an error annotation would be `//~v ERROR: missing trait`. This err
 
 This will be a rather involved process. You'll have to:
 
-- Create a subdirectory named `compile_fail` within the crate you are testing. (E.g. `bevy_ecs/compile_fail` for `bevy_ecs`.)
+- Create a subdirectory named `compile_fail` within the crate you are testing. (E.g. `hearth_ecs/compile_fail` for `hearth_ecs`.)
 - Add `compile_fail_utils` as a `dev-dependency`.
 - Create a folder called `tests` within the new crate.
 - Add a test runner file to this folder. The file should contain a main function calling one of the test functions defined in this crate.

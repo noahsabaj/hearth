@@ -4,7 +4,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 
-use bevy::{
+use hearth::{
     color::palettes::css::{BLUE, GRAY, RED},
     math::Isometry2d,
     mesh::{CircularMeshUvMode, CircularSectorMeshBuilder, CircularSegmentMeshBuilder},
@@ -48,7 +48,7 @@ fn setup(
     const SPACING_X: f32 = 100.0;
     const OFFSET_X: f32 = SPACING_X * (NUM_SLICES - 1) as f32 / 2.0;
 
-    // This draws NUM_SLICES copies of the Bevy logo as circular sectors and segments,
+    // This draws NUM_SLICES copies of the Hearth logo as circular sectors and segments,
     // with successively larger angles up to a complete circle.
     for i in 0..NUM_SLICES {
         let fraction = (i + 1) as f32 / NUM_SLICES as f32;
@@ -73,11 +73,11 @@ fn setup(
         ));
 
         let segment = CircularSegment::from_turns(40.0, fraction);
-        // For the circular segment, we will draw Bevy charging forward, which requires rotating the
+        // For the circular segment, we will draw Hearth charging forward, which requires rotating the
         // shape and texture by 90 degrees.
         //
         // Note that this may be unintuitive; it may feel like we should rotate the texture by the
-        // opposite angle to preserve the orientation of Bevy. But the angle is not the angle of the
+        // opposite angle to preserve the orientation of Hearth. But the angle is not the angle of the
         // texture itself, rather it is the angle at which the vertices are mapped onto the texture.
         // so it is the negative of what you might otherwise expect.
         let segment_angle = -FRAC_PI_2;

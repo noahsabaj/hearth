@@ -1,8 +1,8 @@
 //! Demonstrates how to make a custom [`SystemExecutor`].
 
-use bevy::{
+use hearth::{
     ecs::{
-        error::{BevyError, ErrorContext},
+        error::{ErrorContext, HearthError},
         schedule::{FixedBitSet, SystemExecutor, SystemSchedule},
     },
     prelude::*,
@@ -19,7 +19,7 @@ impl SystemExecutor for CustomExecutor {
         schedule: &mut SystemSchedule,
         world: &mut World,
         _skip_systems: Option<&FixedBitSet>,
-        _error_handler: fn(BevyError, ErrorContext),
+        _error_handler: fn(HearthError, ErrorContext),
     ) {
         #[expect(unsafe_code, reason = "CustomExecutor's require unsafe")]
         // SAFETY: `run` is a trait method on `System`

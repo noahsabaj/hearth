@@ -1,5 +1,5 @@
 //! Renders a lot of sprites to allow performance testing.
-//! See <https://github.com/bevyengine/bevy/pull/1492>
+//! See upstream PR #1492
 //!
 //! This example sets up many sprites in different sizes, rotations, and scales in the world.
 //! It also moves the camera over them to see how well frustum culling works.
@@ -7,7 +7,7 @@
 //! Add the `--colored` arg to run with color tinted sprites. This will cause the sprites to be rendered
 //! in multiple batches, reducing performance but useful for testing.
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,

@@ -11,13 +11,13 @@ mod pan_orbit_camera_custom_input_plugin;
 
 use std::time::Duration;
 
-use bevy::camera::Hdr;
-use bevy::camera_controller::pan_orbit_camera::{
+use hearth::camera::Hdr;
+use hearth::camera_controller::pan_orbit_camera::{
     extensions::{dolly_zoom::DollyZoomTrigger, look_to::LookToTrigger},
     prelude::*,
 };
-use bevy::math::DVec3;
-use bevy::{
+use hearth::math::DVec3;
+use hearth::{
     anti_alias::smaa::Smaa, camera::primitives::Aabb, core_pipeline::tonemapping::Tonemapping,
     pbr::ScreenSpaceAmbientOcclusion, platform::time::Instant, post_process::bloom::Bloom,
     prelude::*, window::RequestRedraw,
@@ -34,7 +34,7 @@ fn main() {
             CustomInputPlugin,
         ))
         // The camera controller works with reactive rendering:
-        // .insert_resource(bevy::winit::WinitSettings::desktop_app())
+        // .insert_resource(hearth::winit::WinitSettings::desktop_app())
         .insert_resource(GlobalAmbientLight::NONE)
         .add_systems(Startup, setup)
         .add_systems(
@@ -53,8 +53,8 @@ fn main() {
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Original envmaps:
-    // let diffuse_map = asset_server.load(get_web_asset_url("bevy_editor_cam_environment_maps/diffuse_rgb9e5_zstd.ktx2"));
-    // let specular_map = asset_server.load(get_web_asset_url("bevy_editor_cam_environment_maps/specular_rgb9e5_zstd.ktx2"));
+    // let diffuse_map = asset_server.load(get_web_asset_url("hearth_editor_cam_environment_maps/diffuse_rgb9e5_zstd.ktx2"));
+    // let specular_map = asset_server.load(get_web_asset_url("hearth_editor_cam_environment_maps/specular_rgb9e5_zstd.ktx2"));
     // let intensity = 1000.0;
 
     let diffuse_map = asset_server.load("environment_maps/pisa_diffuse_rgb9e5_zstd.ktx2");
@@ -300,10 +300,10 @@ fn explode(
 ///
 /// The files are expected to be in the [repository].
 ///
-/// [repository]: https://github.com/bevyengine/bevy_asset_files
+/// [repository]: https://github.com/noahsabaj/hearth_asset_files
 fn get_web_asset_url(name: &str) -> String {
     format!(
-        "https://raw.githubusercontent.com/bevyengine/bevy_asset_files/refs/heads/main/{}",
+        "https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/refs/heads/main/{}",
         name
     )
 }

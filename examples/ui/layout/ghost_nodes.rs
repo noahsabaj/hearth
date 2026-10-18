@@ -2,7 +2,7 @@
 //!
 //! UI layout replaces ghost nodes with their children.
 
-use bevy::{
+use hearth::{
     prelude::*,
     text::FontSourceTemplate,
     ui_widgets::{Activate, Button},

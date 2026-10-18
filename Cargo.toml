@@ -1,12 +1,12 @@
 [package]
-name = "bevy"
+name = "hearth"
 version = "0.20.0-dev"
 edition = "2024"
 categories = ["game-engines", "graphics", "gui", "rendering"]
-description = "Hearth: a data-driven game engine and app framework, forked from Bevy"
+description = "Hearth: a data-driven game engine and app framework"
 exclude = ["assets/", "tools/", ".github/", "crates/", "examples/wasm/assets/"]
 homepage = "https://github.com/noahsabaj/hearth"
-keywords = ["game", "engine", "gamedev", "hearth", "bevy"]
+keywords = ["game", "engine", "gamedev", "hearth"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/noahsabaj/hearth"
 documentation = "https://github.com/noahsabaj/hearth"
@@ -15,40 +15,40 @@ rust-version = "1.97.1"
 [workspace]
 resolver = "3"
 members = [
-  # All of Bevy's official crates are within the `crates` folder!
+  # All of Hearth's official crates are within the `crates` folder!
   "crates/*",
   # Several crates with macros have "compile fail" tests nested inside them, also known as UI
   # tests, that verify diagnostic output does not accidentally change.
   # TODO: Use a glob pattern once they are fixed in `dependabot-core`
-  # TODO: See https://github.com/bevyengine/bevy/issues/17876 for context.
-  "crates/bevy_derive/compile_fail",
-  "crates/bevy_ecs/compile_fail",
-  "crates/bevy_reflect/compile_fail",
-  # Examples of compiling Bevy for mobile platforms.
+  # TODO: See upstream issue #17876 for context.
+  "crates/hearth_derive/compile_fail",
+  "crates/hearth_ecs/compile_fail",
+  "crates/hearth_reflect/compile_fail",
+  # Examples of compiling Hearth for mobile platforms.
   "examples/mobile",
-  # Examples of using Bevy on no_std platforms.
+  # Examples of using Hearth on no_std platforms.
   "examples/no_std/*",
-  # Examples of compiling Bevy with automatic reflect type registration for platforms without `inventory` support.
+  # Examples of compiling Hearth with automatic reflect type registration for platforms without `inventory` support.
   "examples/reflection/auto_register_static",
-  # Examples of large bevy scenes.
+  # Examples of large hearth scenes.
   "examples/large_scenes/bistro",
   "examples/large_scenes/caldera_hotel",
-  "examples/large_scenes/bevy_city",
+  "examples/large_scenes/hearth_city",
   "examples/large_scenes/zero_day",
-  # Mipmap generator for testing large bevy scenes with mips and texture compression.
+  # Mipmap generator for testing large hearth scenes with mips and texture compression.
   "examples/large_scenes/mipmap_generator",
   # Benchmarks
   "benches",
   # Internal tools that are not published.
   "tools/*",
-  # Bevy's error codes. This is a crate so we can automatically check all of the code blocks.
+  # Hearth's error codes. This is a crate so we can automatically check all of the code blocks.
   "errors",
 ]
 exclude = [
   # Integration tests are not part of the workspace
   "tests-integration",
   # Fuzz testing crates
-  "crates/bevy_ecs/fuzz",
+  "crates/hearth_ecs/fuzz",
 ]
 
 [workspace.lints.clippy]
@@ -71,7 +71,7 @@ ptr_as_ptr = "warn"
 ptr_cast_constness = "warn"
 ref_as_ptr = "warn"
 
-# see: https://github.com/bevyengine/bevy/pull/15375#issuecomment-2366966219
+# see: upstream PR #15375
 too_long_first_doc_paragraph = "allow"
 
 # currently falsely fires on std::io, even tho core::io is unstable
@@ -94,7 +94,7 @@ unused_qualifications = "warn"
 # inside a particular crate. See https://github.com/rust-lang/cargo/issues/13157
 #
 # We require an override for cases like `std_instead_of_core`, which are intended
-# for the library contributors and not for how users should consume Bevy.
+# for the library contributors and not for how users should consume Hearth.
 # To ensure examples aren't subject to these lints, below is a duplication of the
 # workspace lints, with the "overrides" applied.
 #
@@ -138,60 +138,60 @@ unused_qualifications = "warn"
 [features]
 default = ["2d", "3d", "ui", "audio"]
 
-# PROFILE: The default 2D Bevy experience. This includes the core Bevy framework, 2D functionality, scenes and picking.
-2d = ["default_app", "default_platform", "2d_bevy_render", "scene", "picking"]
+# PROFILE: The default 2D Hearth experience. This includes the core Hearth framework, 2D functionality, scenes and picking.
+2d = ["default_app", "default_platform", "2d_hearth_render", "scene", "picking"]
 
-# PROFILE: The default 3D Bevy experience. This includes the core Bevy framework, 3D functionality, scenes and picking.
-3d = ["default_app", "default_platform", "3d_bevy_render", "scene", "picking"]
+# PROFILE: The default 3D Hearth experience. This includes the core Hearth framework, 3D functionality, scenes and picking.
+3d = ["default_app", "default_platform", "3d_hearth_render", "scene", "picking"]
 
-# PROFILE: The default Bevy UI experience. This includes the core Bevy framework, Bevy UI, scenes, and picking.
+# PROFILE: The default Hearth UI experience. This includes the core Hearth framework, Hearth UI, scenes, and picking.
 ui = [
   "default_app",
   "default_platform",
   "ui_api",
-  "ui_bevy_render",
+  "ui_hearth_render",
   "scene",
   "picking",
-  "bevy_ui_widgets",
+  "hearth_ui_widgets",
 ]
 
 # COLLECTION: Enable this feature during development to improve the development experience. This adds features like asset hot-reloading and debugging tools. This should not be enabled for published apps!
 dev = [
   "debug",            # TODO: rename this to something more specific ... this is a "debug ECS names" feature
-  "bevy_dev_tools",
+  "hearth_dev_tools",
   "render_dev_tools",
   "file_watcher",
 ]
 
-# COLLECTION: Features used to build audio Bevy apps.
-audio = ["bevy_audio", "vorbis"]
+# COLLECTION: Features used to build audio Hearth apps.
+audio = ["hearth_audio", "vorbis"]
 
 # COLLECTION: Enables audio features and all supported formats.
-audio-all-formats = ["bevy_audio", "aac", "flac", "mp3", "mp4", "vorbis", "wav"]
+audio-all-formats = ["hearth_audio", "aac", "flac", "mp3", "mp4", "vorbis", "wav"]
 
-# COLLECTION: Features used to compose Bevy scenes.
-scene = ["bevy_world_serialization", "bevy_scene"]
+# COLLECTION: Features used to compose Hearth scenes.
+scene = ["hearth_world_serialization", "hearth_scene"]
 
 # COLLECTION: Enables picking with all backends.
-picking = ["bevy_picking", "mesh_picking", "sprite_picking", "ui_picking"]
+picking = ["hearth_picking", "mesh_picking", "sprite_picking", "ui_picking"]
 
 # COLLECTION: The core pieces that most apps need. This serves as a baseline feature set for other higher level feature collections (such as "2d" and "3d"). It is also useful as a baseline feature set for scenarios like headless apps that require no rendering (ex: command line tools, servers, etc).
 default_app = [
   "async_executor",
-  "bevy_asset",
-  "bevy_log",
-  "bevy_state",
+  "hearth_asset",
+  "hearth_log",
+  "hearth_state",
   "reflect_auto_register",
 ]
 
 # COLLECTION: These are platform support features, such as OS support/features, windowing and input backends, etc.
 default_platform = [
   "std",
-  "bevy_gilrs",
-  "bevy_winit",
+  "hearth_gilrs",
+  "hearth_winit",
   # Note: OS-integrated clipboard support is gated behind the `system_clipboard` feature,
   # which is not enabled by default for security reasons.
-  "bevy_clipboard",
+  "hearth_clipboard",
   "default_font",
   "multi_threaded",
   "webgl2",
@@ -201,41 +201,41 @@ default_platform = [
   "sysinfo_plugin",
 ]
 
-# COLLECTION: Default scene definition features. Note that this does not include an actual renderer, such as bevy_render (Bevy's default render backend).
+# COLLECTION: Default scene definition features. Note that this does not include an actual renderer, such as hearth_render (Hearth's default render backend).
 common_api = [
-  "bevy_animation",
-  "bevy_camera",
-  "bevy_color",
-  "bevy_curve",
-  "bevy_gizmos",
-  "bevy_image",
-  "bevy_mesh",
-  "bevy_shader",
-  "bevy_material",
-  "bevy_text",
-  "bevy_window",
+  "hearth_animation",
+  "hearth_camera",
+  "hearth_color",
+  "hearth_curve",
+  "hearth_gizmos",
+  "hearth_image",
+  "hearth_mesh",
+  "hearth_shader",
+  "hearth_material",
+  "hearth_text",
+  "hearth_window",
   "hdr",
   "png",
 ]
 
-# COLLECTION: Features used to build 2D Bevy apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.
-2d_api = ["common_api", "bevy_sprite"]
+# COLLECTION: Features used to build 2D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.
+2d_api = ["common_api", "hearth_sprite"]
 
-# COLLECTION: Bevy's built-in 2D renderer, built on top of `bevy_render`.
-2d_bevy_render = [
+# COLLECTION: Hearth's built-in 2D renderer, built on top of `hearth_render`.
+2d_hearth_render = [
   "2d_api",
-  "bevy_render",
-  "bevy_core_pipeline",
-  "bevy_post_process",
-  "bevy_sprite_render",
-  "bevy_gizmos_render",
+  "hearth_render",
+  "hearth_core_pipeline",
+  "hearth_post_process",
+  "hearth_sprite_render",
+  "hearth_gizmos_render",
 ]
 
-# COLLECTION: Features used to build 3D Bevy apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.
+# COLLECTION: Features used to build 3D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.
 3d_api = [
   "common_api",
-  "bevy_light",
-  "bevy_mikktspace",
+  "hearth_light",
+  "hearth_mikktspace",
   "ktx2",
   "morph_animation",
   "morph",
@@ -244,543 +244,543 @@ common_api = [
   "zstd_rust",
 ]
 
-# COLLECTION: Bevy's built-in 3D renderer, built on top of `bevy_render`.
-3d_bevy_render = [
+# COLLECTION: Hearth's built-in 3D renderer, built on top of `hearth_render`.
+3d_hearth_render = [
   "3d_api",
-  "bevy_render",
-  "bevy_core_pipeline",
-  "bevy_gizmos_render",
-  "bevy_anti_alias",
-  "bevy_gltf",
-  "bevy_pbr",
-  "bevy_post_process",
+  "hearth_render",
+  "hearth_core_pipeline",
+  "hearth_gizmos_render",
+  "hearth_anti_alias",
+  "hearth_gltf",
+  "hearth_pbr",
+  "hearth_post_process",
   "gltf_animation",
 ]
 
-# COLLECTION: Features used to build UI Bevy apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.
-ui_api = ["default_app", "common_api", "bevy_input_focus", "bevy_ui"]
+# COLLECTION: Features used to build UI Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.
+ui_api = ["default_app", "common_api", "hearth_input_focus", "hearth_ui"]
 
-# COLLECTION: Bevy's built-in UI renderer, built on top of `bevy_render`.
-ui_bevy_render = [
+# COLLECTION: Hearth's built-in UI renderer, built on top of `hearth_render`.
+ui_hearth_render = [
   "ui_api",
-  "bevy_render",
-  "bevy_core_pipeline",
-  "bevy_ui_render",
+  "hearth_render",
+  "hearth_core_pipeline",
+  "hearth_ui_render",
 ]
 
 # COLLECTION: Recommended defaults for `no_std` applications.
-default_no_std = ["libm", "critical-section", "bevy_color", "bevy_state"]
+default_no_std = ["libm", "critical-section", "hearth_color", "hearth_state"]
 
 # Provides an implementation for picking meshes
-mesh_picking = ["bevy_internal/mesh_picking"]
+mesh_picking = ["hearth_internal/mesh_picking"]
 
 # Provides an implementation for picking sprites
-sprite_picking = ["bevy_internal/sprite_picking"]
+sprite_picking = ["hearth_internal/sprite_picking"]
 
 # Provides an implementation for picking UI
-ui_picking = ["bevy_internal/ui_picking"]
+ui_picking = ["hearth_internal/ui_picking"]
 
-# Provides a debug overlay for Bevy UI
-bevy_ui_debug = ["bevy_internal/bevy_ui_debug"]
+# Provides a debug overlay for Hearth UI
+hearth_ui_debug = ["hearth_internal/hearth_ui_debug"]
 
 # Force dynamic linking, which improves iterative compile times
-dynamic_linking = ["dep:bevy_dylib"]
+dynamic_linking = ["dep:hearth_dylib"]
 
 # Enables system information diagnostic plugin
-sysinfo_plugin = ["bevy_internal/sysinfo_plugin"]
+sysinfo_plugin = ["hearth_internal/sysinfo_plugin"]
 
 # Provides animation functionality
-bevy_animation = ["bevy_internal/bevy_animation"]
+hearth_animation = ["hearth_internal/hearth_animation"]
 
 # Provides mathematical curve functionality
-bevy_curve = ["bevy_internal/bevy_curve"]
+hearth_curve = ["hearth_internal/hearth_curve"]
 
 # Provides asset functionality
-bevy_asset = ["bevy_internal/bevy_asset"]
+hearth_asset = ["hearth_internal/hearth_asset"]
 
 # Provides audio functionality
-bevy_audio = ["bevy_internal/bevy_audio"]
+hearth_audio = ["hearth_internal/hearth_audio"]
 
 # Provides shared color types and operations
-bevy_color = ["bevy_internal/bevy_color"]
+hearth_color = ["hearth_internal/hearth_color"]
 
 # Provides cameras and other basic render pipeline features
-bevy_core_pipeline = ["bevy_internal/bevy_core_pipeline"]
+hearth_core_pipeline = ["hearth_internal/hearth_core_pipeline"]
 
 # Provides post process effects such as depth of field, bloom, chromatic aberration.
-bevy_post_process = ["bevy_internal/bevy_post_process"]
+hearth_post_process = ["hearth_internal/hearth_post_process"]
 
 # Provides various anti-aliasing solutions
-bevy_anti_alias = ["bevy_internal/bevy_anti_alias"]
+hearth_anti_alias = ["hearth_internal/hearth_anti_alias"]
 
 # Provides the ability to extract entities from an ECS main world to a sub world
-bevy_extract = ["bevy_internal/bevy_extract"]
+hearth_extract = ["hearth_internal/hearth_extract"]
 
 # Adds gamepad support
-bevy_gilrs = ["gamepad", "bevy_internal/bevy_gilrs"]
+hearth_gilrs = ["gamepad", "hearth_internal/hearth_gilrs"]
 
 # [glTF](https://www.khronos.org/gltf/) support
-bevy_gltf = ["bevy_internal/bevy_gltf"]
+hearth_gltf = ["hearth_internal/hearth_gltf"]
 
 # Adds PBR rendering
-bevy_pbr = ["bevy_internal/bevy_pbr"]
+hearth_pbr = ["hearth_internal/hearth_pbr"]
 
 # Provides picking functionality without any backend
-bevy_picking = ["bevy_internal/bevy_picking"]
+hearth_picking = ["hearth_internal/hearth_picking"]
 
 # Provides rendering functionality
-bevy_render = ["bevy_internal/bevy_render"]
+hearth_render = ["hearth_internal/hearth_render"]
 
 # Provides ECS serialization functionality
-bevy_world_serialization = ["bevy_internal/bevy_world_serialization"]
+hearth_world_serialization = ["hearth_internal/hearth_world_serialization"]
 
 # Provides scene functionality
-bevy_scene = ["bevy_internal/bevy_scene"]
+hearth_scene = ["hearth_internal/hearth_scene"]
 
 # Provides BSN AST / parsing functionality
-bevy_bsn = ["bevy_internal/bevy_bsn"]
+hearth_bsn = ["hearth_internal/hearth_bsn"]
 
 # Provides raytraced lighting (experimental)
-bevy_solari = ["bevy_internal/bevy_solari"]
+hearth_solari = ["hearth_internal/hearth_solari"]
 
 # Provides sprite functionality
-bevy_sprite = ["bevy_internal/bevy_sprite"]
+hearth_sprite = ["hearth_internal/hearth_sprite"]
 
 # Provides sprite rendering functionality
-bevy_sprite_render = ["bevy_internal/bevy_sprite_render"]
+hearth_sprite_render = ["hearth_internal/hearth_sprite_render"]
 
 # Provides text functionality
-bevy_text = ["bevy_internal/bevy_text"]
+hearth_text = ["hearth_internal/hearth_text"]
 
 # A custom ECS-driven UI framework
-bevy_ui = ["bevy_internal/bevy_ui"]
+hearth_ui = ["hearth_internal/hearth_ui"]
 
-# Provides rendering functionality for bevy_ui
-bevy_ui_render = ["bevy_internal/bevy_ui_render"]
+# Provides rendering functionality for hearth_ui
+hearth_ui_render = ["hearth_internal/hearth_ui_render"]
 
 # Windowing layer
-bevy_window = ["bevy_internal/bevy_window"]
+hearth_window = ["hearth_internal/hearth_window"]
 
 # winit window and input backend
-bevy_winit = ["bevy_internal/bevy_winit"]
+hearth_winit = ["hearth_internal/hearth_winit"]
 
 # Load and access image data. Usually added by an image format
-bevy_image = ["bevy_internal/bevy_image"]
+hearth_image = ["hearth_internal/hearth_image"]
 
 # Provides a mesh format and some primitive meshing routines.
-bevy_mesh = ["bevy_internal/bevy_mesh"]
+hearth_mesh = ["hearth_internal/hearth_mesh"]
 
-# Provides vertex tangent generation for use with bevy_mesh.
-bevy_mikktspace = ["bevy_internal/bevy_mikktspace"]
+# Provides vertex tangent generation for use with hearth_mesh.
+hearth_mikktspace = ["hearth_internal/hearth_mikktspace"]
 
 # Provides camera and visibility types, as well as culling primitives.
-bevy_camera = ["bevy_internal/bevy_camera"]
+hearth_camera = ["hearth_internal/hearth_camera"]
 
 # Provides light types such as point lights, directional lights, spotlights.
-bevy_light = ["bevy_internal/bevy_light"]
+hearth_light = ["hearth_internal/hearth_light"]
 
 # Provides shaders usable through asset handles.
-bevy_shader = ["bevy_internal/bevy_shader"]
+hearth_shader = ["hearth_internal/hearth_shader"]
 
 # Provides materials.
-bevy_material = ["bevy_internal/bevy_material"]
+hearth_material = ["hearth_internal/hearth_material"]
 
 # Adds support for gizmos
-bevy_gizmos = ["bevy_internal/bevy_gizmos"]
+hearth_gizmos = ["hearth_internal/hearth_gizmos"]
 
 # Adds support for rendering gizmos
-bevy_gizmos_render = ["bevy_internal/bevy_gizmos_render"]
+hearth_gizmos_render = ["hearth_internal/hearth_gizmos_render"]
 
 # Provides a collection of developer tools
-bevy_dev_tools = ["bevy_internal/bevy_dev_tools"]
+hearth_dev_tools = ["hearth_internal/hearth_dev_tools"]
 
 # Provides a collection of prebuilt camera controllers
-bevy_camera_controller = ["bevy_internal/bevy_camera_controller"]
+hearth_camera_controller = ["hearth_internal/hearth_camera_controller"]
 
-# Enables the free cam from bevy_camera_controller
-free_camera = ["bevy_internal/free_camera"]
+# Enables the free cam from hearth_camera_controller
+free_camera = ["hearth_internal/free_camera"]
 
-# Enables the pan camera from bevy_camera_controller
-pan_camera = ["bevy_internal/pan_camera"]
+# Enables the pan camera from hearth_camera_controller
+pan_camera = ["hearth_internal/pan_camera"]
 
-# Enables the pan orbit camera from bevy_camera_controller
-pan_orbit_camera = ["bevy_internal/pan_orbit_camera"]
+# Enables the pan orbit camera from hearth_camera_controller
+pan_orbit_camera = ["hearth_internal/pan_orbit_camera"]
 
 # Enables the pan orbit camera anchor indicator gizmo
-pan_orbit_gizmo = ["bevy_internal/pan_orbit_gizmo"]
+pan_orbit_gizmo = ["hearth_internal/pan_orbit_gizmo"]
 
-# Enable the Bevy Remote Protocol
-bevy_remote = ["bevy_internal/bevy_remote"]
+# Enable the Hearth Remote Protocol
+hearth_remote = ["hearth_internal/hearth_remote"]
 
-# Enable a native client for calling a running app over the Bevy Remote Protocol, used by in-engine tools like the inspector and by the remote examples
-bevy_remote_client = ["bevy_remote", "bevy_internal/bevy_remote_client"]
+# Enable a native client for calling a running app over the Hearth Remote Protocol, used by in-engine tools like the inspector and by the remote examples
+hearth_remote_client = ["hearth_remote", "hearth_internal/hearth_remote_client"]
 
 # Enable integration with `tracing` and `log`
-bevy_log = ["bevy_internal/bevy_log"]
+hearth_log = ["hearth_internal/hearth_log"]
 
 # Enable input focus subsystem
-bevy_input_focus = ["bevy_internal/bevy_input_focus"]
+hearth_input_focus = ["hearth_internal/hearth_input_focus"]
 
 # Clipboard resource and management. See `system_clipboard` for OS-integrated clipboard support.
-bevy_clipboard = ["bevy_internal/bevy_clipboard"]
+hearth_clipboard = ["hearth_internal/hearth_clipboard"]
 
-# Headless widget collection for Bevy UI.
-bevy_ui_widgets = [
-  "bevy_internal/bevy_ui_widgets",
-  "bevy_input_focus",
-  "bevy_ui",
+# Headless widget collection for Hearth UI.
+hearth_ui_widgets = [
+  "hearth_internal/hearth_ui_widgets",
+  "hearth_input_focus",
+  "hearth_ui",
 ]
 
 # Load and save settings
-bevy_settings = ["bevy_internal/bevy_settings"]
+hearth_settings = ["hearth_internal/hearth_settings"]
 
 # Feathers widget collection.
-bevy_feathers = ["bevy_internal/bevy_feathers", "bevy_ui_widgets"]
+hearth_feathers = ["hearth_internal/hearth_feathers", "hearth_ui_widgets"]
 
-# Entity inspector built on bevy_ui and bevy_feathers.
-bevy_inspector = ["bevy_internal/bevy_inspector", "bevy_feathers"]
+# Entity inspector built on hearth_ui and hearth_feathers.
+hearth_inspector = ["hearth_internal/hearth_inspector", "hearth_feathers"]
 
 # The Hearth editor: scenes, a 3D viewport, and a live link to the running game.
-bevy_editor = ["bevy_internal/bevy_editor", "bevy_inspector", "bevy_remote_client"]
+hearth_editor = ["hearth_internal/hearth_editor", "hearth_inspector", "hearth_remote_client"]
 
 # Enable passthrough loading for SPIR-V shaders (Only supported on Vulkan, shader capabilities and extensions must agree with the platform implementation)
-spirv_shader_passthrough = ["bevy_internal/spirv_shader_passthrough"]
+spirv_shader_passthrough = ["hearth_internal/spirv_shader_passthrough"]
 
 # Statically linked DXC shader compiler for DirectX 12
-statically-linked-dxc = ["bevy_internal/statically-linked-dxc"]
+statically-linked-dxc = ["hearth_internal/statically-linked-dxc"]
 
 # Forces the wgpu instance to be initialized using the raw Vulkan HAL, enabling additional configuration
-raw_vulkan_init = ["bevy_internal/raw_vulkan_init"]
+raw_vulkan_init = ["hearth_internal/raw_vulkan_init"]
 
 # Pre-populate buffer labels with buffer types for debugging.
-type_label_buffers = ["bevy_internal/type_label_buffers"]
+type_label_buffers = ["hearth_internal/type_label_buffers"]
 
 # Tracing support, saving a file in Chrome Tracing format
-trace_chrome = ["trace", "bevy_internal/trace_chrome", "debug"]
+trace_chrome = ["trace", "hearth_internal/trace_chrome", "debug"]
 
 # Tracing support, exposing a port for Tracy
-trace_tracy = ["trace", "bevy_internal/trace_tracy", "debug"]
+trace_tracy = ["trace", "hearth_internal/trace_tracy", "debug"]
 
 # Tracing support, with memory profiling, exposing a port for Tracy
-trace_tracy_memory = ["bevy_internal/trace_tracy_memory"]
+trace_tracy_memory = ["hearth_internal/trace_tracy_memory"]
 
 # Tracing support
-trace = ["bevy_internal/trace", "dep:tracing"]
+trace = ["hearth_internal/trace", "dep:tracing"]
 
 # Basis Universal compressed texture support
-basis-universal = ["bevy_internal/basis-universal"]
+basis-universal = ["hearth_internal/basis-universal"]
 
 # Texture compression asset processor (cross-platform, transcodes to any GPU format at load time)
 compressed_image_saver_universal = [
-  "bevy_internal/compressed_image_saver_universal",
+  "hearth_internal/compressed_image_saver_universal",
 ]
 
 # Texture compression asset processor (BCn for desktop, ASTC for mobile via env var)
-compressed_image_saver = ["bevy_internal/compressed_image_saver"]
+compressed_image_saver = ["hearth_internal/compressed_image_saver"]
 
 # Equirectangular (lat-long) panorama to cubemap conversion
-equirectangular_cubemap = ["bevy_internal/equirectangular_cubemap"]
+equirectangular_cubemap = ["hearth_internal/equirectangular_cubemap"]
 
 # Enables system-level clipboard support.
-system_clipboard = ["bevy_clipboard", "bevy_internal/system_clipboard"]
+system_clipboard = ["hearth_clipboard", "hearth_internal/system_clipboard"]
 
 # Enables image copy/paste via the system clipboard. Not supported on WASM.
-clipboard_image = ["system_clipboard", "bevy_internal/clipboard_image"]
+clipboard_image = ["system_clipboard", "hearth_internal/clipboard_image"]
 
 # BMP image format support
-bmp = ["bevy_internal/bmp"]
+bmp = ["hearth_internal/bmp"]
 
 # DDS compressed texture support
-dds = ["bevy_internal/dds"]
+dds = ["hearth_internal/dds"]
 
 # EXR image format support
-exr = ["bevy_internal/exr"]
+exr = ["hearth_internal/exr"]
 
 # Farbfeld image format support
-ff = ["bevy_internal/ff"]
+ff = ["hearth_internal/ff"]
 
 # GIF image format support
-gif = ["bevy_internal/gif"]
+gif = ["hearth_internal/gif"]
 
 # HDR image format support
-hdr = ["bevy_internal/hdr"]
+hdr = ["hearth_internal/hdr"]
 
 # KTX2 compressed texture support
-ktx2 = ["bevy_internal/ktx2"]
+ktx2 = ["hearth_internal/ktx2"]
 
 # ICO image format support
-ico = ["bevy_internal/ico"]
+ico = ["hearth_internal/ico"]
 
 # JPEG image format support
-jpeg = ["bevy_internal/jpeg"]
+jpeg = ["hearth_internal/jpeg"]
 
 # PNG image format support
-png = ["bevy_internal/png"]
+png = ["hearth_internal/png"]
 
 # PNM image format support, includes pam, pbm, pgm and ppm
-pnm = ["bevy_internal/pnm"]
+pnm = ["hearth_internal/pnm"]
 
 # QOI image format support
-qoi = ["bevy_internal/qoi"]
+qoi = ["hearth_internal/qoi"]
 
 # TGA image format support
-tga = ["bevy_internal/tga"]
+tga = ["hearth_internal/tga"]
 
 # TIFF image format support
-tiff = ["bevy_internal/tiff"]
+tiff = ["hearth_internal/tiff"]
 
 # WebP image format support
-webp = ["bevy_internal/webp"]
+webp = ["hearth_internal/webp"]
 
 # For KTX2 supercompression
-zlib = ["bevy_internal/zlib"]
+zlib = ["hearth_internal/zlib"]
 
 # For KTX2 Zstandard decompression using pure Rust [ruzstd](https://crates.io/crates/ruzstd). This is the safe default. For maximum performance, use "zstd_c".
-zstd_rust = ["bevy_internal/zstd_rust"]
+zstd_rust = ["hearth_internal/zstd_rust"]
 
 # For KTX2 Zstandard decompression using [zstd](https://crates.io/crates/zstd). This is a faster backend, but uses unsafe C bindings. For the safe option, stick to the default backend with "zstd_rust".
-zstd_c = ["bevy_internal/zstd_c"]
+zstd_c = ["hearth_internal/zstd_c"]
 
 # FLAC audio format support (through `symphonia`)
-symphonia-flac = ["bevy_internal/symphonia-flac"]
+symphonia-flac = ["hearth_internal/symphonia-flac"]
 
 # OGG/VORBIS audio format support (through `symphonia`)
-symphonia-vorbis = ["bevy_internal/symphonia-vorbis"]
+symphonia-vorbis = ["hearth_internal/symphonia-vorbis"]
 
 # WAV audio format support (through `symphonia`)
-symphonia-wav = ["bevy_internal/symphonia-wav"]
+symphonia-wav = ["hearth_internal/symphonia-wav"]
 
 # AAC audio format support (through `symphonia`)
-aac = ["bevy_internal/aac"]
+aac = ["hearth_internal/aac"]
 
 # FLAC audio format support (through `claxon`)
-flac = ["bevy_internal/flac"]
+flac = ["hearth_internal/flac"]
 
 # MP4 audio format support (through `symphonia`). It also enables AAC support.
-mp4 = ["bevy_internal/mp4"]
+mp4 = ["hearth_internal/mp4"]
 
 # MP3 audio format support (through `symphonia`)
-mp3 = ["bevy_internal/mp3"]
+mp3 = ["hearth_internal/mp3"]
 
 # OGG/VORBIS audio format support (through `lewton`)
-vorbis = ["bevy_internal/vorbis"]
+vorbis = ["hearth_internal/vorbis"]
 
 # WAV audio format support (through `hound`)
-wav = ["bevy_internal/wav"]
+wav = ["hearth_internal/wav"]
 
 # Enable serialization support through serde
-serialize = ["bevy_internal/serialize"]
+serialize = ["hearth_internal/serialize"]
 
 # Enables multithreaded parallelism in the engine. Disabling it forces all engine tasks to run on a single thread.
-multi_threaded = ["bevy_internal/multi_threaded"]
+multi_threaded = ["hearth_internal/multi_threaded"]
 
 # Use async-io's implementation of block_on instead of futures-lite's implementation. This is preferred if your application uses async-io.
-async-io = ["bevy_internal/async-io"]
+async-io = ["hearth_internal/async-io"]
 
 # Wayland display server support
-wayland = ["bevy_internal/wayland"]
+wayland = ["hearth_internal/wayland"]
 
 # X11 display server support
-x11 = ["bevy_internal/x11"]
+x11 = ["hearth_internal/x11"]
 
 # Android NativeActivity support. Legacy, should be avoided for most new Android games.
-android-native-activity = ["bevy_internal/android-native-activity"]
+android-native-activity = ["hearth_internal/android-native-activity"]
 
 # Android GameActivity support. Default, choose between this and `android-native-activity`.
-android-game-activity = ["bevy_internal/android-game-activity"]
+android-game-activity = ["hearth_internal/android-game-activity"]
 
 # Enable systems that allow for automated testing on CI
-bevy_ci_testing = ["bevy_internal/bevy_ci_testing"]
+hearth_ci_testing = ["hearth_internal/hearth_ci_testing"]
 
 # Enable systems that allow for renderable dev tools
-render_dev_tools = ["bevy_internal/render_dev_tools"]
+render_dev_tools = ["hearth_internal/render_dev_tools"]
 
 # Enable glTF animation loading
-gltf_animation = ["bevy_internal/gltf_animation"]
+gltf_animation = ["hearth_internal/gltf_animation"]
 
 # Enables loading glTF files that use KHR_meshopt_compression or EXT_meshopt_compression
-gltf_meshopt = ["bevy_internal/gltf_meshopt"]
+gltf_meshopt = ["hearth_internal/gltf_meshopt"]
 
-# Enables support for morph target weights in bevy_mesh
-morph = ["bevy_internal/morph"]
+# Enables support for morph target weights in hearth_mesh
+morph = ["hearth_internal/morph"]
 
-# Enables bevy_mesh and bevy_animation morph weight support
-morph_animation = ["bevy_internal/morph_animation"]
+# Enables hearth_mesh and hearth_animation morph weight support
+morph_animation = ["hearth_internal/morph_animation"]
 
 # Enable detailed trace event logging. These trace events are expensive even when off, thus they require compile time opt-in
-detailed_trace = ["bevy_internal/detailed_trace"]
+detailed_trace = ["hearth_internal/detailed_trace"]
 
 # Include tonemapping Look Up Tables KTX2 files. If everything is pink, you need to enable this feature or change the `Tonemapping` method for your `Camera2d` or `Camera3d`.
-tonemapping_luts = ["bevy_internal/tonemapping_luts"]
+tonemapping_luts = ["hearth_internal/tonemapping_luts"]
 
 # Include SMAA Look Up Tables KTX2 Files
-smaa_luts = ["bevy_internal/smaa_luts"]
+smaa_luts = ["hearth_internal/smaa_luts"]
 
 # Include spatio-temporal blue noise KTX2 file used by generated environment maps, Solari and atmosphere
-bluenoise_texture = ["bevy_internal/bluenoise_texture"]
+bluenoise_texture = ["hearth_internal/bluenoise_texture"]
 
 # Include a preintegrated BRDF Look Up Table for more accurate specular shading.
-dfg_lut = ["bevy_internal/dfg_lut"]
+dfg_lut = ["hearth_internal/dfg_lut"]
 
 # Include Look Up Tables that are required for area lights.
-area_light_luts = ["bevy_internal/area_light_luts"]
+area_light_luts = ["hearth_internal/area_light_luts"]
 
 # NVIDIA Deep Learning Super Sampling
-dlss = ["bevy_internal/dlss"]
+dlss = ["hearth_internal/dlss"]
 
 # Forcibly disable DLSS so that `cargo build --all-features` works without the DLSS SDK being installed. Not meant for users.
-force_disable_dlss = ["bevy_internal/force_disable_dlss"]
+force_disable_dlss = ["hearth_internal/force_disable_dlss"]
 
 # Enable AccessKit on Unix backends (currently only works with experimental screen readers and forks.)
-accesskit_unix = ["bevy_internal/accesskit_unix"]
+accesskit_unix = ["hearth_internal/accesskit_unix"]
 
 # Enable Feral Interactive's `GameMode` integration on Linux
-linux_game_mode = ["bevy_internal/linux_game_mode"]
+linux_game_mode = ["hearth_internal/linux_game_mode"]
 
 # Enable assertions to check the validity of parameters passed to glam
-glam_assert = ["bevy_internal/glam_assert"]
+glam_assert = ["hearth_internal/glam_assert"]
 
 # Enable assertions in debug builds to check the validity of parameters passed to glam
-debug_glam_assert = ["bevy_internal/debug_glam_assert"]
+debug_glam_assert = ["hearth_internal/debug_glam_assert"]
 
 # Include a default font, containing only ASCII characters, at the cost of a 20kB binary size increase
-default_font = ["bevy_internal/default_font"]
+default_font = ["hearth_internal/default_font"]
 
 # Allows for discovery of preloaded system fonts
-system_font_discovery = ["bevy_internal/system_font_discovery"]
+system_font_discovery = ["hearth_internal/system_font_discovery"]
 
 # Enables dictionary-based segmentation for complex scripts (CJK, Thai, Khmer, Lao, Myanmar), at the cost of a larger binary
-complex_script_segmentation = ["bevy_internal/complex_script_segmentation"]
+complex_script_segmentation = ["hearth_internal/complex_script_segmentation"]
 
 # Enable support for shaders in SPIR-V
-shader_format_spirv = ["bevy_internal/shader_format_spirv"]
+shader_format_spirv = ["hearth_internal/shader_format_spirv"]
 
 # Enable support for transmission-related textures in the `StandardMaterial`, at the risk of blowing past the global, per-shader texture limit on older/lower-end GPUs
-pbr_transmission_textures = ["bevy_internal/pbr_transmission_textures"]
+pbr_transmission_textures = ["hearth_internal/pbr_transmission_textures"]
 
 # Enable support for Clustered Decals
-pbr_clustered_decals = ["bevy_internal/pbr_clustered_decals"]
+pbr_clustered_decals = ["hearth_internal/pbr_clustered_decals"]
 
 # Enable support for Light Textures
-pbr_light_textures = ["bevy_internal/pbr_light_textures"]
+pbr_light_textures = ["hearth_internal/pbr_light_textures"]
 
 # Enable support for multi-layer material textures in the `StandardMaterial`, at the risk of blowing past the global, per-shader texture limit on older/lower-end GPUs
 pbr_multi_layer_material_textures = [
-  "bevy_internal/pbr_multi_layer_material_textures",
+  "hearth_internal/pbr_multi_layer_material_textures",
 ]
 
 # Enable support for anisotropy texture in the `StandardMaterial`, at the risk of blowing past the global, per-shader texture limit on older/lower-end GPUs
-pbr_anisotropy_texture = ["bevy_internal/pbr_anisotropy_texture"]
+pbr_anisotropy_texture = ["hearth_internal/pbr_anisotropy_texture"]
 
 # Enable support for PCSS, at the risk of blowing past the global, per-shader sampler limit on older/lower-end GPUs
-experimental_pbr_pcss = ["bevy_internal/experimental_pbr_pcss"]
+experimental_pbr_pcss = ["hearth_internal/experimental_pbr_pcss"]
 
 # Enable support for specular textures in the `StandardMaterial`, at the risk of blowing past the global, per-shader texture limit on older/lower-end GPUs
-pbr_specular_textures = ["bevy_internal/pbr_specular_textures"]
+pbr_specular_textures = ["hearth_internal/pbr_specular_textures"]
 
-# Enable some limitations to be able to use WebGL2. Please refer to the [WebGL2 and WebGPU](https://github.com/bevyengine/bevy/tree/latest/examples#webgl2-and-webgpu) section of the examples README for more information on how to run Wasm builds with WebGPU.
-webgl2 = ["bevy_internal/webgl"]
+# Enable some limitations to be able to use WebGL2. Please refer to the [WebGL2 and WebGPU](https://github.com/noahsabaj/hearth/tree/main/examples#webgl2-and-webgpu) section of the examples README for more information on how to run Wasm builds with WebGPU.
+webgl2 = ["hearth_internal/webgl"]
 
 # Enable support for WebGPU in Wasm. When enabled, this feature will override the `webgl2` feature and you won't be able to run Wasm builds with WebGL2, only with WebGPU.
-webgpu = ["bevy_internal/webgpu"]
+webgpu = ["hearth_internal/webgpu"]
 
 # Enables the built-in asset processor for processed assets.
-asset_processor = ["bevy_internal/asset_processor"]
+asset_processor = ["hearth_internal/asset_processor"]
 
-# Enables watching the filesystem for Bevy Asset hot-reloading
-file_watcher = ["bevy_internal/file_watcher"]
+# Enables watching the filesystem for Hearth Asset hot-reloading
+file_watcher = ["hearth_internal/file_watcher"]
 
-# Enables watching in memory asset providers for Bevy Asset hot-reloading
-embedded_watcher = ["bevy_internal/embedded_watcher"]
+# Enables watching in memory asset providers for Hearth Asset hot-reloading
+embedded_watcher = ["hearth_internal/embedded_watcher"]
 
 # Enables downloading assets from HTTP sources. Warning: there are security implications. Read the docs on WebAssetPlugin.
-http = ["bevy_internal/http"]
+http = ["hearth_internal/http"]
 
 # Enables downloading assets from HTTPS sources. Warning: there are security implications. Read the docs on WebAssetPlugin.
-https = ["bevy_internal/https"]
+https = ["hearth_internal/https"]
 
 # Enable caching downloaded assets on the filesystem. NOTE: this cache currently never invalidates entries!
-web_asset_cache = ["bevy_internal/web_asset_cache"]
+web_asset_cache = ["hearth_internal/web_asset_cache"]
 
-# Enable stepping-based debugging of Bevy systems
-bevy_debug_stepping = [
-  "bevy_internal/bevy_debug_stepping",
-  "bevy_internal/debug",
+# Enable stepping-based debugging of Hearth systems
+hearth_debug_stepping = [
+  "hearth_internal/hearth_debug_stepping",
+  "hearth_internal/debug",
 ]
 
 # Enable collecting schedule data from the app.
-schedule_data = ["bevy_internal/schedule_data"]
+schedule_data = ["hearth_internal/schedule_data"]
 
 # Enables the meshlet renderer for dense high-poly scenes (experimental)
-meshlet = ["bevy_internal/meshlet"]
+meshlet = ["hearth_internal/meshlet"]
 
-# Enables processing meshes into meshlet meshes for `bevy_pbr`
-meshlet_processor = ["bevy_internal/meshlet_processor"]
+# Enables processing meshes into meshlet meshes for `hearth_pbr`
+meshlet_processor = ["hearth_internal/meshlet_processor"]
 
 # Enable built in global state machines
-bevy_state = ["bevy_internal/bevy_state"]
+hearth_state = ["hearth_internal/hearth_state"]
 
 # Enables source location tracking for change detection and spawning/despawning, which can assist with debugging
-track_location = ["bevy_internal/track_location"]
+track_location = ["hearth_internal/track_location"]
 
 # Enable function reflection
-reflect_functions = ["bevy_internal/reflect_functions"]
+reflect_functions = ["hearth_internal/reflect_functions"]
 
-# Enables `bevy_reflect` to access documentation comments of Rust code at runtime
-reflect_documentation = ["bevy_internal/reflect_documentation"]
+# Enables `hearth_reflect` to access documentation comments of Rust code at runtime
+reflect_documentation = ["hearth_internal/reflect_documentation"]
 
 # Enable automatic reflect registration
-reflect_auto_register = ["bevy_internal/reflect_auto_register"]
+reflect_auto_register = ["hearth_internal/reflect_auto_register"]
 
 # Enable automatic reflect registration without inventory. See `reflect::load_type_registrations` for more info.
-reflect_auto_register_static = ["bevy_internal/reflect_auto_register_static"]
+reflect_auto_register_static = ["hearth_internal/reflect_auto_register_static"]
 
 # Enable winit custom cursor support
-custom_cursor = ["bevy_internal/custom_cursor"]
+custom_cursor = ["hearth_internal/custom_cursor"]
 
 # Uses `async-executor` as a task execution backend.
-async_executor = ["std", "bevy_internal/async_executor"]
+async_executor = ["std", "hearth_internal/async_executor"]
 
 # Allows access to the `std` crate.
-std = ["bevy_internal/std"]
+std = ["hearth_internal/std"]
 
 # `critical-section` provides the building blocks for synchronization primitives on all platforms, including `no_std`.
-critical-section = ["bevy_internal/critical-section"]
+critical-section = ["hearth_internal/critical-section"]
 
 # Uses the `libm` maths library instead of the one provided in `std` and `core`.
-libm = ["bevy_internal/libm"]
+libm = ["hearth_internal/libm"]
 
 # Enables use of browser APIs. Note this is currently only applicable on `wasm32` architectures.
-web = ["bevy_internal/web"]
+web = ["hearth_internal/web"]
 
-# Mouse support. Automatically enabled by `bevy_window`.
-mouse = ["bevy_internal/mouse"]
+# Mouse support. Automatically enabled by `hearth_window`.
+mouse = ["hearth_internal/mouse"]
 
-# Keyboard support. Automatically enabled by `bevy_window`.
-keyboard = ["bevy_internal/keyboard"]
+# Keyboard support. Automatically enabled by `hearth_window`.
+keyboard = ["hearth_internal/keyboard"]
 
-# Gamepad support. Automatically enabled by `bevy_gilrs`.
-gamepad = ["bevy_internal/gamepad"]
+# Gamepad support. Automatically enabled by `hearth_gilrs`.
+gamepad = ["hearth_internal/gamepad"]
 
-# Touch support. Automatically enabled by `bevy_window`.
-touch = ["bevy_internal/touch"]
+# Touch support. Automatically enabled by `hearth_window`.
+touch = ["hearth_internal/touch"]
 
-# Gestures support. Automatically enabled by `bevy_window`.
-gestures = ["bevy_internal/gestures"]
+# Gestures support. Automatically enabled by `hearth_window`.
+gestures = ["hearth_internal/gestures"]
 
-# Enable hotpatching of Bevy systems
-hotpatching = ["bevy_internal/hotpatching"]
+# Enable hotpatching of Hearth systems
+hotpatching = ["hearth_internal/hotpatching"]
 
 # Enable collecting debug information about systems and components to help with diagnostics
-debug = ["bevy_internal/debug"]
+debug = ["hearth_internal/debug"]
 
 [dependencies]
-bevy_internal = { path = "crates/bevy_internal", version = "0.20.0-dev", default-features = false }
+hearth_internal = { path = "crates/hearth_internal", version = "0.20.0-dev", default-features = false }
 tracing = { version = "0.1", default-features = false, optional = true }
 
 # Wasm does not support dynamic linking.
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-bevy_dylib = { path = "crates/bevy_dylib", version = "0.20.0-dev", default-features = false, optional = true }
+hearth_dylib = { path = "crates/hearth_dylib", version = "0.20.0-dev", default-features = false, optional = true }
 
 [dev-dependencies]
 rand = "0.10.0"
@@ -790,18 +790,18 @@ flate2 = "1.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0.140"
 bytemuck = "1"
-# The following explicit dependencies are needed for proc macros to work inside of examples as they are part of the bevy crate itself.
-bevy_animation = { path = "crates/bevy_animation", version = "0.20.0-dev", default-features = false }
-bevy_asset = { path = "crates/bevy_asset", version = "0.20.0-dev", default-features = false }
-bevy_ecs = { path = "crates/bevy_ecs", version = "0.20.0-dev", default-features = false }
-bevy_extract = { path = "crates/bevy_extract", version = "0.20.0-dev", default-features = false }
-bevy_gizmos = { path = "crates/bevy_gizmos", version = "0.20.0-dev", default-features = false }
-bevy_image = { path = "crates/bevy_image", version = "0.20.0-dev", default-features = false }
-bevy_reflect = { path = "crates/bevy_reflect", version = "0.20.0-dev", default-features = false }
-bevy_render = { path = "crates/bevy_render", version = "0.20.0-dev", default-features = false }
-bevy-settings = { path = "crates/bevy_settings", version = "0.20.0-dev", default-features = false }
-bevy_state = { path = "crates/bevy_state", version = "0.20.0-dev", default-features = false }
-bevy_scene = { path = "crates/bevy_scene", version = "0.20.0-dev", default-features = false }
+# The following explicit dependencies are needed for proc macros to work inside of examples as they are part of the hearth crate itself.
+hearth_animation = { path = "crates/hearth_animation", version = "0.20.0-dev", default-features = false }
+hearth_asset = { path = "crates/hearth_asset", version = "0.20.0-dev", default-features = false }
+hearth_ecs = { path = "crates/hearth_ecs", version = "0.20.0-dev", default-features = false }
+hearth_extract = { path = "crates/hearth_extract", version = "0.20.0-dev", default-features = false }
+hearth_gizmos = { path = "crates/hearth_gizmos", version = "0.20.0-dev", default-features = false }
+hearth_image = { path = "crates/hearth_image", version = "0.20.0-dev", default-features = false }
+hearth_reflect = { path = "crates/hearth_reflect", version = "0.20.0-dev", default-features = false }
+hearth_render = { path = "crates/hearth_render", version = "0.20.0-dev", default-features = false }
+hearth-settings = { path = "crates/hearth_settings", version = "0.20.0-dev", default-features = false }
+hearth_state = { path = "crates/hearth_state", version = "0.20.0-dev", default-features = false }
+hearth_scene = { path = "crates/hearth_scene", version = "0.20.0-dev", default-features = false }
 # Needed to poll Task examples
 futures-lite = "2.0.1"
 futures-timer = { version = "3", features = ["wasm-bindgen", "gloo-timers"] }
@@ -948,7 +948,7 @@ wasm = true
 name = "2d_shapes"
 path = "examples/2d/2d_shapes.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.2d_shapes]
 name = "2D Shapes"
@@ -1227,7 +1227,7 @@ wasm = true
 name = "wireframe_2d"
 path = "examples/2d/wireframe_2d.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.wireframe_2d]
 name = "2D Wireframe"
@@ -1311,7 +1311,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.anti_aliasing]
 name = "Anti-aliasing"
-description = "Compares different anti-aliasing techniques supported by Bevy"
+description = "Compares different anti-aliasing techniques supported by Hearth"
 category = "3D Rendering"
 # TAA not supported by WebGL
 wasm = false
@@ -1376,7 +1376,7 @@ wasm = true
 name = "contact_shadows"
 path = "examples/3d/contact_shadows.rs"
 doc-scrape-examples = true
-required-features = ["bluenoise_texture", "bevy_feathers"]
+required-features = ["bluenoise_texture", "hearth_feathers"]
 
 [package.metadata.example.contact_shadows]
 name = "Contact Shadows"
@@ -1478,7 +1478,7 @@ wasm = true
 name = "order_independent_transparency"
 path = "examples/3d/order_independent_transparency.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.order_independent_transparency]
 name = "Order Independent Transparency"
@@ -1592,11 +1592,11 @@ wasm = true
 name = "solari"
 path = "examples/3d/solari.rs"
 doc-scrape-examples = true
-required-features = ["bevy_solari", "https", "free_camera"]
+required-features = ["hearth_solari", "https", "free_camera"]
 
 [package.metadata.example.solari]
 name = "Solari"
-description = "Demonstrates realtime dynamic raytraced lighting using Bevy Solari."
+description = "Demonstrates realtime dynamic raytraced lighting using Hearth Solari."
 category = "3D Rendering"
 wasm = false
 
@@ -1604,7 +1604,7 @@ wasm = false
 name = "solari_reflections"
 path = "examples/3d/solari_reflections.rs"
 doc-scrape-examples = true
-required-features = ["bevy_solari", "free_camera"]
+required-features = ["hearth_solari", "free_camera"]
 
 [package.metadata.example.solari_reflections]
 name = "Solari Reflections"
@@ -1628,7 +1628,7 @@ wasm = true
 name = "split_screen"
 path = "examples/3d/split_screen.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.split_screen]
 name = "Split Screen"
@@ -1806,7 +1806,7 @@ wasm = true
 name = "animation_graph"
 path = "examples/animation/animation_graph.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.animation_graph]
 name = "Animation Graph"
@@ -1932,7 +1932,7 @@ wasm = true
 name = "headless"
 path = "examples/app/headless.rs"
 doc-scrape-examples = true
-required-features = ["bevy_log"]
+required-features = ["hearth_log"]
 
 [package.metadata.example.headless]
 name = "Headless"
@@ -1972,7 +1972,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.log_layers_ecs]
 name = "Advanced log layers"
-description = "Illustrate how to transfer data between log layers and Bevy's ECS"
+description = "Illustrate how to transfer data between log layers and Hearth's ECS"
 category = "Application"
 # Doesn't render anything, doesn't create a canvas
 wasm = false
@@ -2006,7 +2006,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.return_after_run]
 name = "Return after Run"
-description = "Show how to return to main after the Bevy app has exited"
+description = "Show how to return to main after the Hearth app has exited"
 category = "Application"
 wasm = false
 
@@ -2039,7 +2039,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.externally_driven_headless_renderer]
 name = "Externally Driven Headless Renderer"
-description = "Using bevy with manually driven update to render images"
+description = "Using hearth with manually driven update to render images"
 category = "Application"
 wasm = false
 
@@ -2050,7 +2050,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.render_recovery]
 name = "Render Recovery"
-description = "Demonstrates how bevy can recover from rendering failures."
+description = "Demonstrates how hearth can recover from rendering failures."
 category = "Application"
 wasm = false
 
@@ -2460,7 +2460,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.ecs_guide]
 name = "ECS Guide"
-description = "Full guide to Bevy's ECS"
+description = "Full guide to Hearth's ECS"
 category = "ECS (Entity Component System)"
 wasm = false
 
@@ -2747,7 +2747,7 @@ wasm = false
 name = "sub_states"
 path = "examples/state/sub_states.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools"]
+required-features = ["hearth_dev_tools"]
 
 [package.metadata.example.sub_states]
 name = "Sub States"
@@ -2759,7 +2759,7 @@ wasm = false
 name = "computed_states"
 path = "examples/state/computed_states.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools"]
+required-features = ["hearth_dev_tools"]
 
 [package.metadata.example.computed_states]
 name = "Computed States"
@@ -2771,7 +2771,7 @@ wasm = false
 name = "custom_transitions"
 path = "examples/state/custom_transitions.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools"]
+required-features = ["hearth_dev_tools"]
 
 [package.metadata.example.custom_transitions]
 name = "Custom State Transition Behavior"
@@ -2827,7 +2827,7 @@ wasm = false
 name = "system_stepping"
 path = "examples/ecs/system_stepping.rs"
 doc-scrape-examples = true
-required-features = ["bevy_debug_stepping"]
+required-features = ["hearth_debug_stepping"]
 
 [package.metadata.example.system_stepping]
 name = "System Stepping"
@@ -2900,7 +2900,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.contributors]
 name = "Contributors"
-description = "Displays each contributor as a bouncy bevy-ball!"
+description = "Displays each contributor as a bouncy hearth-ball!"
 category = "Games"
 wasm = true
 
@@ -2911,7 +2911,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.desk_toy]
 name = "Desk Toy"
-description = "Bevy logo as a desk toy using transparent windows! Now with Googly Eyes!"
+description = "Hearth logo as a desk toy using transparent windows! Now with Googly Eyes!"
 category = "Games"
 wasm = false
 
@@ -2944,7 +2944,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.mines]
 name = "Mines"
-description = "A simple minesweeper-style game in Bevy UI"
+description = "A simple minesweeper-style game in Hearth UI"
 category = "Games"
 wasm = true
 
@@ -3089,7 +3089,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.reflection]
 name = "Reflection"
-description = "Demonstrates how reflection in Bevy provides a way to dynamically interact with Rust types"
+description = "Demonstrates how reflection in Hearth provides a way to dynamically interact with Rust types"
 category = "Reflection"
 wasm = false
 
@@ -3246,7 +3246,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.shader_defs]
 name = "Shader Defs"
-description = "A shader that uses \"shaders defs\" (a bevy tool to selectively toggle parts of a shader)"
+description = "A shader that uses \"shaders defs\" (a hearth tool to selectively toggle parts of a shader)"
 category = "Shaders"
 wasm = true
 
@@ -3401,7 +3401,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.array_texture]
 name = "Array Texture"
-description = "A shader that shows how to reuse the core bevy PBR shading functionality in a custom material that obtains the base color from an array texture."
+description = "A shader that shows how to reuse the core hearth PBR shading functionality in a custom material that obtains the base color from an array texture."
 category = "Shaders"
 wasm = true
 
@@ -3420,9 +3420,9 @@ wasm = true
 [[package.metadata.example_category]]
 name = "Shaders - advanced"
 description = """
-These examples demonstrate how to use the lower level rendering apis exposed from bevy.
+These examples demonstrate how to use the lower level rendering apis exposed from hearth.
 
-These are generally simplified examples of bevy's own rendering infrastructure.
+These are generally simplified examples of hearth's own rendering infrastructure.
 """
 
 [[example]]
@@ -3538,24 +3538,24 @@ cargo run --release --example <example name>
 """
 
 [[example]]
-name = "bevymark"
-path = "examples/stress_tests/bevymark.rs"
+name = "hearthmark"
+path = "examples/stress_tests/hearthmark.rs"
 doc-scrape-examples = true
 
-[package.metadata.example.bevymark]
-name = "Bevymark"
-description = "A heavy sprite rendering workload to benchmark your system with Bevy"
+[package.metadata.example.hearthmark]
+name = "Hearthmark"
+description = "A heavy sprite rendering workload to benchmark your system with Hearth"
 category = "Stress Tests"
 wasm = true
 
 [[example]]
-name = "bevymark_3d"
-path = "examples/stress_tests/bevymark_3d.rs"
+name = "hearthmark_3d"
+path = "examples/stress_tests/hearthmark_3d.rs"
 doc-scrape-examples = true
 
-[package.metadata.example.bevymark_3d]
-name = "Bevymark 3D"
-description = "A heavy 3D cube rendering workload to benchmark your system with Bevy"
+[package.metadata.example.hearthmark_3d]
+name = "Hearthmark 3D"
+description = "A heavy 3D cube rendering workload to benchmark your system with Hearth"
 category = "Stress Tests"
 wasm = true
 
@@ -3764,11 +3764,11 @@ wasm = false
 name = "scene_viewer"
 path = "examples/tools/scene_viewer/main.rs"
 doc-scrape-examples = true
-required-features = ["free_camera", "bevy_dev_tools", "render_dev_tools"]
+required-features = ["free_camera", "hearth_dev_tools", "render_dev_tools"]
 
 [package.metadata.example.scene_viewer]
 name = "Scene Viewer"
-description = "A simple way to view glTF models with Bevy. Just run `cargo run --release --example scene_viewer /path/to/model.gltf#Scene0`, replacing the path as appropriate. With no arguments it will load the FieldHelmet glTF model from the repository assets subdirectory"
+description = "A simple way to view glTF models with Hearth. Just run `cargo run --release --example scene_viewer /path/to/model.gltf#Scene0`, replacing the path as appropriate. With no arguments it will load the FieldHelmet glTF model from the repository assets subdirectory"
 category = "Tools"
 wasm = true
 
@@ -3898,7 +3898,7 @@ wasm = true
 name = "box_shadow"
 path = "examples/ui/styling/box_shadow.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.box_shadow]
 name = "Box Shadow"
@@ -3943,7 +3943,7 @@ wasm = true
 name = "display_and_visibility"
 path = "examples/ui/layout/display_and_visibility.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.display_and_visibility]
 name = "Display and Visibility"
@@ -4264,7 +4264,7 @@ wasm = true
 name = "virtual_keyboard"
 path = "examples/ui/widgets/virtual_keyboard.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.virtual_keyboard]
 name = "Virtual Keyboard"
@@ -4413,7 +4413,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.low_power]
 name = "Low Power"
-description = "Demonstrates settings to reduce power use for bevy applications"
+description = "Demonstrates settings to reduce power use for hearth applications"
 category = "Window"
 wasm = true
 
@@ -4512,7 +4512,7 @@ hidden = true
 name = "desktop_request_redraw"
 path = "tests/window/desktop_request_redraw.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools", "render_dev_tools"]
+required-features = ["hearth_dev_tools", "render_dev_tools"]
 
 [package.metadata.example.desktop_request_redraw]
 hidden = true
@@ -4653,7 +4653,7 @@ wasm = true
 name = "transform_gizmo"
 path = "examples/gizmos/transform_gizmo.rs"
 doc-scrape-examples = true
-required-features = ["free_camera", "bevy_feathers"]
+required-features = ["free_camera", "hearth_feathers"]
 
 [package.metadata.example.transform_gizmo]
 name = "Transform Gizmo"
@@ -4843,7 +4843,7 @@ wasm = true
 name = "fps_overlay"
 path = "examples/dev_tools/fps_overlay.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools", "render_dev_tools"]
+required-features = ["hearth_dev_tools", "render_dev_tools"]
 
 [package.metadata.example.fps_overlay]
 name = "FPS overlay"
@@ -4867,11 +4867,11 @@ wasm = false
 name = "infinite_grid"
 path = "examples/dev_tools/infinite_grid.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools", "free_camera", "render_dev_tools"]
+required-features = ["hearth_dev_tools", "free_camera", "render_dev_tools"]
 
 [package.metadata.example.infinite_grid]
 name = "Infinite grid"
-description = "Demonstrates Bevy's infinite grid, suitable as a ground plane for editors"
+description = "Demonstrates Hearth's infinite grid, suitable as a ground plane for editors"
 category = "Dev tools"
 wasm = true
 
@@ -4879,11 +4879,11 @@ wasm = true
 name = "infinite_grid_2d"
 path = "examples/dev_tools/infinite_grid_2d.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools", "render_dev_tools"]
+required-features = ["hearth_dev_tools", "render_dev_tools"]
 
 [package.metadata.example.infinite_grid_2d]
 name = "Infinite grid 2D"
-description = "Demonstrates Bevy's infinite grid in a 2D scene"
+description = "Demonstrates Hearth's infinite grid in a 2D scene"
 category = "Dev tools"
 wasm = true
 
@@ -4891,13 +4891,13 @@ wasm = true
 name = "local_inspector"
 path = "examples/inspector/local_inspector.rs"
 doc-scrape-examples = true
-required-features = ["bevy_inspector"]
+required-features = ["hearth_inspector"]
 
 [[example]]
 name = "editor"
 path = "examples/tools/editor.rs"
 doc-scrape-examples = true
-required-features = ["bevy_editor"]
+required-features = ["hearth_editor"]
 
 [package.metadata.example.editor]
 name = "Editor"
@@ -4907,7 +4907,7 @@ wasm = false
 
 [package.metadata.example.local_inspector]
 name = "Local Inspector"
-description = "Inspects the app's own world with the bevy_inspector entity tree panel"
+description = "Inspects the app's own world with the hearth_inspector entity tree panel"
 category = "Dev tools"
 wasm = true
 
@@ -4915,11 +4915,11 @@ wasm = true
 name = "remote_inspector"
 path = "examples/inspector/remote_inspector.rs"
 doc-scrape-examples = true
-required-features = ["bevy_inspector", "bevy_remote_client"]
+required-features = ["hearth_inspector", "hearth_remote_client"]
 
 [package.metadata.example.remote_inspector]
 name = "Remote Inspector"
-description = "Inspects a separate running app with the bevy_inspector panels over the Bevy Remote Protocol"
+description = "Inspects a separate running app with the hearth_inspector panels over the Hearth Remote Protocol"
 category = "Dev tools"
 wasm = false
 
@@ -5007,8 +5007,8 @@ path = "examples/camera/2d_on_ui.rs"
 doc-scrape-examples = true
 
 [package.metadata.example.2d_on_ui]
-name = "2D on Bevy UI"
-description = "Shows how to render 2D objects on top of Bevy UI"
+name = "2D on Hearth UI"
+description = "Shows how to render 2D objects on top of Hearth UI"
 category = "Camera"
 wasm = true
 
@@ -5027,7 +5027,7 @@ wasm = true
 name = "ssr"
 path = "examples/3d/ssr.rs"
 doc-scrape-examples = true
-required-features = ["bluenoise_texture", "bevy_feathers"]
+required-features = ["bluenoise_texture", "hearth_feathers"]
 
 [package.metadata.example.ssr]
 name = "Screen Space Reflections"
@@ -5050,7 +5050,7 @@ wasm = true
 name = "color_grading"
 path = "examples/3d/color_grading.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.color_grading]
 name = "Color grading"
@@ -5062,7 +5062,7 @@ wasm = true
 name = "clearcoat"
 path = "examples/3d/clearcoat.rs"
 doc-scrape-examples = true
-required-features = ["pbr_multi_layer_material_textures", "bevy_feathers"]
+required-features = ["pbr_multi_layer_material_textures", "hearth_feathers"]
 
 [package.metadata.example.clearcoat]
 name = "Clearcoat"
@@ -5096,11 +5096,11 @@ wasm = true
 name = "client"
 path = "examples/remote/client.rs"
 doc-scrape-examples = true
-required-features = ["bevy_remote"]
+required-features = ["hearth_remote"]
 
 [package.metadata.example.client]
 name = "client"
-description = "A simple command line client that can control Bevy apps via the BRP"
+description = "A simple command line client that can control Hearth apps via the HRP"
 category = "Remote Protocol"
 wasm = false
 
@@ -5108,11 +5108,11 @@ wasm = false
 name = "server"
 path = "examples/remote/server.rs"
 doc-scrape-examples = true
-required-features = ["bevy_remote"]
+required-features = ["hearth_remote"]
 
 [package.metadata.example.server]
 name = "server"
-description = "A Bevy app that you can connect to with the BRP and edit"
+description = "A Hearth app that you can connect to with the HRP and edit"
 category = "Remote Protocol"
 wasm = false
 
@@ -5120,11 +5120,11 @@ wasm = false
 name = "app_under_test"
 path = "examples/remote/app_under_test.rs"
 doc-scrape-examples = true
-required-features = ["bevy_remote", "bevy_feathers"]
+required-features = ["hearth_remote", "hearth_feathers"]
 
 [package.metadata.example.app_under_test]
 name = "App Under Test"
-description = "A Bevy app that you can connect to with the BRP and control"
+description = "A Hearth app that you can connect to with the HRP and control"
 category = "Remote Protocol"
 wasm = false
 
@@ -5132,11 +5132,11 @@ wasm = false
 name = "integration_test"
 path = "examples/remote/integration_test.rs"
 doc-scrape-examples = true
-required-features = ["bevy_remote_client", "bevy_feathers"]
+required-features = ["hearth_remote_client", "hearth_feathers"]
 
 [package.metadata.example.integration_test]
 name = "Integration Test"
-description = "Connects to a running Bevy app via BRP, finds a button, and clicks it"
+description = "Connects to a running Hearth app via HRP, finds a button, and clicks it"
 category = "Remote Protocol"
 wasm = false
 
@@ -5271,7 +5271,7 @@ wasm = true
 name = "debug_picking"
 path = "examples/picking/debug_picking.rs"
 doc-scrape-examples = true
-required-features = ["bevy_dev_tools"]
+required-features = ["hearth_dev_tools"]
 
 [package.metadata.example.debug_picking]
 name = "Picking Debug Tools"
@@ -5306,7 +5306,7 @@ wasm = true
 name = "animation_masks"
 path = "examples/animation/animation_masks.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.animation_masks]
 name = "Animation Masks"
@@ -5318,7 +5318,7 @@ wasm = true
 name = "pcss"
 path = "examples/3d/pcss.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers", "experimental_pbr_pcss"]
+required-features = ["hearth_feathers", "experimental_pbr_pcss"]
 
 [package.metadata.example.pcss]
 name = "Percentage-closer soft shadows"
@@ -5330,7 +5330,7 @@ wasm = false
 name = "mixed_lighting"
 path = "examples/3d/mixed_lighting.rs"
 doc-scrape-examples = true
-required-features = ["jpeg", "bevy_feathers"]
+required-features = ["jpeg", "hearth_feathers"]
 
 [package.metadata.example.mixed_lighting]
 name = "Mixed lighting"
@@ -5364,7 +5364,7 @@ wasm = true
 name = "specular_tint"
 path = "examples/3d/specular_tint.rs"
 doc-scrape-examples = true
-required-features = ["pbr_specular_textures", "bevy_feathers"]
+required-features = ["pbr_specular_textures", "hearth_feathers"]
 
 [package.metadata.example.specular_tint]
 name = "Specular Tint"
@@ -5411,7 +5411,7 @@ lto = "fat"
 panic = "abort"
 
 # Keep mobile dev artifacts small enough for emulator and simulator installs.
-[profile.dev.package.bevy_mobile_example]
+[profile.dev.package.hearth_mobile_example]
 strip = true
 
 [package.metadata.docs.rs]
@@ -5425,7 +5425,7 @@ rustdoc-args = [
   "-Zunstable-options",
   "--generate-link-to-definition",
   "--generate-macro-expansion",
-  # Embed tags to the top of documentation pages for common Bevy traits
+  # Embed tags to the top of documentation pages for common Hearth traits
   # that are implemented by the current type, like `Component` or `Resource`.
   # This makes it easier to see at a glance what types are used for.
   "--html-after-content",
@@ -5515,7 +5515,7 @@ wasm = true
 name = "clustered_decals"
 path = "examples/3d/clustered_decals.rs"
 doc-scrape-examples = true
-required-features = ["pbr_clustered_decals", "bevy_feathers"]
+required-features = ["pbr_clustered_decals", "hearth_feathers"]
 
 [package.metadata.example.clustered_decals]
 name = "Clustered Decals"
@@ -5527,7 +5527,7 @@ wasm = false
 name = "light_textures"
 path = "examples/3d/light_textures.rs"
 doc-scrape-examples = true
-required-features = ["pbr_light_textures", "bevy_feathers"]
+required-features = ["pbr_light_textures", "hearth_feathers"]
 
 [package.metadata.example.light_textures]
 name = "Light Textures"
@@ -5539,7 +5539,7 @@ wasm = false
 name = "occlusion_culling"
 path = "examples/3d/occlusion_culling.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.occlusion_culling]
 name = "Occlusion Culling"
@@ -5600,7 +5600,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.standard_widgets]
 name = "Standard Widgets"
-description = "Demonstrates use of core (headless) widgets in Bevy UI"
+description = "Demonstrates use of core (headless) widgets in Hearth UI"
 category = "UI (User Interface)"
 wasm = true
 
@@ -5655,7 +5655,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.standard_widgets_observers]
 name = "Standard Widgets (w/Observers)"
-description = "Demonstrates use of core (headless) widgets in Bevy UI, with Observers"
+description = "Demonstrates use of core (headless) widgets in Hearth UI, with Observers"
 category = "UI (User Interface)"
 wasm = true
 
@@ -5666,7 +5666,7 @@ doc-scrape-examples = true
 
 [package.metadata.example.scrollbars]
 name = "Scrollbars"
-description = "Demonstrates use of core scrollbar in Bevy UI"
+description = "Demonstrates use of core scrollbar in Hearth UI"
 category = "UI (User Interface)"
 wasm = true
 
@@ -5674,7 +5674,7 @@ wasm = true
 name = "settings"
 path = "examples/app/settings.rs"
 doc-scrape-examples = true
-required-features = ["bevy_settings"]
+required-features = ["hearth_settings"]
 
 [package.metadata.example.settings]
 name = "Settings"
@@ -5686,7 +5686,7 @@ wasm = true
 name = "persisting_window_settings"
 path = "examples/window/persisting_window_settings.rs"
 doc-scrape-examples = true
-required-features = ["bevy_settings"]
+required-features = ["hearth_settings"]
 
 [package.metadata.example.persisting_window_settings]
 name = "Save Window Position"
@@ -5710,7 +5710,7 @@ wasm = true
 name = "feathers_counter"
 path = "examples/ui/widgets/feathers_counter.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.feathers_counter]
 name = "Feathers Counter"
@@ -5722,7 +5722,7 @@ wasm = true
 name = "feathers_gallery"
 path = "examples/ui/widgets/feathers_gallery.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.feathers_gallery]
 name = "Feathers Widgets"
@@ -5734,7 +5734,7 @@ wasm = true
 name = "feathers_number_input"
 path = "examples/ui/widgets/feathers_number_input.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.feathers_number_input]
 name = "Feathers Number Input"
@@ -5834,7 +5834,7 @@ wasm = false
 name = "clustered_decal_maps"
 path = "examples/3d/clustered_decal_maps.rs"
 doc-scrape-examples = true
-required-features = ["pbr_clustered_decals", "https", "bevy_feathers"]
+required-features = ["pbr_clustered_decals", "https", "hearth_feathers"]
 
 [package.metadata.example.clustered_decal_maps]
 name = "Clustered Decal Maps"
@@ -5846,7 +5846,7 @@ wasm = false
 name = "mirror"
 path = "examples/3d/mirror.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.mirror]
 name = "Mirror"
@@ -5858,7 +5858,7 @@ wasm = true
 name = "dynamic_mip_generation"
 path = "examples/2d/dynamic_mip_generation.rs"
 doc-scrape-examples = true
-required-features = ["bevy_feathers"]
+required-features = ["hearth_feathers"]
 
 [package.metadata.example.dynamic_mip_generation]
 name = "Dynamic Mipmap Generation"
@@ -5870,7 +5870,7 @@ wasm = false
 name = "pccm"
 path = "examples/3d/pccm.rs"
 doc-scrape-examples = true
-required-features = ["free_camera", "https", "bevy_feathers"]
+required-features = ["free_camera", "https", "hearth_feathers"]
 
 [package.metadata.example.pccm]
 name = "Parallax-Corrected Cubemaps"
@@ -5882,7 +5882,7 @@ wasm = true
 name = "light_probe_blending"
 path = "examples/3d/light_probe_blending.rs"
 doc-scrape-examples = true
-required-features = ["free_camera", "https", "bevy_feathers"]
+required-features = ["free_camera", "https", "hearth_feathers"]
 
 [package.metadata.example.light_probe_blending]
 name = "Light Probe Blending"
@@ -5917,8 +5917,8 @@ edition = "2026_pre"
 root = "assets/shaders"
 
 [package.metadata.wgsl-analyzer.dependencies]
-bevy_render = { path = "crates/bevy_render" }
-bevy_pbr = { path = "crates/bevy_pbr" }
-bevy_core_pipeline = { path = "crates/bevy_core_pipeline" }
-bevy_sprite_render = { path = "crates/bevy_sprite_render" }
-bevy_ui_render = { path = "crates/bevy_ui_render" }
+hearth_render = { path = "crates/hearth_render" }
+hearth_pbr = { path = "crates/hearth_pbr" }
+hearth_core_pipeline = { path = "crates/hearth_core_pipeline" }
+hearth_sprite_render = { path = "crates/hearth_sprite_render" }
+hearth_ui_render = { path = "crates/hearth_ui_render" }

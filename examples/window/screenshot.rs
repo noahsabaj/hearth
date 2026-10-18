@@ -1,6 +1,6 @@
 //! An example showing how to save screenshots to disk
 
-use bevy::{
+use hearth::{
     prelude::*,
     render::view::screenshot::{save_to_disk, Capturing, Screenshot},
     window::{CursorIcon, SystemCursorIcon},

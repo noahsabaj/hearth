@@ -1,8 +1,8 @@
 # Docs.rs Extensions
 
 This directory includes some templates and styling to extend and modify [rustdoc]'s output
-for Bevy's documentation on [docs.rs]. Currently this consists of tags indicating core
-`bevy_ecs` traits.
+for Hearth's documentation on [docs.rs]. Currently this consists of tags indicating core
+`hearth_ecs` traits.
 
 ## 3rd Party Crates
 

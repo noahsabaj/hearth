@@ -1,6 +1,6 @@
 //! Demonstrates drag and drop functionality using picking events.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Component)]
 struct DropArea;

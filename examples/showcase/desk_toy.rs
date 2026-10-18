@@ -1,4 +1,4 @@
-//! Bevy logo as a desk toy using transparent windows! Now with Googly Eyes!
+//! Hearth logo as a desk toy using transparent windows! Now with Googly Eyes!
 //!
 //! This example demonstrates:
 //! - Transparent windows that can be clicked through.
@@ -6,7 +6,7 @@
 //! - Using entity hierarchy, Transform, and Visibility to create simple animations.
 //! - Creating simple 2D meshes based on shape primitives.
 
-use bevy::{
+use hearth::{
     app::AppExit,
     input::common_conditions::{input_just_pressed, input_just_released},
     prelude::*,
@@ -14,13 +14,13 @@ use bevy::{
 };
 
 #[cfg(target_os = "macos")]
-use bevy::window::CompositeAlphaMode;
+use hearth::window::CompositeAlphaMode;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Desk Toy".into(),
+                title: "Hearth Desk Toy".into(),
                 transparent: true,
                 #[cfg(target_os = "macos")]
                 composite_alpha_mode: CompositeAlphaMode::PostMultiplied,
@@ -59,7 +59,7 @@ struct WindowTransparency(bool);
 #[derive(Resource)]
 struct CursorWorldPos(Option<Vec2>);
 
-/// The current drag operation including the offset with which we grabbed the Bevy logo.
+/// The current drag operation including the offset with which we grabbed the Hearth logo.
 #[derive(Resource)]
 struct DragOperation(Vec2);
 
@@ -67,9 +67,9 @@ struct DragOperation(Vec2);
 #[derive(Component)]
 struct InstructionsText;
 
-/// Marker component for the Bevy logo entity.
+/// Marker component for the Hearth logo entity.
 #[derive(Component)]
-struct BevyLogo;
+struct HearthLogo;
 
 /// Component for the moving pupil entity (the moving part of the googly eye).
 #[derive(Component)]
@@ -83,14 +83,13 @@ struct Pupil {
 }
 
 // Dimensions are based on: assets/branding/icon.png
-// Bevy logo radius
-const BEVY_LOGO_RADIUS: f32 = 128.0;
-// Birds' eyes x y (offset from the origin) and radius
+// Hearth logo radius
+const HEARTH_LOGO_RADIUS: f32 = 128.0;
+// The flame's eyes: x y (offset from the origin) and radius
 // These values are manually determined from the logo image
-const BIRDS_EYES: [(f32, f32, f32); 3] = [
-    (145.0 - 128.0, -(56.0 - 128.0), 12.0),
-    (198.0 - 128.0, -(87.0 - 128.0), 10.0),
-    (222.0 - 128.0, -(140.0 - 128.0), 8.0),
+const FLAME_EYES: [(f32, f32, f32); 2] = [
+    (117.0 - 128.0, -(175.0 - 128.0), 8.0),
+    (139.0 - 128.0, -(175.0 - 128.0), 8.0),
 ];
 
 const WINDOW_CLEAR_COLOR: Color = Color::srgb(0.2, 0.2, 0.2);
@@ -113,7 +112,7 @@ fn setup(
         ..default()
     };
     commands.spawn((
-        Text2d::new("Press Space to play on your desktop! Press it again to return.\nRight click Bevy logo to exit."),
+        Text2d::new("Press Space to play on your desktop! Press it again to return.\nRight click Hearth logo to exit."),
             text_style.clone(),
             Transform::from_xyz(0.0, -300.0, 100.0),
         InstructionsText,
@@ -127,15 +126,15 @@ fn setup(
     let pupil_material = materials.add(Color::srgb(0.2, 0.2, 0.2));
     let pupil_highlight_material = materials.add(Color::srgba(1.0, 1.0, 1.0, 0.2));
 
-    // Spawn the Bevy logo sprite
+    // Spawn the Hearth logo sprite
     commands
         .spawn((
             Sprite::from_image(asset_server.load("branding/icon.png")),
-            BevyLogo,
+            HearthLogo,
         ))
         .with_children(|commands| {
-            // For each bird eye
-            for (x, y, radius) in BIRDS_EYES {
+            // For each eye
+            for (x, y, radius) in FLAME_EYES {
                 let pupil_radius = radius * 0.6;
                 let pupil_highlight_radius = radius * 0.3;
                 let pupil_highlight_offset = radius * 0.3;
@@ -220,7 +219,7 @@ fn get_cursor_world_pos(
 fn update_cursor_hit_test(
     cursor_world_pos: Res<CursorWorldPos>,
     primary_window: Single<(&Window, &mut CursorOptions), With<PrimaryWindow>>,
-    bevy_logo_transform: Single<&Transform, With<BevyLogo>>,
+    hearth_logo_transform: Single<&Transform, With<HearthLogo>>,
 ) {
     let (window, mut cursor_options) = primary_window.into_inner();
     // If the window has decorations (e.g. a border) then it should be clickable
@@ -234,30 +233,30 @@ fn update_cursor_hit_test(
         return;
     };
 
-    // If the cursor is within the radius of the Bevy logo make the window clickable otherwise the window is not clickable
-    cursor_options.hit_test = bevy_logo_transform
+    // If the cursor is within the radius of the Hearth logo make the window clickable otherwise the window is not clickable
+    cursor_options.hit_test = hearth_logo_transform
         .translation
         .truncate()
         .distance(cursor_world_pos)
-        < BEVY_LOGO_RADIUS;
+        < HEARTH_LOGO_RADIUS;
 }
 
 /// Start the drag operation and record the offset we started dragging from
 fn start_drag(
     mut commands: Commands,
     cursor_world_pos: Res<CursorWorldPos>,
-    bevy_logo_transform: Single<&Transform, With<BevyLogo>>,
+    hearth_logo_transform: Single<&Transform, With<HearthLogo>>,
 ) {
     // If the cursor is not within the primary window skip this system
     let Some(cursor_world_pos) = cursor_world_pos.0 else {
         return;
     };
 
-    // Get the offset from the cursor to the Bevy logo sprite
-    let drag_offset = bevy_logo_transform.translation.truncate() - cursor_world_pos;
+    // Get the offset from the cursor to the Hearth logo sprite
+    let drag_offset = hearth_logo_transform.translation.truncate() - cursor_world_pos;
 
-    // If the cursor is within the Bevy logo radius start the drag operation and remember the offset of the cursor from the origin
-    if drag_offset.length() < BEVY_LOGO_RADIUS {
+    // If the cursor is within the Hearth logo radius start the drag operation and remember the offset of the cursor from the origin
+    if drag_offset.length() < HEARTH_LOGO_RADIUS {
         commands.insert_resource(DragOperation(drag_offset));
     }
 }
@@ -267,12 +266,12 @@ fn end_drag(mut commands: Commands) {
     commands.remove_resource::<DragOperation>();
 }
 
-/// Drag the Bevy logo
+/// Drag the Hearth logo
 fn drag(
     drag_offset: Res<DragOperation>,
     cursor_world_pos: Res<CursorWorldPos>,
     time: Res<Time>,
-    mut bevy_transform: Single<&mut Transform, With<BevyLogo>>,
+    mut hearth_transform: Single<&mut Transform, With<HearthLogo>>,
     mut q_pupils: Query<&mut Pupil>,
 ) {
     // If the cursor is not within the primary window skip this system
@@ -280,41 +279,41 @@ fn drag(
         return;
     };
 
-    // Calculate the new translation of the Bevy logo based on cursor and drag offset
+    // Calculate the new translation of the Hearth logo based on cursor and drag offset
     let new_translation = cursor_world_pos + drag_offset.0;
 
-    // Calculate how fast we are dragging the Bevy logo (unit/second)
+    // Calculate how fast we are dragging the Hearth logo (unit/second)
     let drag_velocity =
-        (new_translation - bevy_transform.translation.truncate()) / time.delta_secs();
+        (new_translation - hearth_transform.translation.truncate()) / time.delta_secs();
 
-    // Update the translation of Bevy logo transform to new translation
-    bevy_transform.translation = new_translation.extend(bevy_transform.translation.z);
+    // Update the translation of Hearth logo transform to new translation
+    hearth_transform.translation = new_translation.extend(hearth_transform.translation.z);
 
     // Add the cursor drag velocity in the opposite direction to each pupil.
-    // Remember pupils are using local coordinates to move. So when the Bevy logo moves right they need to move left to
+    // Remember pupils are using local coordinates to move. So when the Hearth logo moves right they need to move left to
     // simulate inertia, otherwise they will move fixed to the parent.
     for mut pupil in &mut q_pupils {
         pupil.velocity -= drag_velocity;
     }
 }
 
-/// Quit when the user right clicks the Bevy logo
+/// Quit when the user right clicks the Hearth logo
 fn quit(
     cursor_world_pos: Res<CursorWorldPos>,
     mut app_exit: MessageWriter<AppExit>,
-    bevy_logo_transform: Single<&Transform, With<BevyLogo>>,
+    hearth_logo_transform: Single<&Transform, With<HearthLogo>>,
 ) {
     // If the cursor is not within the primary window skip this system
     let Some(cursor_world_pos) = cursor_world_pos.0 else {
         return;
     };
 
-    // If the cursor is within the Bevy logo radius send the [`AppExit`] event to quit the app
-    if bevy_logo_transform
+    // If the cursor is within the Hearth logo radius send the [`AppExit`] event to quit the app
+    if hearth_logo_transform
         .translation
         .truncate()
         .distance(cursor_world_pos)
-        < BEVY_LOGO_RADIUS
+        < HEARTH_LOGO_RADIUS
     {
         app_exit.write(AppExit::Success);
     }

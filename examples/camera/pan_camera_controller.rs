@@ -1,6 +1,6 @@
 //! Example for `PanCamera`, demonstrating basic camera controls such as panning and zooming.
 //!
-//! This example shows how to use the `PanCamera` controller on a 2D camera in Bevy. The camera
+//! This example shows how to use the `PanCamera` controller on a 2D camera in Hearth. The camera
 //! can be panned with keyboard inputs (arrow keys or WASD) and zoomed in/out using the mouse
 //! wheel or the +/- keys. The camera starts with the default `PanCamera` settings, which can
 //! be customized.
@@ -9,8 +9,8 @@
 //! - Arrow keys (or WASD) to pan the camera.
 //! - Mouse scroll wheel or +/- to zoom in/out.
 
-use bevy::camera_controller::pan_camera::{PanCamera, PanCameraPlugin};
-use bevy::prelude::*;
+use hearth::camera_controller::pan_camera::{PanCamera, PanCameraPlugin};
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -37,6 +37,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((Camera2d, PanCamera::default()));
 
     commands.spawn(Sprite::from_image(
-        asset_server.load("branding/bevy_bird_dark.png"),
+        asset_server.load("branding/hearth_mark.png"),
     ));
 }

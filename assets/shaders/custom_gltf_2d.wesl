@@ -1,4 +1,4 @@
-import bevy_sprite_render::mesh2d::{
+import hearth_sprite_render::mesh2d::{
     view_bindings::globals,
     functions::{get_world_from_local, mesh2d_position_local_to_clip},
 };

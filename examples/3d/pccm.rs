@@ -2,7 +2,7 @@
 
 use core::f32;
 
-use bevy::{
+use hearth::{
     camera::Hdr,
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     feathers::{theme::UiTheme, FeathersPlugins},
@@ -27,16 +27,16 @@ struct InnerCube;
 /// The brightness of the cubemap.
 ///
 /// Since the cubemap image was baked in Blender, which uses a different
-/// exposure setting than that of Bevy, we need this factor in order to make the
+/// exposure setting than that of Hearth, we need this factor in order to make the
 /// exposure of the baked image match ours.
 const ENVIRONMENT_MAP_INTENSITY: f32 = 100.0;
 
 const OUTER_CUBE_URL: &str =
-    "https://raw.githubusercontent.com/bevyengine/bevy_asset_files/main/pccm_example/outer_cube.glb#Scene0";
+    "https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/main/pccm_example/outer_cube.glb#Scene0";
 const ENV_DIFFUSE_URL: &str =
-    "https://raw.githubusercontent.com/bevyengine/bevy_asset_files/main/pccm_example/env_diffuse.ktx2";
+    "https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/main/pccm_example/env_diffuse.ktx2";
 const ENV_SPECULAR_URL: &str =
-    "https://raw.githubusercontent.com/bevyengine/bevy_asset_files/main/pccm_example/env_specular.ktx2";
+    "https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/main/pccm_example/env_specular.ktx2";
 
 /// The current value of user-customizable settings for this demo.
 #[derive(Resource, Default)]
@@ -62,7 +62,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Parallax-Corrected Cubemaps Example".into(),
+                    title: "Hearth Parallax-Corrected Cubemaps Example".into(),
                     ..default()
                 }),
                 ..default()

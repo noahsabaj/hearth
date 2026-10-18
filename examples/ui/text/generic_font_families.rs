@@ -12,7 +12,7 @@
 //! most games instead choose to simply bundle their required fonts
 //! to ensure a unified visual look.
 
-use bevy::{
+use hearth::{
     color::palettes::{
         css::{WHEAT, YELLOW},
         tailwind::ZINC_600,

@@ -1,8 +1,8 @@
-//! A simple minesweeper-style game in Bevy UI.
+//! A simple minesweeper-style game in Hearth UI.
 
-use bevy::color::palettes::css::{DARK_GREEN, LIME, ORANGE, ORANGE_RED, RED, SEA_GREEN, YELLOW};
-use bevy::prelude::*;
-use bevy::text::LineHeight;
+use hearth::color::palettes::css::{DARK_GREEN, LIME, ORANGE, ORANGE_RED, RED, SEA_GREEN, YELLOW};
+use hearth::prelude::*;
+use hearth::text::LineHeight;
 use rand::seq::SliceRandom;
 use std::ops::Range;
 
@@ -222,7 +222,7 @@ fn setup_menu(mut commands: Commands) {
             ..default()
         },
         children![
-            (Text::new("Bevy Mines"), TextFont::from_font_size(35.0)),
+            (Text::new("Hearth Mines"), TextFont::from_font_size(35.0)),
             (
                 Node {
                     flex_direction: FlexDirection::Column,

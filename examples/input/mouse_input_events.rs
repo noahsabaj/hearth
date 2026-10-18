@@ -1,6 +1,6 @@
 //! Prints all mouse events to the console.
 
-use bevy::{
+use hearth::{
     input::{
         gestures::*,
         mouse::{MouseButtonInput, MouseMotion, MouseWheel},

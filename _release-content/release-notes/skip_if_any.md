@@ -4,7 +4,7 @@ authors: ["@BrainBacon"]
 pull_requests: [25852]
 ---
 
-When Fallible System Parameters were [introduced in 0.15](/news/bevy-0-15), the `Single` and `Populated` query params were added. Those can skip system execution if there isn't exactly one result, or no results respectively.
+When Fallible System Parameters were [introduced in 0.15](/news/hearth-0-15), the `Single` and `Populated` query params were added. Those can skip system execution if there isn't exactly one result, or no results respectively.
 
 Now `SkipIfAny<F>` has been added to this family. This variant will skip the system if there are any results matched by the provided filter.
 

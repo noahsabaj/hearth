@@ -1,6 +1,6 @@
-//! a test that confirms that 'bevy' does not panic while changing from Windowed to Fullscreen when viewport is set
+//! a test that confirms that 'hearth' does not panic while changing from Windowed to Fullscreen when viewport is set
 
-use bevy::{prelude::*, render::camera::Viewport, window::WindowMode};
+use hearth::{prelude::*, render::camera::Viewport, window::WindowMode};
 
 //Having a viewport set to the same size as a window used to cause panic on some occasions when switching to Fullscreen
 const WINDOW_WIDTH: f32 = 1366.0;

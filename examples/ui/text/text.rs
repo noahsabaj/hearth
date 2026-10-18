@@ -3,7 +3,7 @@
 //! It displays the current FPS in the top left corner, as well as text that changes color
 //! in the bottom right. For text within a scene, please see the text2d example.
 
-use bevy::{
+use hearth::{
     color::palettes::css::GOLD,
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     prelude::*,
@@ -32,7 +32,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Text with one section
     commands.spawn((
         // Accepts a `String` or any type that converts into a `String`, such as `&str`
-        Text::new("hello\nbevy!"),
+        Text::new("hello\nhearth!"),
         Underline,
         TextFont {
             // This font is loaded and will be used instead of the default font.

@@ -1,11 +1,11 @@
 //! Shows how to trigger force-feedback, making gamepads rumble when buttons are
 //! pressed.
 
-use bevy::{
+use core::time::Duration;
+use hearth::{
     input::gamepad::{Gamepad, GamepadRumbleIntensity, GamepadRumbleRequest},
     prelude::*,
 };
-use core::time::Duration;
 
 fn main() {
     App::new()

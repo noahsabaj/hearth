@@ -1,14 +1,14 @@
 //! Demonstrates a single, minimal multiline [`EditableText`] widget.
 
-use bevy::color::palettes::css::DARK_SLATE_GRAY;
-use bevy::color::palettes::tailwind::SLATE_300;
-use bevy::input::keyboard::{Key, KeyboardInput};
-use bevy::input_focus::tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin};
-use bevy::input_focus::{AutoFocus, FocusCause, FocusedInput, InputFocus};
-use bevy::prelude::*;
-use bevy::text::{EditableText, EditableTextFilter, TextCursorStyle, TextLayoutInfo};
-use bevy::ui_widgets::TextInput;
-use bevy::ui_widgets::{
+use hearth::color::palettes::css::DARK_SLATE_GRAY;
+use hearth::color::palettes::tailwind::SLATE_300;
+use hearth::input::keyboard::{Key, KeyboardInput};
+use hearth::input_focus::tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin};
+use hearth::input_focus::{AutoFocus, FocusCause, FocusedInput, InputFocus};
+use hearth::prelude::*;
+use hearth::text::{EditableText, EditableTextFilter, TextCursorStyle, TextLayoutInfo};
+use hearth::ui_widgets::TextInput;
+use hearth::ui_widgets::{
     popover::{Popover, PopoverAlign, PopoverPlacement, PopoverSide},
     Activate, Button, MenuAction, MenuButton, MenuEvent, MenuFocusState, MenuItem, MenuPopup,
     SelectAllOnFocus,
@@ -41,8 +41,8 @@ struct JustifyLabel;
 ///
 /// This is a small, self-contained scrollbar built directly against
 /// [`EditableText::viewport`] and [`TextLayoutInfo::size`], since the input's scroll
-/// state isn't a [`ScrollPosition`](bevy::ui::ScrollPosition) and so can't drive the headless
-/// `Scrollbar` widget from `bevy_ui_widgets`. It has no `TabIndex` and isn't `InputFocus`able.
+/// state isn't a [`ScrollPosition`](hearth::ui::ScrollPosition) and so can't drive the headless
+/// `Scrollbar` widget from `hearth_ui_widgets`. It has no `TabIndex` and isn't `InputFocus`able.
 #[derive(Component)]
 struct InputScrollThumb;
 
@@ -228,8 +228,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         .observe(
                             |on: On<FocusedInput<KeyboardInput>>,
                              mut query_set: ParamSet<(
-                                Query<&EditableText, With<VisibleLinesInput>>,
-                                Query<&mut EditableText, With<MultilineInput>>,
+                                Query<&'static EditableText, With<VisibleLinesInput>>,
+                                Query<&'static mut EditableText, With<MultilineInput>>,
                             )>| {
                                 if !(on.input.state.is_pressed()
                                     && on.input.logical_key == Key::Enter)
@@ -444,7 +444,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                         if popup.0.display == Display::None {
                                             popup.0.display = Display::Flex;
                                             *popup.1 = MenuFocusState::Opening(
-                                                bevy::input_focus::tab_navigation::NavAction::First,
+                                                hearth::input_focus::tab_navigation::NavAction::First,
                                             );
                                         } else {
                                             popup.0.display = Display::None;

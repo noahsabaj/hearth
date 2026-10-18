@@ -1,6 +1,6 @@
-//! Demonstrates the behavior-only split pane widget in `bevy_ui_widgets`.
+//! Demonstrates the behavior-only split pane widget in `hearth_ui_widgets`.
 
-use bevy::{
+use hearth::{
     picking::cursor::{CursorIconPlugin, EntityCursor},
     prelude::*,
     ui_widgets::{split_pane_self_update, ControlOrientation, Pane, SplitPane, SplitPaneHandle},

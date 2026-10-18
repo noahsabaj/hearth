@@ -2,7 +2,7 @@
 //!
 //! Acts as background color, since pixels that are not drawn in a frame remain unchanged.
 
-use bevy::{color::palettes::css::PURPLE, prelude::*};
+use hearth::{color::palettes::css::PURPLE, prelude::*};
 
 fn main() {
     App::new()

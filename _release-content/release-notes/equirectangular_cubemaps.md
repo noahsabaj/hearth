@@ -4,7 +4,7 @@ authors: ["@stuartparmenter"]
 pull_requests: [25802]
 ---
 
-Environment maps often come as lat-long panoramas in Radiance HDR (`.hdr`) files, while Bevy's skyboxes and environment lighting use cubemaps. Bevy can now convert these panoramas during loading, removing the need for an external conversion tool. Enable the `equirectangular_cubemap` feature to use it.
+Environment maps often come as lat-long panoramas in Radiance HDR (`.hdr`) files, while Hearth's skyboxes and environment lighting use cubemaps. Hearth can now convert these panoramas during loading, removing the need for an external conversion tool. Enable the `equirectangular_cubemap` feature to use it.
 
 For example, with asset processing, `equirectangular_cubemap` and `compressed_image_saver` enabled, add an `environment.hdr.meta` file beside your panorama to convert it to a compressed cubemap for rendering:
 

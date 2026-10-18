@@ -1,6 +1,7 @@
 //! Test that the renderer can handle various invalid skinned meshes
 
-use bevy::{
+use core::f32::consts::TAU;
+use hearth::{
     asset::RenderAssetUsages,
     camera::ScalingMode,
     math::ops,
@@ -11,7 +12,6 @@ use bevy::{
     post_process::motion_blur::MotionBlur,
     prelude::*,
 };
-use core::f32::consts::TAU;
 
 fn main() {
     App::new()
@@ -170,8 +170,8 @@ fn setup_meshes(
     .into_iter()
     .enumerate()
     {
-        // Skip variations that are currently broken. See https://github.com/bevyengine/bevy/issues/16929,
-        // https://github.com/bevyengine/bevy/pull/18074.
+        // Skip variations that are currently broken. See upstream issue #16929,
+        // upstream PR #18074.
         if (variation == Variation::MissingSkinnedMeshComponent)
             || (variation == Variation::MissingMeshAttributes)
         {

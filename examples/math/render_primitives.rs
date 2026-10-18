@@ -1,7 +1,7 @@
-//! This example demonstrates how each of Bevy's math primitives look like in 2D and 3D with meshes
+//! This example demonstrates how each of Hearth's math primitives look like in 2D and 3D with meshes
 //! and with gizmos
 
-use bevy::{input::common_conditions::input_just_pressed, math::Isometry2d, prelude::*};
+use hearth::{input::common_conditions::input_just_pressed, math::Isometry2d, prelude::*};
 
 const LEFT_RIGHT_OFFSET_2D: f32 = 200.0;
 const LEFT_RIGHT_OFFSET_3D: f32 = 2.0;

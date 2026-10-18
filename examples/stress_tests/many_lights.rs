@@ -3,7 +3,7 @@
 
 use std::f64::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::ScalingMode,
     color::palettes::css::DEEP_PINK,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},

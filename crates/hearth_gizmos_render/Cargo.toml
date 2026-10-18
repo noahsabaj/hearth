@@ -1,0 +1,59 @@
+[package]
+name = "hearth_gizmos_render"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides gizmos rendering for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+webgl = []
+webgpu = []
+
+[dependencies]
+# Hearth
+hearth_pbr = { path = "../hearth_pbr", version = "0.20.0-dev", optional = true }
+hearth_sprite_render = { path = "../hearth_sprite_render", version = "0.20.0-dev", optional = true }
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_gizmos = { path = "../hearth_gizmos", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_extract = { path = "../hearth_extract", version = "0.20.0-dev" }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev" }
+hearth_mesh = { path = "../hearth_mesh", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_shape = { path = "../hearth_shape", version = "0.20.0-dev" }
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev" }
+hearth_shader = { path = "../hearth_shader", version = "0.20.0-dev" }
+hearth_render = { path = "../hearth_render", version = "0.20.0-dev" }
+hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev" }
+hearth_core_pipeline = { path = "../hearth_core_pipeline", version = "0.20.0-dev" }
+hearth_transform = { path = "../hearth_transform", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_color = { path = "../hearth_color", version = "0.20.0-dev" }
+hearth_material = { path = "../hearth_material", version = "0.20.0-dev" }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+
+# other
+bytemuck = "1.0"
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true
+
+[package.metadata.wgsl-analyzer]
+edition = "2026_pre"
+root = "src"
+
+[package.metadata.wgsl-analyzer.dependencies]
+hearth_render = { path = "../hearth_render" }

@@ -4,7 +4,7 @@
 //! as they provide a consistent reference for the orientation of objects
 //! and an evenly spaced grid to judge relative scale.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     dev_tools::infinite_grid::{InfiniteGrid, InfiniteGridPlugin, InfiniteGridSettings},
     prelude::*,

@@ -1,6 +1,6 @@
 //! The example demonstrates what type data is, how to create it, and how to use it.
 
-use bevy::{
+use hearth::{
     prelude::*,
     reflect::{CreateTypeData, TypeRegistry},
 };
@@ -94,7 +94,7 @@ fn main() {
     assert_eq!(value.take::<Zombie>().unwrap(), Zombie { health: 75 });
 
     // This is a simple example, but type data can be used for much more complex operations.
-    // Bevy also provides some useful shorthand for working with type data.
+    // Hearth also provides some useful shorthand for working with type data.
 
     // For example, we can have the type data be automatically registered when we register the type
     // by using the `#[reflect(MyTrait)]` attribute when defining our type.
@@ -171,7 +171,7 @@ fn main() {
     registry.register_type_data_with::<Beast, ReflectDamageable, _>(5);
 
     // And for object-safe traits (see https://doc.rust-lang.org/reference/items/traits.html#object-safety),
-    // Bevy provides a convenience macro for generating type data that converts `dyn Reflect` into `dyn MyTrait`.
+    // Hearth provides a convenience macro for generating type data that converts `dyn Reflect` into `dyn MyTrait`.
     #[reflect_trait]
     trait Health {
         fn health(&self) -> i32;
@@ -199,7 +199,7 @@ fn main() {
     let value: &dyn Health = reflect_health.get(value.as_reflect()).unwrap();
     assert_eq!(value.health(), 50);
 
-    // Lastly, here's a list of some useful type data provided by Bevy that you might want to register for your types:
+    // Lastly, here's a list of some useful type data provided by Hearth that you might want to register for your types:
     // - `ReflectDefault` for types that implement `Default`
     // - `ReflectFromWorld` for types that implement `FromWorld`
     // - `ReflectComponent` for types that implement `Component`

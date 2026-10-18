@@ -1,6 +1,6 @@
 //! Prints mouse button events.
 
-use bevy::{
+use hearth::{
     input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll},
     prelude::*,
 };

@@ -1,11 +1,11 @@
-//! Illustrates how "reflection" serialization works in Bevy.
+//! Illustrates how "reflection" serialization works in Hearth.
 //!
 //! Deriving `Reflect` will also register `SerializationData`,
 //! which powers reflect (de)serialization.
 //! Serializing reflected data *does not* require deriving serde's
 //! Serialize and Deserialize implementations.
 
-use bevy::{
+use hearth::{
     prelude::*,
     reflect::serde::{ReflectDeserializer, ReflectSerializer},
 };
@@ -27,7 +27,7 @@ pub struct Player {
 
 const PLAYER_JSON: &str = r#"{
     "serialization::Player": {
-        "name": "BevyPlayerOne",
+        "name": "HearthPlayerOne",
         "health": 50
     }
 }"#;
@@ -53,7 +53,7 @@ fn serialize(type_registry: Res<AppTypeRegistry>) {
 
     // a concrete value
     let value = Player {
-        name: "BevyPlayerSerialize".to_string(),
+        name: "HearthPlayerSerialize".to_string(),
         health: 80,
     };
 

@@ -1,13 +1,13 @@
-//! Demonstrates simple integration testing of Bevy applications.
+//! Demonstrates simple integration testing of Hearth applications.
 //!
-//! By substituting [`DefaultPlugins`] with [`MinimalPlugins`], Bevy can run completely headless.
+//! By substituting [`DefaultPlugins`] with [`MinimalPlugins`], Hearth can run completely headless.
 //!
 //! The list of minimal plugins does not include things like window or input handling. The downside
 //! of this is that resources or entities associated with those systems (for example:
 //! `ButtonInput::<KeyCode>`) need to be manually added, either directly or via e.g.
 //! [`InputPlugin`]. The upside, however, is that the test has complete control over these
 //! resources, meaning we can fake user input, fake the window being moved around, and more.
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Component)]
 struct Player {
@@ -20,7 +20,7 @@ impl Default for Player {
     }
 }
 
-/// Splitting a Bevy project into multiple smaller plugins can make it more testable. We can
+/// Splitting a Hearth project into multiple smaller plugins can make it more testable. We can
 /// write tests for individual plugins in isolation, as well as for the entire project.
 fn game_plugin(app: &mut App) {
     app.add_systems(Startup, (spawn_player, window_title_system).chain());

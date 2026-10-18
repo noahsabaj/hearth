@@ -9,10 +9,11 @@
 //! 5. Exit if `single_image` setting is set
 //!
 //! If your goal is to capture a single “screenshot” as opposed to every single rendered frame
-//! without gaps, it is simpler to use [`bevy::render::view::window::screenshot::Screenshot`]
+//! without gaps, it is simpler to use [`hearth::render::view::window::screenshot::Screenshot`]
 //! than this approach.
 
-use bevy::{
+use crossbeam_channel::{Receiver, Sender};
+use hearth::{
     app::{AppExit, ScheduleRunnerPlugin},
     camera::RenderTarget,
     core_pipeline::tonemapping::Tonemapping,
@@ -30,7 +31,6 @@ use bevy::{
     window::ExitCondition,
     winit::WinitPlugin,
 };
-use crossbeam_channel::{Receiver, Sender};
 use std::{
     ops::{Deref, DerefMut},
     path::PathBuf,
@@ -86,7 +86,7 @@ fn main() {
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
                 // Not strictly necessary, as the inclusion of ScheduleRunnerPlugin below
-                // replaces the bevy_winit app runner and so a window is never created.
+                // replaces the hearth_winit app runner and so a window is never created.
                 .set(WindowPlugin {
                     primary_window: None,
                     // Don’t automatically exit due to having no windows.
@@ -100,7 +100,7 @@ fn main() {
         .add_plugins(ImageCopyPlugin)
         // headless frame capture
         .add_plugins(CaptureFramePlugin)
-        // ScheduleRunnerPlugin provides an alternative to the default bevy_winit app runner, which
+        // ScheduleRunnerPlugin provides an alternative to the default hearth_winit app runner, which
         // manages the loop without creating a window.
         .add_plugins(ScheduleRunnerPlugin::run_loop(
             // Run 60 times per second.
@@ -324,7 +324,7 @@ fn image_copy_driver(
     render_context: RenderContext,
     image_copiers: Res<ImageCopiers>,
     render_queue: Res<RenderQueue>,
-    gpu_images: Res<RenderAssets<bevy::render::texture::GpuImage>>,
+    gpu_images: Res<RenderAssets<hearth::render::texture::GpuImage>>,
 ) {
     for image_copier in image_copiers.iter() {
         if !image_copier.enabled() {
@@ -499,7 +499,7 @@ fn update(
                         Err(e) => panic!("Failed to create image buffer {e:?}"),
                     };
 
-                    // Prepare directory for images, test_images in bevy folder is used here for example
+                    // Prepare directory for images, test_images in hearth folder is used here for example
                     // You should choose the path depending on your needs
                     let images_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("test_images");
                     info!("Saving image to: {images_dir:?}");

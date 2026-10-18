@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::Viewport,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     math::ops::{cos, sin},

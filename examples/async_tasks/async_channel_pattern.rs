@@ -1,4 +1,4 @@
-//! A minimal example showing how to perform asynchronous work in Bevy
+//! A minimal example showing how to perform asynchronous work in Hearth
 //! using [`AsyncComputeTaskPool`] for parallel task execution and a crossbeam channel
 //! to communicate between async tasks and the main ECS thread.
 //!
@@ -6,13 +6,13 @@
 //! and dynamically spawn ECS entities (cubes) as results from these tasks. The system processes
 //! async task results in the main game loop, all without blocking or polling the main thread.
 
-use bevy::{
+use crossbeam_channel::{Receiver, Sender};
+use futures_timer::Delay;
+use hearth::{
     math::ops::{cos, sin},
     prelude::*,
     tasks::AsyncComputeTaskPool,
 };
-use crossbeam_channel::{Receiver, Sender};
-use futures_timer::Delay;
 use rand::RngExt;
 use std::time::Duration;
 

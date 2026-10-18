@@ -1,4 +1,4 @@
-import bevy_pbr::render::{
+import hearth_pbr::render::{
     mesh_view_bindings::view,
     forward_io::VertexOutput,
     utils::coords_to_viewport_uv,

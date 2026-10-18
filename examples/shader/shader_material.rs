@@ -1,6 +1,6 @@
 //! A shader and a material that uses it.
 
-use bevy::{
+use hearth::{
     prelude::*, reflect::TypePath, render::render_resource::AsBindGroup, shader::ShaderRef,
 };
 

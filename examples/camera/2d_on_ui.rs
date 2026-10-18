@@ -1,6 +1,6 @@
-//! This example shows how to render 2D objects on top of Bevy UI, by using a second camera with a higher `order` than the UI camera.
+//! This example shows how to render 2D objects on top of Hearth UI, by using a second camera with a higher `order` than the UI camera.
 
-use bevy::{camera::visibility::RenderLayers, color::palettes::tailwind, prelude::*};
+use hearth::{camera::visibility::RenderLayers, color::palettes::tailwind, prelude::*};
 
 fn main() {
     App::new()

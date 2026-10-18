@@ -1,12 +1,12 @@
 //! A material that uses bindless textures.
 
-use bevy::prelude::*;
-use bevy::render::render_resource::{AsBindGroup, ShaderType};
-use bevy::shader::ShaderRef;
+use hearth::prelude::*;
+use hearth::render::render_resource::{AsBindGroup, ShaderType};
+use hearth::shader::ShaderRef;
 
 const SHADER_ASSET_PATH: &str = "shaders/bindless_material.wesl";
 
-// `#[bindless(limit(4))]` indicates that we want Bevy to group materials into
+// `#[bindless(limit(4))]` indicates that we want Hearth to group materials into
 // bind groups of at most 4 materials each.
 // Note that we use the structure-level `#[uniform]` attribute to supply
 // ordinary data to the shader.
@@ -59,7 +59,7 @@ fn setup(
         Mesh3d(meshes.add(Cuboid::default())),
         MeshMaterial3d(materials.add(BindlessMaterial {
             color: LinearRgba::BLUE,
-            color_texture: Some(asset_server.load("branding/bevy_logo_dark.png")),
+            color_texture: Some(asset_server.load("branding/hearth_logo_dark.png")),
         })),
         Transform::from_xyz(-2.0, 0.5, 0.0),
     ));
@@ -69,7 +69,7 @@ fn setup(
         Mesh3d(meshes.add(Cylinder::default())),
         MeshMaterial3d(materials.add(BindlessMaterial {
             color: LinearRgba::RED,
-            color_texture: Some(asset_server.load("branding/bevy_logo_light.png")),
+            color_texture: Some(asset_server.load("branding/hearth_logo_light.png")),
         })),
         Transform::from_xyz(2.0, 0.5, 0.0),
     ));

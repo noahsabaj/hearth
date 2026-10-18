@@ -12,10 +12,10 @@
 //! The example will implement a traditional Model View Controller (MVC) design
 //! using the various ui widgets to power a character creation screen.
 //!
-//! To read more about state management, consult the [`bevy::ui_widgets`]
+//! To read more about state management, consult the [`hearth::ui_widgets`]
 //! crate level documentation.
 
-use bevy::{
+use hearth::{
     color::palettes,
     ecs::schedule::IntoScheduleConfigs,
     input_focus::tab_navigation::TabIndex,
@@ -85,7 +85,7 @@ struct Character {
 impl Default for Character {
     fn default() -> Self {
         Character {
-            name: "Bevy".into(),
+            name: "Hearth".into(),
             age: 5,
             hat_type: HatType::default(),
             tint_yellow: false,

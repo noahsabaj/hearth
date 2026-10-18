@@ -1,8 +1,8 @@
-//! This example shows off the various Bevy Feathers widgets.
+//! This example shows off the various Hearth Feathers widgets.
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     feathers::{
         controls::*,
         dark_theme::create_dark_theme,

@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{color::palettes::basic::YELLOW, prelude::*};
+use hearth::{color::palettes::basic::YELLOW, prelude::*};
 
 // A struct for additional data of for a moving cube.
 #[derive(Component)]

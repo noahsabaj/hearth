@@ -1,0 +1,39 @@
+[package]
+name = "hearth_material"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides a material abstraction for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[dependencies]
+# hearth
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev" }
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_material_macros = { path = "macros", version = "0.20.0-dev" }
+hearth_mesh = { path = "../hearth_mesh", version = "0.20.0-dev" }
+hearth_shader = { path = "../hearth_shader", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev" }
+
+encase = "0.13"
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+thiserror = { version = "2", default-features = false }
+wgpu-types = { version = "30", default-features = false }
+variadics_please = "2.0"
+smallvec = { version = "1", default-features = false }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

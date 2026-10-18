@@ -1,6 +1,6 @@
 //! Demonstrates how Display and Visibility work in the UI.
 
-use bevy::{
+use hearth::{
     color::palettes::css::{DARK_CYAN, DARK_GRAY},
     ecs::{component::Mutable, template::EntityTemplate},
     feathers::{
@@ -407,7 +407,7 @@ where
         template(move |ctx| match target {
             EntityTemplate::Entity(ent) => Ok(Target::<T>::new(ent)),
             EntityTemplate::SceneEntityReference(scene_entity_reference) => Ok(Target::<T>::new(ctx.get_entity(scene_entity_reference))),
-            EntityTemplate::None => Err(BevyError::error("Did not set up example correctly!"))
+            EntityTemplate::None => Err(HearthError::error("Did not set up example correctly!"))
         })
     }
 }

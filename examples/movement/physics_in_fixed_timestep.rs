@@ -3,8 +3,6 @@
 //!
 //! The classic source for how and why this is done is Glenn Fiedler's article
 //! [Fix Your Timestep!](https://gafferongames.com/post/fix_your_timestep/).
-//! For a more Bevy-centric source, see
-//! [this cheatbook entry](https://bevy-cheatbook.github.io/fundamentals/fixed-timestep.html).
 //!
 //! ## Motivation
 //!
@@ -34,8 +32,8 @@
 //! at a time. If the real time that passed between two frames is less than the fixed timestep, we simply
 //! don't advance the physics simulation at all.
 //! If it is more, we advance the physics simulation multiple times until we catch up.
-//! You can read more about how Bevy implements this in the documentation for
-//! [`bevy::time::Fixed`](https://docs.rs/bevy/latest/bevy/time/struct.Fixed.html).
+//! You can read more about how Hearth implements this in the documentation for
+//! `hearth::time::Fixed`.
 //!
 //! This leaves us with a last problem, however. If our physics simulation may advance zero or multiple times
 //! per frame, there may be frames in which the player's position did not need to be updated at all,
@@ -67,7 +65,7 @@
 //! - The player's velocity is stored in a `Velocity` component. This is the speed in units per second.
 //! - The player's current position in the physics simulation is stored in a `PhysicalTranslation` component.
 //! - The player's previous position in the physics simulation is stored in a `PreviousPhysicalTranslation` component.
-//! - The player's visual representation is stored in Bevy's regular `Transform` component.
+//! - The player's visual representation is stored in Hearth's regular `Transform` component.
 //! - Every frame, we go through the following steps:
 //!   - Accumulate the player's input and set the current speed in the `handle_input` system.
 //!     This is run in the `RunFixedMainLoop` schedule, ordered in `RunFixedMainLoopSystems::BeforeFixedMainLoop`,
@@ -95,7 +93,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 
-use bevy::{color::palettes::tailwind, input::mouse::AccumulatedMouseMotion, prelude::*};
+use hearth::{color::palettes::tailwind, input::mouse::AccumulatedMouseMotion, prelude::*};
 
 fn main() {
     App::new()
@@ -160,7 +158,7 @@ struct Velocity(Vec3);
 ///
 /// If you want to make sure that this component is always initialized
 /// with the same value as the `Transform`'s translation, you can
-/// use a [component lifecycle hook](https://docs.rs/bevy/latest/bevy/ecs/component/struct.ComponentHooks.html)
+/// use a component lifecycle hook
 #[derive(Debug, Component, Clone, Copy, PartialEq, Default, Deref, DerefMut)]
 struct PhysicalTranslation(Vec3);
 
@@ -300,7 +298,7 @@ fn accumulate_input(
     player: Single<(&mut AccumulatedInput, &mut Velocity)>,
     camera: Single<&Transform, With<Camera>>,
 ) {
-    /// Since Bevy's 3D renderer assumes SI units, this has the unit of meters per second.
+    /// Since Hearth's 3D renderer assumes SI units, this has the unit of meters per second.
     /// Note that about 1.5 is the average walking speed of a human.
     const SPEED: f32 = 4.0;
     let (mut input, mut velocity) = player.into_inner();
@@ -320,8 +318,8 @@ fn accumulate_input(
         input.movement.x += 1.0;
     }
 
-    // Remap the 2D input to Bevy's 3D coordinate system.
-    // Pressing W makes `input.y` go up. Since Bevy assumes that -Z is forward, we make our new Z equal to -input.y
+    // Remap the 2D input to Hearth's 3D coordinate system.
+    // Pressing W makes `input.y` go up. Since Hearth assumes that -Z is forward, we make our new Z equal to -input.y
     let input_3d = Vec3 {
         x: input.movement.x,
         y: 0.0,

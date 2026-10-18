@@ -1,6 +1,6 @@
-// For 2d replace `bevy_pbr::render::mesh_functions` with `bevy_sprite_render::mesh2d::functions`
+// For 2d replace `hearth_pbr::render::mesh_functions` with `hearth_sprite_render::mesh2d::functions`
 // and `mesh_position_local_to_clip` with `mesh2d_position_local_to_clip`.
-import bevy_pbr::render::mesh_functions::{get_world_from_local, mesh_position_local_to_clip};
+import hearth_pbr::render::mesh_functions::{get_world_from_local, mesh_position_local_to_clip};
 
 struct CustomMaterial {
     color: vec4<f32>,

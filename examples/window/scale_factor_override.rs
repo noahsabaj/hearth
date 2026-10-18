@@ -1,7 +1,7 @@
 //! This example illustrates how to override the window scale factor imposed by the
 //! operating system.
 
-use bevy::{prelude::*, window::WindowResolution};
+use hearth::{prelude::*, window::WindowResolution};
 
 #[derive(Component)]
 struct CustomText;

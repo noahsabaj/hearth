@@ -3,7 +3,7 @@
 //! - Copy the code for the `SceneViewerPlugin` and add the plugin to your App.
 //! - Insert an initialized `SceneHandle` resource into your App's `AssetServer`.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::FreeCamera,
     gizmos::skinned_mesh_bounds::SkinnedMeshBoundsGizmoConfigGroup, gltf::Gltf,
     input::common_conditions::input_just_pressed, prelude::*, world_serialization::InstanceId,
@@ -219,9 +219,9 @@ fn camera_tracker(
     mut camera_tracker: ResMut<CameraTracker>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut queries: ParamSet<(
-        Query<(Entity, &mut Camera), (Added<Camera>, Without<FreeCamera>)>,
-        Query<(Entity, &mut Camera), (Added<Camera>, With<FreeCamera>)>,
-        Query<&mut Camera>,
+        Query<(Entity, &'static mut Camera), (Added<Camera>, Without<FreeCamera>)>,
+        Query<(Entity, &'static mut Camera), (Added<Camera>, With<FreeCamera>)>,
+        Query<&'static mut Camera>,
     )>,
 ) {
     // track added scene camera entities first, to ensure they are preferred for the

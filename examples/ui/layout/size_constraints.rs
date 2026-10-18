@@ -1,6 +1,6 @@
 //! Demonstrates how the to use the size constraints to control the size of a UI node.
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     prelude::*,
     text::FontSourceTemplate,

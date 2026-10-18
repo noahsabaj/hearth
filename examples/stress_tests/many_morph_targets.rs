@@ -1,7 +1,9 @@
 //! Simple benchmark to test rendering many meshes with animated morph targets.
 
 use argh::FromArgs;
-use bevy::{
+use chacha20::ChaCha8Rng;
+use core::{f32::consts::PI, str::FromStr};
+use hearth::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     gltf::GltfPlugin,
     mesh::MeshCompressionArgs,
@@ -11,8 +13,6 @@ use bevy::{
     winit::WinitSettings,
     world_serialization::WorldInstanceReady,
 };
-use chacha20::ChaCha8Rng;
-use core::{f32::consts::PI, str::FromStr};
 use rand::{RngExt, SeedableRng};
 
 /// Controls the morph weights.

@@ -5,7 +5,7 @@ use crate::{
 };
 use argh::FromArgs;
 
-/// The CI command line tool for Bevy.
+/// The CI command line tool for Hearth.
 #[derive(FromArgs)]
 pub struct CI {
     #[argh(subcommand)]

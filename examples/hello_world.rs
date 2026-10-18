@@ -1,6 +1,6 @@
 //! A minimal example that outputs "Hello, World!"
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new().add_systems(Startup, hello_world_system).run();

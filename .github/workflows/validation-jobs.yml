@@ -95,7 +95,7 @@ jobs:
         run: cargo install --force cargo-ndk
 
       - name: Build .so file
-        run: cargo ndk build -t arm64-v8a -P 26 -p bevy_mobile_example -o ./examples/mobile/android/app/src/main/jniLibs
+        run: cargo ndk build -t arm64-v8a -P 26 -p hearth_mobile_example -o ./examples/mobile/android/app/src/main/jniLibs
 
       - name: Build app for Android
         run: cd ./examples/mobile/android && ./gradlew build
@@ -164,7 +164,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        crate: [bevy_ecs, bevy_reflect, bevy]
+        crate: [hearth_ecs, hearth_reflect, hearth]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

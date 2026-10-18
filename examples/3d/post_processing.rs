@@ -1,4 +1,4 @@
-//! Demonstrates Bevy's built-in postprocessing features.
+//! Demonstrates Hearth's built-in postprocessing features.
 //!
 //! Includes:
 //!
@@ -8,7 +8,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::Hdr,
     light::CascadeShadowConfigBuilder,
     post_process::effect_stack::{ChromaticAberration, LensDistortion, Vignette},

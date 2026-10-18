@@ -4,7 +4,7 @@
 //! impact of pre-converting colors to the target color space on the CPU.
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     math::ops::sin,

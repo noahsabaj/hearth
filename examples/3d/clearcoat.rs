@@ -7,9 +7,9 @@
 //! In glTF, clearcoat is supported via the `KHR_materials_clearcoat` [2]
 //! extension. This extension is well supported by tools; in particular,
 //! Blender's glTF exporter maps the clearcoat feature of its Principled BSDF
-//! node to this extension, allowing it to appear in Bevy.
+//! node to this extension, allowing it to appear in Hearth.
 //!
-//! This Bevy example is inspired by the corresponding three.js example [3].
+//! This Hearth example is inspired by the corresponding three.js example [3].
 //!
 //! [1]: https://google.github.io/filament/Filament.md.html#materialsystem/clearcoatmodel
 //!
@@ -19,7 +19,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::Hdr,
     color::palettes::css::{BLUE, GOLD, WHITE},
     core_pipeline::tonemapping::Tonemapping::AcesFitted,

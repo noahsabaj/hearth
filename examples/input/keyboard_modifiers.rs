@@ -1,6 +1,6 @@
 //! Demonstrates using key modifiers (ctrl, shift).
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

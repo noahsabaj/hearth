@@ -1,4 +1,4 @@
-//! Tool used to build Bevy examples for wasm.
+//! Tool used to build Hearth examples for wasm.
 
 use std::{fs::File, io::Write};
 
@@ -56,8 +56,8 @@ fn main() {
         let mut file = File::create("ci_testing_config.ron").unwrap();
         file.write_fmt(format_args!("(events: [({frames}, AppExit)])"))
             .unwrap();
-        features.push("bevy_ci_testing");
-        features.push("bevy_feathers");
+        features.push("hearth_ci_testing");
+        features.push("hearth_feathers");
     }
 
     match cli.api {

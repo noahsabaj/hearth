@@ -1,6 +1,6 @@
 //! Demonstrates how shadow biases affect shadows in a 3d scene.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     light::ShadowFilteringMethod,
     prelude::*,

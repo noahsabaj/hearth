@@ -4,7 +4,7 @@ authors: ["@jbuehler23"]
 pull_requests: [25972]
 ---
 
-`bevy_ui_widgets` now has a small drag-proxy facility for widgets that show a visual following the pointer during a drag.
+`hearth_ui_widgets` now has a small drag-proxy facility for widgets that show a visual following the pointer during a drag.
 
 The initiating widget spawns whatever visual it wants as a descendant of the dragged entity and attaches `DragProxy { pointer_id, offset }`. `DragProxyPlugin` then reparents the visual to the nearest ancestor marked with `DragOverlayRoot`, makes it unpickable, keeps it positioned under the pointer in logical UI pixels, and despawns it when the drag ends, is cancelled, the drag source disappears, or Escape is pressed.
 

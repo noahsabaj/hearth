@@ -4,7 +4,7 @@
 //!
 //! See also the `headless` example which does not display a window.
 
-use bevy::{
+use hearth::{
     prelude::*,
     render::{settings::WgpuSettings, RenderPlugin},
 };

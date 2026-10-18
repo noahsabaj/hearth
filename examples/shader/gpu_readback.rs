@@ -1,7 +1,7 @@
 //! Simple example demonstrating the use of the [`Readback`] component to read back data from the GPU
 //! using both a storage buffer and texture.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     prelude::*,
     render::{

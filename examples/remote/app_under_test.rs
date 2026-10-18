@@ -1,15 +1,16 @@
-//! A Bevy app that can be used as an integration test target.
+//! A Hearth app that can be used as an integration test target.
 //! It displays a button that must be clicked. The button is placed at a random position and
 //! moves every 5 seconds.
 //!
-//! Run with the `bevy_remote` and `bevy_feathers` feature enabled:
+//! Run with the `hearth_remote` and `hearth_feathers` feature enabled:
 //! ```bash
-//! cargo run --example app_under_test --features="bevy_remote bevy_feathers"
+//! cargo run --example app_under_test --features="hearth_remote hearth_feathers"
 //! ```
 //! This example can be paired with the `integration_test` example, which will run an integration
 //! test on this app.
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     feathers::{
         controls::FeathersButton, dark_theme::create_dark_theme, display::caption, theme::UiTheme,
         FeathersPlugins,
@@ -19,7 +20,6 @@ use bevy::{
     time::common_conditions::on_timer,
     ui::UiGlobalTransform,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {

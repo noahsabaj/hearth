@@ -1,4 +1,4 @@
-//! Example `no_std` compatible Bevy library.
+//! Example `no_std` compatible Hearth library.
 
 // The first step to a `no_std` library is to add this annotation:
 
@@ -19,7 +19,7 @@ extern crate std;
 // This still uses the `core` prelude, so items such as `std::println` aren't implicitly included
 // in all your modules, but it does make them available to import.
 
-// Because Bevy requires access to an allocator anyway, you are free to include `alloc` regardless
+// Because Hearth requires access to an allocator anyway, you are free to include `alloc` regardless
 // of what features are enabled.
 // This gives you access to `Vec`, `String`, `Box`, and many other allocation primitives.
 
@@ -33,16 +33,16 @@ extern crate alloc;
 use core::time::Duration;
 
 // With the above boilerplate out of the way, everything below should look very familiar to those
-// who have worked with Bevy before.
+// who have worked with Hearth before.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 // While this example doesn't need it, a lot of fundamental types which are exclusively in `std`
-// have alternatives in `bevy::platform`.
+// have alternatives in `hearth::platform`.
 // If you find yourself needing a `HashMap`, `RwLock`, or `Instant`, check there first!
 
 #[expect(unused_imports, reason = "demonstrating some available items")]
-use bevy::platform::{
+use hearth::platform::{
     collections::{HashMap, HashSet},
     hash::DefaultHasher,
     sync::{
@@ -52,13 +52,13 @@ use bevy::platform::{
     time::Instant,
 };
 
-// Note that `bevy::platform::sync::Arc` exists, despite `alloc::sync::Arc` being available.
+// Note that `hearth::platform::sync::Arc` exists, despite `alloc::sync::Arc` being available.
 // The reason is not every platform has full support for atomic operations, so `Arc`, `AtomicBool`,
 // etc. aren't always available.
 // You can test for their inclusion with `#[cfg(target_has_atomic = "ptr")]` and other related flags.
-// You can get a more cross-platform alternative from `portable-atomic`, but Bevy handles this for you!
-// Simply use `bevy::platform::sync` instead of `core::sync` and `alloc::sync` when possible,
-// and Bevy will handle selecting the fallback from `portable-atomic` when it is required.
+// You can get a more cross-platform alternative from `portable-atomic`, but Hearth handles this for you!
+// Simply use `hearth::platform::sync` instead of `core::sync` and `alloc::sync` when possible,
+// and Hearth will handle selecting the fallback from `portable-atomic` when it is required.
 
 /// Plugin for working with delayed components.
 ///

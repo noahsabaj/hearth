@@ -1,8 +1,8 @@
 //! Demonstrates how to use transparency with UI.
 //! Shows two colored buttons with transparent text.
 
-use bevy::prelude::*;
-use bevy::ui_widgets::Button;
+use hearth::prelude::*;
+use hearth::ui_widgets::Button;
 
 fn main() {
     App::new()

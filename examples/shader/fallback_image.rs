@@ -5,7 +5,7 @@
 //! the clear color. The test material does not shade any geometry; this example
 //! only tests that the images are initialized and bound so that the app does
 //! not panic.
-use bevy::{
+use hearth::{
     prelude::*, reflect::TypePath, render::render_resource::AsBindGroup, shader::ShaderRef,
 };
 

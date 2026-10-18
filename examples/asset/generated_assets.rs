@@ -1,6 +1,6 @@
 //! Shows how to generate and store assets at runtime.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

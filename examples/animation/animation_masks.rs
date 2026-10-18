@@ -1,7 +1,7 @@
 //! Demonstrates how to use masks to limit the scope of animations.
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
-use bevy::{
+use hearth::{
     animation::{AnimatedBy, AnimationTargetId},
     color::palettes::css::WHITE,
     feathers::{dark_theme::create_dark_theme, display::label, theme::UiTheme, FeathersPlugins},
@@ -112,7 +112,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Animation Masks Example".into(),
+                    title: "Hearth Animation Masks Example".into(),
                     ..default()
                 }),
                 ..default()

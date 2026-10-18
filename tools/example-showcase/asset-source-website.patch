@@ -1,7 +1,7 @@
-diff --git a/crates/bevy_asset/src/lib.rs b/crates/bevy_asset/src/lib.rs
+diff --git a/crates/hearth_asset/src/lib.rs b/crates/hearth_asset/src/lib.rs
 index 81deeff145..7792d9f1ed 100644
---- a/crates/bevy_asset/src/lib.rs
-+++ b/crates/bevy_asset/src/lib.rs
+--- a/crates/hearth_asset/src/lib.rs
++++ b/crates/hearth_asset/src/lib.rs
 @@ -343,7 +343,7 @@
  }
  

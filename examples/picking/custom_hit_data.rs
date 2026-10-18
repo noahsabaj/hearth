@@ -8,7 +8,7 @@
 //! requires its `extra` field. A follow-up system reads the hit data and draws
 //! an outline around the hovered triangle using gizmos.
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     picking::{
         backend::{ray::RayMap, HitData, PointerHits},

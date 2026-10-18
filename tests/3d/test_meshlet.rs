@@ -1,6 +1,6 @@
 //! Test meshlets by showing them next to the mesh they were created from.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     image::{ImageAddressMode, ImageFilterMode},

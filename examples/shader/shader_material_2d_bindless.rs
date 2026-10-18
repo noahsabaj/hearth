@@ -1,6 +1,6 @@
 //! Demonstrates bindless materials in 2D.
 
-use bevy::{
+use hearth::{
     prelude::*,
     reflect::TypePath,
     render::render_resource::{AsBindGroup, ShaderType},
@@ -32,8 +32,8 @@ fn setup(
     commands.spawn(Camera2d);
 
     // Create the shared assets that the bindless material will use.
-    let dark_icon = asset_server.load("branding/bevy_logo_dark.png");
-    let light_icon = asset_server.load("branding/bevy_logo_light.png");
+    let dark_icon = asset_server.load("branding/hearth_logo_dark.png");
+    let light_icon = asset_server.load("branding/hearth_logo_light.png");
     let mesh = meshes.add(Rectangle::default());
 
     // Spawn the quads.
@@ -77,7 +77,7 @@ struct BindlessMaterialUniform {
     color: LinearRgba,
 }
 
-// The conversion function that Bevy calls to convert from the CPU-side material
+// The conversion function that Hearth calls to convert from the CPU-side material
 // structure to the GPU-side material structure.
 impl<'a> From<&'a BindlessMaterial> for BindlessMaterialUniform {
     fn from(material: &'a BindlessMaterial) -> Self {

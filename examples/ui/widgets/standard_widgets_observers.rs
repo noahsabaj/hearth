@@ -1,10 +1,10 @@
-//! This experimental example illustrates how to create widgets using the `bevy_ui_widgets` widget set.
+//! This experimental example illustrates how to create widgets using the `hearth_ui_widgets` widget set.
 //!
-//! The patterns shown here are likely to change substantially as the `bevy_ui_widgets` crate
+//! The patterns shown here are likely to change substantially as the `hearth_ui_widgets` crate
 //! matures, so please exercise caution if you are using this as a reference for your own code,
 //! and note that there are still "user experience" issues with this API.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::*,
     ecs::{event::EventPattern, lifecycle::RemoveEvent},
     input_focus::tab_navigation::{TabGroup, TabIndex, TabNavigationPlugin},

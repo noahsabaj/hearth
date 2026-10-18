@@ -6,7 +6,7 @@
 //!
 //! This is a fairly low level example and assumes some familiarity with rendering concepts and wgpu.
 
-use bevy::{
+use hearth::{
     core_pipeline::{schedule::Core3d, Core3dSystems, FullscreenShader},
     prelude::*,
     render::{

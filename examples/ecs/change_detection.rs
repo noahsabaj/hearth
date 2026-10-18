@@ -1,6 +1,6 @@
 //! This example illustrates how to react to component and resource changes.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 use rand::RngExt;
 
 fn main() {

@@ -1,4 +1,4 @@
-//! Tool to run all examples or generate a showcase page for the Bevy website.
+//! Tool to run all examples or generate a showcase page for them.
 
 #![expect(clippy::print_stdout, reason = "Allowed in tools.")]
 
@@ -110,7 +110,7 @@ enum Action {
         content_folder: String,
 
         #[arg(long)]
-        /// Enable hacks for Bevy website integration
+        /// Enable hacks for website integration
         website_hacks: bool,
 
         #[arg(long)]
@@ -201,7 +201,7 @@ fn main() {
                     )
                     .unwrap();
                     extra_parameters.push("--features");
-                    extra_parameters.push("bevy_ci_testing");
+                    extra_parameters.push("hearth_ci_testing");
                 }
                 // When the example does not automatically stop.
                 (0, _, false) => {
@@ -211,7 +211,7 @@ fn main() {
                     )
                     .unwrap();
                     extra_parameters.push("--features");
-                    extra_parameters.push("bevy_ci_testing");
+                    extra_parameters.push("hearth_ci_testing");
                 }
                 // When the example does not take a screenshot.
                 (_, 0, _) => {
@@ -219,7 +219,7 @@ fn main() {
                     file.write_all(format!("(events: [({stop_frame}, AppExit)])").as_bytes())
                         .unwrap();
                     extra_parameters.push("--features");
-                    extra_parameters.push("bevy_ci_testing");
+                    extra_parameters.push("hearth_ci_testing");
                 }
                 // When the example both automatically stops at an automatic frame and takes a screenshot.
                 (_, _, true) => {
@@ -229,7 +229,7 @@ fn main() {
                     )
                     .unwrap();
                     extra_parameters.push("--features");
-                    extra_parameters.push("bevy_ci_testing");
+                    extra_parameters.push("hearth_ci_testing");
                 }
                 // When the example both automatically stops and takes a screenshot.
                 (_, _, false) => {
@@ -239,7 +239,7 @@ fn main() {
                     )
                     .unwrap();
                     extra_parameters.push("--features");
-                    extra_parameters.push("bevy_ci_testing");
+                    extra_parameters.push("hearth_ci_testing");
                 }
             }
 
@@ -498,7 +498,7 @@ fn main() {
                 index
                     .write_all(
                         "+++
-title = \"Bevy Examples in WebGPU\"
+title = \"Hearth Examples in WebGPU\"
 template = \"examples-webgpu.html\"
 sort_by = \"weight\"
 
@@ -512,7 +512,7 @@ header_message = \"Examples (WebGPU)\"
                 index
                     .write_all(
                         "+++
-title = \"Bevy Examples in WebGL2\"
+title = \"Hearth Examples in WebGL2\"
 template = \"examples.html\"
 sort_by = \"weight\"
 
@@ -736,7 +736,7 @@ required_features = {:?}
 
                 if website_hacks {
                     // set up the loader bar for asset loading
-                    cmd!(sh, "sed -i.bak -e 's/getObject(arg0).fetch(/window.bevyLoadingBarFetch(/' -e 's/input = fetch(/input = window.bevyLoadingBarFetch(/' examples/wasm/target/wasm_example.js").run().unwrap();
+                    cmd!(sh, "sed -i.bak -e 's/getObject(arg0).fetch(/window.hearthLoadingBarFetch(/' -e 's/input = fetch(/input = window.hearthLoadingBarFetch(/' examples/wasm/target/wasm_example.js").run().unwrap();
                 }
 
                 let _ = fs::rename(

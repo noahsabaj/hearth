@@ -16,7 +16,7 @@ Human-readable formats no longer accept the old `u64` form when deserializing.
 { "entity": "5v0" }
 ```
 
-This affects Bevy Remote Protocol clients that send or parse entity ids,
+This affects Hearth Remote Protocol clients that send or parse entity ids,
 and hand-written or previously saved `.scn.ron` files, whose entity map keys need to be rewritten from `4294967290: (` to `"5v0": (`.
 
 `Entity` also now implements `FromStr`, which parses the `Display` form and returns a `ParseEntityError` on failure.

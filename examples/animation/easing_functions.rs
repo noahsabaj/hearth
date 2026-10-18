@@ -1,6 +1,6 @@
 //! Demonstrates the behavior of the built-in easing functions.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Component)]
 #[require(Visibility, Transform)]

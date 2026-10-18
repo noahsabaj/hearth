@@ -1,8 +1,8 @@
-//! Bevy has an optional prepass that is controlled per-material. A prepass is a rendering pass that runs before the main pass.
+//! Hearth has an optional prepass that is controlled per-material. A prepass is a rendering pass that runs before the main pass.
 //! It will optionally generate various view textures. Currently it supports depth, normal, and motion vector textures.
 //! The textures are not generated for any material using alpha blending.
 
-use bevy::{
+use hearth::{
     core_pipeline::prepass::{DepthPrepass, MotionVectorPrepass, NormalPrepass},
     light::NotShadowCaster,
     pbr::PbrPlugin,

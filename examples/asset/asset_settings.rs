@@ -1,6 +1,6 @@
-//! This example demonstrates the usage of '.meta' files and [`LoadBuilder::with_settings`](bevy::asset::LoadBuilder::with_settings) to override the default settings for loading an asset
+//! This example demonstrates the usage of '.meta' files and [`LoadBuilder::with_settings`](hearth::asset::LoadBuilder::with_settings) to override the default settings for loading an asset
 
-use bevy::{
+use hearth::{
     image::{ImageLoaderSettings, ImageSampler},
     prelude::*,
 };
@@ -25,7 +25,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // everything uses linear by default but if you look at the default of sampler, it uses nearest.
     commands.spawn((
         Sprite {
-            image: asset_server.load("bevy_pixel_dark.png"),
+            image: asset_server.load("hearth_pixel_dark.png"),
             custom_size: Some(Vec2 { x: 160.0, y: 120.0 }),
             ..Default::default()
         },
@@ -35,15 +35,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // When a .meta file is added with the same name as the asset and a '.meta' extension
     // you can (and must) specify all fields of the asset loader's settings for that
     // particular asset, in this case [ImageLoaderSettings]. Take a look at
-    // examples/asset/files/bevy_pixel_dark_with_meta.png.meta
+    // examples/asset/files/hearth_pixel_dark_with_meta.png.meta
     // for the format and you'll notice, the only non-default option is setting Nearest
     // filtering. This tends to work much better for pixel art assets.
     // A good reference when filling this out is to check out [ImageLoaderSettings::default()]
     // and follow to the default implementation of each fields type.
-    // https://docs.rs/bevy/latest/bevy/image/struct.ImageLoaderSettings.html
     commands.spawn((
         Sprite {
-            image: asset_server.load("bevy_pixel_dark_with_meta.png"),
+            image: asset_server.load("hearth_pixel_dark_with_meta.png"),
             custom_size: Some(Vec2 { x: 160.0, y: 120.0 }),
             ..Default::default()
         },
@@ -67,7 +66,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .with_settings(|settings: &mut ImageLoaderSettings| {
                     settings.sampler = ImageSampler::nearest();
                 })
-                .load("bevy_pixel_dark_with_settings.png"),
+                .load("hearth_pixel_dark_with_settings.png"),
             custom_size: Some(Vec2 { x: 160.0, y: 120.0 }),
             ..Default::default()
         },

@@ -1,0 +1,59 @@
+[package]
+name = "hearth_ui_widgets"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Unstyled common widgets for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_a11y = { path = "../hearth_a11y", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_input = { path = "../hearth_input", version = "0.20.0-dev" }
+hearth_input_focus = { path = "../hearth_input_focus", version = "0.20.0-dev", features = [
+  "hearth_picking",
+] }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_picking = { path = "../hearth_picking", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_ui = { path = "../hearth_ui", version = "0.20.0-dev" }
+hearth_text = { path = "../hearth_text", version = "0.20.0-dev" }
+hearth_time = { path = "../hearth_time", version = "0.20.0-dev" }
+hearth_window = { path = "../hearth_window", version = "0.20.0-dev" }
+
+# other
+accesskit = "0.25"
+parley = { version = "0.11.0", default-features = false }
+serde = { version = "1", features = ["derive"], optional = true }
+smol_str = "0.2"
+thiserror = { version = "2", default-features = false }
+
+# The shortcut layout (Cmd vs Ctrl) depends on the HOST os, which on wasm is
+# only knowable at runtime -- see `mac_host` in text_input.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { version = "0.3", features = ["Window", "Navigator"] }
+
+[dev-dependencies]
+ron = "0.12"
+
+[features]
+default = []
+serialize = ["dep:serde"]
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

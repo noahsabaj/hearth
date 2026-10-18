@@ -1,6 +1,6 @@
 /// Helpers to create an option menu using Feathers Checkboxes.
-/// Using these helpers requires the `bevy_feathers` feature to be enabled.
-use bevy::{
+/// Using these helpers requires the `hearth_feathers` feature to be enabled.
+use hearth::{
     feathers::{controls::FeathersCheckbox, display::caption},
     picking::hover::Hovered,
     prelude::*,

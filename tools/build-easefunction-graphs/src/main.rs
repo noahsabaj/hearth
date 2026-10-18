@@ -4,7 +4,7 @@
 
 use std::path::PathBuf;
 
-use bevy_curve::{CurveExt, EaseFunction, EasingCurve, JumpAt};
+use hearth_curve::{CurveExt, EaseFunction, EasingCurve, JumpAt};
 use svg::{
     node::element::{self, path::Data},
     Document,
@@ -16,7 +16,7 @@ fn main() {
             .expect("Please run via cargo or set CARGO_MANIFEST_DIR"),
     );
     let directory = root_dir
-        .join("../../crates/bevy_curve/images/easefunction")
+        .join("../../crates/hearth_curve/images/easefunction")
         .canonicalize()
         .unwrap();
 

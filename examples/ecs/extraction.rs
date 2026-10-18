@@ -7,8 +7,8 @@
 //! Each component contains the current elapsed time, updated each frame on the Main World, and is
 //! extracted to the render world in a different way.
 
-use bevy::prelude::*;
-use bevy::render::{
+use hearth::prelude::*;
+use hearth::render::{
     extract_component::{ExtractComponent, ExtractComponentPlugin},
     sync_world::{RenderEntity, SyncToRenderWorld},
     Extract, Render, RenderApp,

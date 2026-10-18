@@ -1,6 +1,6 @@
 //! Shows how to use animation clips to animate UI properties.
 
-use bevy::{
+use hearth::{
     animation::{
         animated_field, AnimatedBy, AnimationEntityMut, AnimationEvaluationError, AnimationTargetId,
     },
@@ -27,7 +27,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         // Note that we don't need any systems other than the setup system,
-        // because Bevy automatically updates animations every frame.
+        // because Hearth automatically updates animations every frame.
         .add_systems(Startup, setup)
         .run();
 }
@@ -160,7 +160,7 @@ fn setup(
 
     let player = entity.id();
     entity.with_child((
-        Text::new("Bevy"),
+        Text::new("Hearth"),
         TextFont {
             font: asset_server.load("fonts/FiraSans-Bold.ttf").into(),
             font_size: FontSize::Px(80.),

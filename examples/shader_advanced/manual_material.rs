@@ -1,6 +1,6 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
 
-use bevy::{
+use hearth::{
     asset::{AsAssetId, AssetEventSystems},
     core_pipeline::core_3d::Opaque3d,
     ecs::system::{

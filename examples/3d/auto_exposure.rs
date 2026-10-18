@@ -11,7 +11,7 @@
 //! | `M`                | Toggle Metering Mask                   |
 //! | `V`                | Visualize Metering Mask                |
 
-use bevy::{
+use hearth::{
     curve::cubic_splines::LinearSpline,
     light::Skybox,
     math::vec2,

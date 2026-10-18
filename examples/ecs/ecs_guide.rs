@@ -1,5 +1,5 @@
-//! This is a guided introduction to Bevy's "Entity Component System" (ECS)
-//! All Bevy app logic is built using the ECS pattern, so definitely pay attention!
+//! This is a guided introduction to Hearth's "Entity Component System" (ECS)
+//! All Hearth app logic is built using the ECS pattern, so definitely pay attention!
 //!
 //! Why ECS?
 //! * Data oriented: Functionality is driven by data
@@ -21,14 +21,14 @@
 //! System: runs logic on entities, components, and resources
 //!     Examples: move system, damage system
 //!
-//! Now that you know a little bit about ECS, lets look at some Bevy code!
-//! We will now make a simple "game" to illustrate what Bevy's ECS looks like in practice.
+//! Now that you know a little bit about ECS, lets look at some Hearth code!
+//! We will now make a simple "game" to illustrate what Hearth's ECS looks like in practice.
 
-use bevy::{
+use core::time::Duration;
+use hearth::{
     app::{AppExit, ScheduleRunnerPlugin},
     prelude::*,
 };
-use core::time::Duration;
 use rand::random;
 use std::fmt;
 
@@ -265,7 +265,7 @@ fn exclusive_player_system(world: &mut World) {
     }
 }
 
-// Sometimes systems need to be stateful. Bevy's ECS provides the `Local` system parameter
+// Sometimes systems need to be stateful. Hearth's ECS provides the `Local` system parameter
 // for this case. A `Local<T>` refers to a value of type `T` that is owned by the system.
 // This value is automatically initialized using `T`'s `FromWorld`* implementation upon the system's initialization.
 // In this system's `Local` (`counter`), `T` is `u32`.
@@ -289,9 +289,9 @@ enum MySystems {
     AfterRound,
 }
 
-// Our Bevy app's entry point
+// Our Hearth app's entry point
 fn main() {
-    // Bevy apps are created using the builder pattern. We use the builder to add systems,
+    // Hearth apps are created using the builder pattern. We use the builder to add systems,
     // resources, and plugins to our app
     App::new()
         // Resources that implement the Default or FromWorld trait can be added like this:

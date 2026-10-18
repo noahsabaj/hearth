@@ -1,20 +1,20 @@
-//! Shows the `bevy_inspector` entity tree and details panels inspecting a separate running app
-//! over the Bevy Remote Protocol.
+//! Shows the `hearth_inspector` entity tree and details panels inspecting a separate running app
+//! over the Hearth Remote Protocol.
 //!
 //! Run the app to inspect in one terminal:
 //! ```bash
-//! cargo run --example server --features="bevy_remote"
+//! cargo run --example server --features="hearth_remote"
 //! ```
 //!
 //! Then run this example in another terminal:
 //! ```bash
-//! cargo run --example remote_inspector --features="bevy_inspector,bevy_remote_client"
+//! cargo run --example remote_inspector --features="hearth_inspector,hearth_remote_client"
 //! ```
 //!
-//! The address defaults to `127.0.0.1:15702` and can be overridden with the `BRP_HOST` and
-//! `BRP_PORT` environment variables, or changed in the connection bar at the top.
+//! The address defaults to `127.0.0.1:15702` and can be overridden with the `HRP_HOST` and
+//! `HRP_PORT` environment variables, or changed in the connection bar at the top.
 
-use bevy::{
+use hearth::{
     feathers::{
         controls::{FeathersPane, FeathersSplitPane, FeathersSplitPaneHandle},
         dark_theme::create_dark_theme,
@@ -43,8 +43,8 @@ fn main() {
 }
 
 fn remote_source() -> RemoteSource {
-    let host = std::env::var("BRP_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
-    let port = std::env::var("BRP_PORT")
+    let host = std::env::var("HRP_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+    let port = std::env::var("HRP_PORT")
         .ok()
         .and_then(|port| port.parse().ok())
         .unwrap_or(DEFAULT_PORT);

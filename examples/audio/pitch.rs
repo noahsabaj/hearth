@@ -1,6 +1,6 @@
 //! This example illustrates how to play a single-frequency sound (aka a pitch)
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 use std::time::Duration;
 
 fn main() {

@@ -2,7 +2,7 @@
 //! An [`AssetReader`] is what the asset server uses to read the raw bytes of assets.
 //! It does not know anything about the asset formats, only how to talk to the underlying storage.
 
-use bevy::{
+use hearth::{
     asset::io::{
         AssetReader, AssetReaderError, AssetSource, AssetSourceBuilder, AssetSourceId,
         ErasedAssetReader, PathStream, Reader,

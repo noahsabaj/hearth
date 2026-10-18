@@ -1,4 +1,4 @@
-//! A simple glTF scene viewer made with Bevy.
+//! A simple glTF scene viewer made with Hearth.
 //!
 //! Just run `cargo run --release --example scene_viewer /path/to/model.gltf`,
 //! replacing the path as appropriate.
@@ -9,7 +9,7 @@
 //! If you want to hot reload asset changes, enable the `file_watcher` cargo feature.
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     asset::UnapprovedPathMode,
     camera::primitives::{Aabb, Sphere},
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
@@ -31,7 +31,7 @@ mod scene_viewer_plugin;
 use morph_viewer_plugin::MorphViewerPlugin;
 use scene_viewer_plugin::{SceneHandle, SceneViewerPlugin};
 
-/// A simple glTF scene viewer made with Bevy
+/// A simple glTF scene viewer made with Hearth
 #[derive(FromArgs, Resource)]
 struct Args {
     /// the path to the glTF scene
@@ -98,7 +98,7 @@ fn main() {
         DefaultPlugins
             .set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "bevy scene viewer".to_string(),
+                    title: "hearth scene viewer".to_string(),
                     ..default()
                 }),
                 ..default()

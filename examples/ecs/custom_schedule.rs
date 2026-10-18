@@ -1,7 +1,7 @@
-//! Demonstrates how to add custom schedules that run in Bevy's `Main` schedule, ordered relative to Bevy's built-in
+//! Demonstrates how to add custom schedules that run in Hearth's `Main` schedule, ordered relative to Hearth's built-in
 //! schedules such as `Update` or `Last`.
 
-use bevy::{
+use hearth::{
     app::MainScheduleOrder,
     ecs::schedule::{ScheduleLabel, SingleThreadedExecutor},
     prelude::*,
@@ -26,8 +26,8 @@ fn main() {
     // that systems can look it up using the `Schedules` resource.
     app.add_schedule(custom_update_schedule);
 
-    // Bevy `App`s have a `main_schedule_label` field that configures which schedule is run by the App's `runner`.
-    // By default, this is `Main`. The `Main` schedule is responsible for running Bevy's main schedules such as
+    // Hearth `App`s have a `main_schedule_label` field that configures which schedule is run by the App's `runner`.
+    // By default, this is `Main`. The `Main` schedule is responsible for running Hearth's main schedules such as
     // `Update`, `Startup` or `Last`.
     //
     // We can configure the `Main` schedule to run our custom update schedule relative to the existing ones by modifying

@@ -1,15 +1,15 @@
-import bevy_pbr::render::{
+import hearth_pbr::render::{
     pbr_fragment::pbr_input_from_standard_material,
     pbr_functions::alpha_discard,
 };
 
 @if(PREPASS_PIPELINE)
-import bevy_pbr::{
+import hearth_pbr::{
     prepass::io::{VertexOutput, FragmentOutput},
     deferred::functions::deferred_output,
 };
 @else
-import bevy_pbr::render::{
+import hearth_pbr::render::{
     forward_io::{VertexOutput, FragmentOutput},
     pbr_functions::{apply_pbr_lighting, main_pass_post_lighting_processing},
 };

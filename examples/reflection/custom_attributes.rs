@@ -1,10 +1,10 @@
 //! Demonstrates how to register and access custom attributes on reflected types.
 
-use bevy::reflect::{Reflect, TypeInfo, Typed};
+use hearth::reflect::{Reflect, TypeInfo, Typed};
 use std::{any::TypeId, ops::RangeInclusive};
 
 fn main() {
-    // Bevy supports statically registering custom attribute data on reflected types,
+    // Hearth supports statically registering custom attribute data on reflected types,
     // which can then be accessed at runtime via the type's `TypeInfo`.
     // Attributes are registered using the `#[reflect(@...)]` syntax,
     // where the `...` is any expression that resolves to a value which implements `Reflect`.

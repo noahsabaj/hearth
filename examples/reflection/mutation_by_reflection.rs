@@ -1,5 +1,5 @@
 //! Demonstrates how to modify component values in a type-erased way,
-//! using Bevy's runtime type reflection functionality
+//! using Hearth's runtime type reflection functionality
 //! to operate generically over any component type or shape of data.
 //!
 //! This path is useful when building tools like inspectors or for integrating scripting languages,
@@ -8,7 +8,7 @@
 //! so it should only be used when you have no other choice,
 //! or when flexibility is the most important consideration.
 
-use bevy::{prelude::*, reflect::ReflectMut};
+use hearth::{prelude::*, reflect::ReflectMut};
 
 fn main() {
     App::new()
@@ -25,7 +25,7 @@ fn main() {
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2d);
     commands.spawn(Sprite {
-        image: asset_server.load("branding/bevy_logo_dark.png"),
+        image: asset_server.load("branding/hearth_logo_dark.png"),
         ..Default::default()
     });
 
@@ -89,7 +89,7 @@ fn select_component_to_modify(
 /// 2. Find the field(s) you want to modify by walking the tree of type metadata.
 /// 3. Downcast each field to a concrete type (e.g. with `try_downcast_ref`) to read its value.
 ///
-/// [`GetPath`], and its cached variant [`ParsedPath`](bevy::reflect::ParsedPath), can be used to simplify this process.
+/// [`GetPath`], and its cached variant [`ParsedPath`](hearth::reflect::ParsedPath), can be used to simplify this process.
 /// For example, calling `.path_mut::<f32>("translation.y")` on a `ReflectMut` object that stores a transform will return a
 /// `&mut f32` to the `y` field of a `Vec3` inside a `Transform`.
 fn modify_selected_component(world: &mut World) {
@@ -113,15 +113,15 @@ fn modify_selected_component(world: &mut World) {
     // We could cheat and use `TypeId::of::<T>()` to get the type ID of a known type,
     // but real applications identify types by name (from a UI dropdown, text entry or a script).
     let type_name = match selected {
-        // Note that Bevy's native types are registered under their full subcrate paths:
-        // `bevy_transform`, not `bevy::transform`, `bevy::prelude`, or `bevy_transform::prelude`.
+        // Note that Hearth's native types are registered under their full subcrate paths:
+        // `hearth_transform`, not `hearth::transform`, `hearth::prelude`, or `hearth_transform::prelude`.
         // You can use `<T as TypePath>::type_path()` to look this up.
-        SelectedComponent::Transform => "bevy_transform::components::transform::Transform",
-        SelectedComponent::Sprite => "bevy_sprite::sprite::Sprite",
+        SelectedComponent::Transform => "hearth_transform::components::transform::Transform",
+        SelectedComponent::Sprite => "hearth_sprite::sprite::Sprite",
     };
 
     // Then, we need to use a type registry to resolve the type name to a `TypeId`.
-    // Types are (for the most part) registered automatically by Bevy,
+    // Types are (for the most part) registered automatically by Hearth,
     // but you can also register your own types using `App::register_type`.
     // Generic types always need to be registered manually;
     // if a type is not showing up in your tool, check if that's the problem.
@@ -184,7 +184,7 @@ fn modify_selected_component(world: &mut World) {
             // We could downcast to an f32 again here, but that would be cheating!
             // How do you generalize this sort of operation, if, for example,
             // you wanted to build a generic inspector that could modify any numeric field of any component type?
-            // The solution lies in the way that Bevy can reflect *traits* as well as types,
+            // The solution lies in the way that Hearth can reflect *traits* as well as types,
             // allowing type owners to define and register additional behavior for their types.
             // This data is registered automatically at compile time using an inventory-like solution,
             // and operates on a per-type x per-trait basis,
@@ -200,8 +200,8 @@ fn modify_selected_component(world: &mut World) {
             // The solution is again to register the compile time information that we want to use at runtime;
             // storing function pointers to the trait methods in the type registry.
             // In order to make this work, we need shadow "reflect" versions of the traits we want to use at runtime.
-            // Bevy provides a few of these out of the box, including `ReflectAddAssign` and `ReflectSubAssign`.
-            // That's what the `#[reflect(Add)]` attributes that you see scattered about in Bevy's source code are doing:
+            // Hearth provides a few of these out of the box, including `ReflectAddAssign` and `ReflectSubAssign`.
+            // That's what the `#[reflect(Add)]` attributes that you see scattered about in Hearth's source code are doing:
             // generating implementations of the reflect versions of the traits, so they can later be registered and used at runtime.
             //
             // For more information, see the `type_data` example.

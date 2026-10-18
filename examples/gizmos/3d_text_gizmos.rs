@@ -1,7 +1,7 @@
 //! Basic example demonstrating 3d text gizmos
 
-use bevy::color::palettes::css::{ORANGE, RED, YELLOW};
-use bevy::prelude::*;
+use hearth::color::palettes::css::{ORANGE, RED, YELLOW};
+use hearth::prelude::*;
 
 fn main() {
     App::new()

@@ -1,0 +1,105 @@
+[package]
+name = "hearth_winit"
+version = "0.20.0-dev"
+edition = "2024"
+description = "A winit window and input backend for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+default = ["x11"]
+trace = []
+wayland = ["winit/wayland", "winit/wayland-csd-adwaita"]
+x11 = ["winit/x11"]
+accesskit_unix = [
+  "accesskit_winit/accesskit_unix",
+  "accesskit_winit/async-io",
+  "hearth_tasks/async-io",
+]
+
+serialize = [
+  "hearth_input/serialize",
+  "hearth_window/serialize",
+  "hearth_platform/serialize",
+]
+android-native-activity = ["winit/android-native-activity"]
+android-game-activity = ["winit/android-game-activity"]
+custom_cursor = [
+  "hearth_window/custom_cursor",
+  "hearth_image",
+  "hearth_asset",
+  "wgpu-types",
+  "bytemuck",
+]
+
+linux_game_mode = ["dep:zbus"]
+
+[dependencies]
+# hearth
+hearth_a11y = { path = "../hearth_a11y", version = "0.20.0-dev" }
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_input = { path = "../hearth_input", version = "0.20.0-dev" }
+hearth_input_focus = { path = "../hearth_input_focus", version = "0.20.0-dev" }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_window = { path = "../hearth_window", version = "0.20.0-dev" }
+hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "std",
+] }
+
+# hearth optional
+## used by custom_cursor
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev", optional = true }
+## used by custom_cursor
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev", optional = true }
+## used by custom_cursor
+wgpu-types = { version = "30", optional = true }
+## used by custom_cursor
+bytemuck = { version = "1.5", optional = true }
+
+# other
+# feature rwh_06 refers to window_raw_handle@v0.6
+winit = { version = "0.30", default-features = false, features = ["rwh_06"] }
+accesskit_winit = { version = "0.34", default-features = false, features = [
+  "rwh_06",
+] }
+approx = { version = "0.5", default-features = false }
+accesskit = "0.25"
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+
+zbus = { version = "5.13", optional = true }
+
+[target.'cfg(target_os = "android")'.dependencies]
+hearth_android = { path = "../hearth_android", version = "0.20.0-dev", default-features = false }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { version = "0.2" }
+web-sys = "0.3"
+js-sys = "0.3"
+# TODO: Assuming all wasm builds are for the browser. Require `no_std` support to break assumption.
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev", default-features = false, features = [
+  "web",
+] }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "web",
+] }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev", default-features = false, features = [
+  "web",
+] }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

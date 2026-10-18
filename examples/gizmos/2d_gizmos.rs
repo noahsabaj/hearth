@@ -1,8 +1,8 @@
-//! This example demonstrates Bevy's immediate mode drawing API intended for visual debugging.
+//! This example demonstrates Hearth's immediate mode drawing API intended for visual debugging.
 
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
-use bevy::{color::palettes::css::*, math::Isometry2d, prelude::*};
+use hearth::{color::palettes::css::*, math::Isometry2d, prelude::*};
 
 fn main() {
     App::new()

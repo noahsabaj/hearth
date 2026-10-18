@@ -1,4 +1,4 @@
-//! Beeple's "Zero-Day" sci-fi corridor from NVIDIA ORCA, path-traced with Bevy Solari.
+//! Beeple's "Zero-Day" sci-fi corridor from NVIDIA ORCA, path-traced with Hearth Solari.
 //!
 //! See this example's `README.md` for how to get and convert the scene and for the
 //! command-line options.
@@ -11,7 +11,7 @@ use std::f32::consts::{PI, TAU};
 use std::time::{Duration, Instant};
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     asset::LoadState,
     camera::{CameraMainTextureUsages, Hdr},
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
@@ -33,7 +33,7 @@ use bevy::{
 // DLSS Ray Reconstruction denoises the Solari output. It needs an NVIDIA RTX GPU, but
 // the path tracer still runs without one.
 #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-use bevy::{
+use hearth::{
     anti_alias::dlss::{
         Dlss, DlssPerfQualityMode, DlssProjectId, DlssRayReconstructionFeature,
         DlssRayReconstructionSupported,
@@ -104,7 +104,7 @@ fn parse_dlss_quality(value: &str) -> Result<DlssPerfQualityMode, String> {
 /// Where the converted glTF binaries are published. The `https` asset source fetches
 /// them from here, and `web_asset_cache` keeps them in `.web-asset-cache` afterwards.
 const BASE_URL: &str =
-    "https://github.com/bevyengine/bevy_asset_files/releases/download/zero-day-1.0";
+    "https://github.com/noahsabaj/hearth_asset_files/releases/download/zero-day-1.0";
 
 /// The scene to load. Only the asset filename differs between measures.
 // Keep the shared `Measure` prefix, which matches the Zero-Day asset names.
@@ -182,7 +182,7 @@ fn main() {
 
     // DLSS reads the project ID when the renderer starts, so set it before the plugins.
     #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
-    app.insert_resource(DlssProjectId(bevy::asset::uuid::uuid!(
+    app.insert_resource(DlssProjectId(hearth::asset::uuid::uuid!(
         "b1a7c0de-4d2f-4e6a-9b3c-0d1e2f3a4b5c"
     )));
 
@@ -479,7 +479,7 @@ fn proc_scene(
 /// measure_seven, so the render camera keeps its far=2000. The near plane of 0.001 must
 /// be copied, because Solari gets primary visibility from a rasterized prepass and the
 /// flythrough passes within ~0.02 units of geometry, which the default near plane of 0.1
-/// would clip away. Bevy's reverse-z depth buffer keeps enough precision between 0.001
+/// would clip away. Hearth's reverse-z depth buffer keeps enough precision between 0.001
 /// and 2000.
 ///
 /// `FilmCamera` goes on the first camera only, so the `Single` in `drive_flythrough`

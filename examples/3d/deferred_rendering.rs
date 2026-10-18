@@ -2,7 +2,7 @@
 
 use std::f32::consts::*;
 
-use bevy::{
+use hearth::{
     anti_alias::fxaa::Fxaa,
     core_pipeline::prepass::{DeferredPrepass, DepthPrepass, MotionVectorPrepass, NormalPrepass},
     image::ImageLoaderSettings,

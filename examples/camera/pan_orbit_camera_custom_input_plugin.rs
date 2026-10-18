@@ -1,23 +1,23 @@
 //! Provides custom example input plugin for the camera.
-//! Based on the input plugin from `bevy_editor_cam`. This will later be replaced with a first-party input-manager-integrated solution.
+//! Based on the input plugin from `hearth_editor_cam`. This will later be replaced with a first-party input-manager-integrated solution.
 
-use bevy::app::prelude::*;
-use bevy::camera::{prelude::*, RenderTarget};
-use bevy::ecs::prelude::*;
-use bevy::input::{
+use hearth::app::prelude::*;
+use hearth::camera::{prelude::*, RenderTarget};
+use hearth::ecs::prelude::*;
+use hearth::input::{
     mouse::{MouseScrollUnit, MouseWheel},
     prelude::*,
 };
-use bevy::math::{prelude::*, DVec2, DVec3};
-use bevy::platform::collections::HashMap;
-use bevy::prelude::*;
-use bevy::window::{PrimaryWindow, Window};
+use hearth::math::{prelude::*, DVec2, DVec3};
+use hearth::platform::collections::HashMap;
+use hearth::prelude::*;
+use hearth::window::{PrimaryWindow, Window};
 
-use bevy::picking::pointer::{
+use hearth::picking::pointer::{
     PointerAction, PointerId, PointerInput, PointerInteraction, PointerLocation, PointerMap,
 };
 
-use bevy::camera_controller::pan_orbit_camera::prelude::{
+use hearth::camera_controller::pan_orbit_camera::prelude::{
     component::PanOrbitCamera, inputs::MotionInputs,
 };
 
@@ -59,7 +59,7 @@ impl Plugin for CustomInputPlugin {
                     PanOrbitCameraInputMessage::send_pointer_inputs,
                 )
                     .chain()
-                    .after(bevy::picking::PickingSystems::Last)
+                    .after(hearth::picking::PickingSystems::Last)
                     .before(PanOrbitCamera::update_camera_positions),
             );
     }
@@ -206,7 +206,7 @@ impl PanOrbitCameraInputMessage {
                         .get_entity(*pointer)
                         .and_then(|entity| pointer_interactions.get(entity).ok())
                         .and_then(|interaction| interaction.get_nearest_hit())
-                        // Since `bevy` 0.17.3:
+                        // Since `hearth` 0.17.3:
                         //
                         // If the current hit is on a window, we cannot use the `hit.position` as an anchor
                         // as the `hit.position` is in viewport coordinates.
@@ -223,7 +223,7 @@ impl PanOrbitCameraInputMessage {
                         .filter(|p| {
                             #[cfg(debug_assertions)]
                             if !p.is_finite() {
-                                bevy::log::warn!(
+                                hearth::log::warn!(
                                     "Non-finite input fed to camera controller: {p:?}"
                                 );
                             }

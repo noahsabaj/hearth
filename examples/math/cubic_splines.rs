@@ -1,6 +1,6 @@
 //! This example exhibits different available modes of constructing cubic Bezier curves.
 
-use bevy::{
+use hearth::{
     app::{App, Startup, Update},
     color::*,
     curve::cubic_splines::*,

@@ -1,0 +1,96 @@
+[package]
+name = "hearth_window"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides windowing functionality for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+default = ["std", "hearth_reflect"]
+
+# Functionality
+
+## Adds runtime reflection support using `hearth_reflect`.
+hearth_reflect = [
+  "dep:hearth_reflect",
+  "hearth_app/hearth_reflect",
+  "hearth_color/hearth_reflect",
+  "hearth_ecs/hearth_reflect",
+  "hearth_input/hearth_reflect",
+]
+
+## Adds serialization support through `serde`.
+serialize = [
+  "serde",
+  "hearth_color/serialize",
+  "hearth_ecs/serialize",
+  "hearth_input/serialize",
+]
+
+# Enable custom cursor support
+custom_cursor = ["hearth_image", "hearth_asset"]
+
+# Platform Compatibility
+
+## Allows access to the `std` crate. Enabling this feature will prevent compilation
+## on `no_std` targets, but provides access to certain additional features on
+## supported platforms.
+std = [
+  "hearth_app/std",
+  "hearth_color/std",
+  "hearth_ecs/std",
+  "hearth_input/std",
+  "hearth_math/std",
+  "hearth_reflect?/std",
+  "serde?/std",
+  "raw-window-handle/std",
+  "hearth_platform/std",
+]
+
+## Uses the `libm` maths library instead of the one provided in `std` and `core`.
+libm = ["hearth_color/libm", "hearth_math/libm"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev", default-features = false }
+hearth_color = { path = "../hearth_color", version = "0.20.0-dev", default-features = false }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev", default-features = false }
+hearth_input = { path = "../hearth_input", version = "0.20.0-dev", default-features = false, features = [
+  "gestures",
+  "keyboard",
+  "mouse",
+  "touch",
+] }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev", default-features = false }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false }
+
+# hearth optional
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev", default-features = false, optional = true }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev", optional = true }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev", default-features = false, features = [
+  "glam",
+], optional = true }
+
+# other
+serde = { version = "1.0", features = [
+  "alloc",
+  "derive",
+], default-features = false, optional = true }
+raw-window-handle = { version = "0.6", features = [
+  "alloc",
+], default-features = false }
+log = { version = "0.4", default-features = false }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

@@ -9,9 +9,9 @@ use std::{
     },
 };
 
-use bevy::{gltf::Gltf, prelude::*, tasks::AsyncComputeTaskPool};
 use event_listener::Event;
 use futures_lite::Future;
+use hearth::{gltf::Gltf, prelude::*, tasks::AsyncComputeTaskPool};
 
 fn main() {
     App::new()
@@ -65,7 +65,7 @@ pub struct OneHundredThings([Handle<Gltf>; 100]);
 pub struct AssetBarrier(Arc<AssetBarrierInner>);
 
 /// This guard is to be acquired by
-/// [`LoadBuilder::with_guard`](bevy::asset::LoadBuilder::with_guard) and dropped once finished.
+/// [`LoadBuilder::with_guard`](hearth::asset::LoadBuilder::with_guard) and dropped once finished.
 #[derive(Debug, Deref)]
 pub struct AssetBarrierGuard(Arc<AssetBarrierInner>);
 

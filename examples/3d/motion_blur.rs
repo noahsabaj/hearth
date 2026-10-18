@@ -1,7 +1,7 @@
 //! Demonstrates how to enable per-object motion blur. This rendering feature can be configured per
 //! camera using the [`MotionBlur`] component.z
 
-use bevy::{
+use hearth::{
     image::{ImageAddressMode, ImageFilterMode, ImageSampler, ImageSamplerDescriptor},
     math::ops,
     post_process::motion_blur::MotionBlur,
@@ -353,7 +353,7 @@ fn move_camera(
 }
 
 fn uv_debug_texture() -> Image {
-    use bevy::{asset::RenderAssetUsages, render::render_resource::*};
+    use hearth::{asset::RenderAssetUsages, render::render_resource::*};
     const TEXTURE_SIZE: usize = 7;
 
     let mut palette = [

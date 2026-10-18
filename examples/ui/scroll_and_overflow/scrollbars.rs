@@ -1,6 +1,6 @@
 //! Demonstrations of scrolling and scrollbars.
 
-use bevy::{
+use hearth::{
     ecs::{relationship::RelatedSpawner, spawn::SpawnWith},
     input_focus::tab_navigation::{TabGroup, TabNavigationPlugin},
     picking::hover::Hovered,
@@ -184,7 +184,7 @@ fn update_scrollbar_thumb(
 }
 
 mod colors {
-    use bevy::color::Srgba;
+    use hearth::color::Srgba;
 
     pub const GRAY1: Srgba = Srgba::new(0.224, 0.224, 0.243, 1.0);
     pub const GRAY2: Srgba = Srgba::new(0.486, 0.486, 0.529, 1.0);

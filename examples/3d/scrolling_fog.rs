@@ -10,7 +10,7 @@
 //! The camera is looking at a pillar with the sun peaking behind it. The light
 //! interactions change based on the density of the fog.
 
-use bevy::{
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     image::{
         ImageAddressMode, ImageFilterMode, ImageLoaderSettings, ImageSampler,
@@ -26,7 +26,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Scrolling Fog".into(),
+                title: "Hearth Scrolling Fog".into(),
                 ..default()
             }),
             ..default()

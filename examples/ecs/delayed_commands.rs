@@ -3,7 +3,7 @@
 //! We've chosen to demonstrate this effect through the creation of a grid of clickable,
 //! with "ripples" created when you click.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

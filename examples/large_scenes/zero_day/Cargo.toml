@@ -6,10 +6,10 @@ publish = false
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-bevy = { path = "../../..", features = [
-  "bevy_camera_controller",
+hearth = { path = "../../..", features = [
+  "hearth_camera_controller",
   "free_camera",
-  "bevy_solari",
+  "hearth_solari",
   # The scene is downloaded on first run and then served from `.web-asset-cache`.
   "https",
   "web_asset_cache",
@@ -20,5 +20,5 @@ argh = "0.1.12"
 [features]
 # Use `--features dlss` to enable denoising with DLSS Ray Reconstruction in Solari. It
 # is off by default because a build with it needs the DLSS SDK.
-dlss = ["bevy/dlss"]
-force_disable_dlss = ["bevy/force_disable_dlss"]
+dlss = ["hearth/dlss"]
+force_disable_dlss = ["hearth/force_disable_dlss"]

@@ -7,7 +7,7 @@
 //! | `Spacebar`         | Toggle Atmospheric Fog                 |
 //! | `S`                | Toggle Directional Light Fog Influence |
 
-use bevy::{
+use hearth::{
     light::{CascadeShadowConfigBuilder, NotShadowCaster},
     prelude::*,
 };

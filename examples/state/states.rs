@@ -5,7 +5,7 @@
 //!
 //! In this case, we're transitioning from a `Menu` state to an `InGame` state.
 
-use bevy::{
+use hearth::{
     picking::hover::Hovered,
     prelude::*,
     ui_widgets::{Activate, ActivateOnPress, Button},
@@ -31,10 +31,13 @@ fn main() {
             (movement, change_color).run_if(in_state(AppState::InGame)),
         );
 
-    #[cfg(feature = "bevy_dev_tools")]
-    app.add_systems(Update, bevy::dev_tools::states::log_transitions::<AppState>);
-    #[cfg(not(feature = "bevy_dev_tools"))]
-    warn!("Enable feature bevy_dev_tools to log state transitions");
+    #[cfg(feature = "hearth_dev_tools")]
+    app.add_systems(
+        Update,
+        hearth::dev_tools::states::log_transitions::<AppState>,
+    );
+    #[cfg(not(feature = "hearth_dev_tools"))]
+    warn!("Enable feature hearth_dev_tools to log state transitions");
 
     app.run();
 }

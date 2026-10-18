@@ -1,6 +1,6 @@
 //! Shows different built-in plugins that logs diagnostics, like frames per second (FPS), to the console.
 
-use bevy::{
+use hearth::{
     color::palettes,
     diagnostic::{
         DiagnosticPath, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
@@ -38,7 +38,7 @@ fn main() {
             SystemInformationDiagnosticsPlugin,
             // Forwards various diagnostics from the render app to the main app.
             // These are pretty verbose but can be useful to pinpoint performance issues.
-            bevy::render::diagnostic::RenderDiagnosticsPlugin,
+            hearth::render::diagnostic::RenderDiagnosticsPlugin,
         ))
         // No rendering diagnostics are emitted unless something is drawn to the screen,
         // so we spawn a small scene.

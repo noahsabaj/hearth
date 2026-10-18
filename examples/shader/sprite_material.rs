@@ -1,6 +1,6 @@
 //! Demonstrates using `SpriteMaterial`s to create custom materials for sprites
 
-use bevy::{
+use hearth::{
     input::common_conditions::input_just_pressed, prelude::*, render::render_resource::AsBindGroup,
     shader::ShaderRef,
 };
@@ -86,7 +86,7 @@ fn setup(mut commands: Commands) {
 
     commands.queue_spawn_scene(bsn! {
         Sprite {
-            image: "branding/bevy_bird_dark.png",
+            image: "branding/hearth_mark.png",
         }
         DissolveState::Visible
         SpriteMaterial<DissolveMaterial>(asset_value(DissolveMaterial::new(0.0)))

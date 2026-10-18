@@ -1,9 +1,9 @@
-//! Connects to a running Bevy app via the BRP, takes a screenshot, finds a button's position, and
+//! Connects to a running Hearth app via the HRP, takes a screenshot, finds a button's position, and
 //! clicks it. It then asks the app to exit. Run the `app_under_test` example on the same machine,
 //! then:
 //!
 //! ```bash
-//! cargo run --example integration_test --features="bevy_remote_client bevy_feathers"
+//! cargo run --example integration_test --features="hearth_remote_client hearth_feathers"
 //! ```
 //!
 //! It exits with an error if the button wasn't clicked after three tries.
@@ -17,19 +17,19 @@ use std::{
 };
 
 use anyhow::{bail, Result as AnyhowResult};
-use bevy::{
+use hearth::{
     app::AppExit,
     feathers::controls::FeathersButton,
     platform::collections::HashMap,
     remote::{
         builtin_methods::{
-            BrpObserveParams, BrpQuery, BrpQueryFilter, BrpQueryParams, BrpSpawnEntityParams,
-            BrpWriteMessageParams, ComponentSelector, BRP_OBSERVE_METHOD, BRP_QUERY_METHOD,
-            BRP_SPAWN_ENTITY_METHOD, BRP_WRITE_MESSAGE_METHOD,
+            ComponentSelector, HrpObserveParams, HrpQuery, HrpQueryFilter, HrpQueryParams,
+            HrpSpawnEntityParams, HrpWriteMessageParams, HRP_OBSERVE_METHOD, HRP_QUERY_METHOD,
+            HRP_SPAWN_ENTITY_METHOD, HRP_WRITE_MESSAGE_METHOD,
         },
-        client::BrpClient,
+        client::HrpClient,
         http::{DEFAULT_ADDR, DEFAULT_PORT},
-        BrpRequest,
+        HrpRequest,
     },
     render::view::screenshot::{Screenshot, ScreenshotCaptured},
     tasks::block_on,
@@ -49,21 +49,21 @@ const CLICK_TRIES: u32 = 3;
 
 fn main() -> AnyhowResult<()> {
     let url = format!("http://{DEFAULT_ADDR}:{DEFAULT_PORT}/");
-    let client = BrpClient::new(DEFAULT_ADDR.to_string(), DEFAULT_PORT);
+    let client = HrpClient::new(DEFAULT_ADDR.to_string(), DEFAULT_PORT);
 
     // Step 1: Wait for the app to answer, and find the window entity
     println!("Waiting for the app, and querying for window entity...");
     let window_entity = wait_for_window(&client)?;
     println!("Found window entity: {window_entity}");
 
-    // Step 2: Take a screenshot via BRP
+    // Step 2: Take a screenshot via HRP
     // The window must be visible (not fully occluded) for the GPU to render content
     // If the window is hidden, the screenshot will be black
     println!("Spawning Screenshot entity...");
-    let spawn_response = brp_request(
+    let spawn_response = hrp_request(
         &client,
-        BRP_SPAWN_ENTITY_METHOD,
-        &BrpSpawnEntityParams {
+        HRP_SPAWN_ENTITY_METHOD,
+        &HrpSpawnEntityParams {
             components: HashMap::from([(
                 type_name::<Screenshot>().to_string(),
                 serde_json::json!({"Window": "Primary"}),
@@ -75,7 +75,7 @@ fn main() -> AnyhowResult<()> {
     println!("Observing ScreenshotCaptured on entity {screenshot_entity}...");
     let screenshots = watch(
         &url,
-        BrpObserveParams {
+        HrpObserveParams {
             event: type_name::<ScreenshotCaptured>().to_string(),
             entity: Some(serde_json::from_value(screenshot_entity.clone())?),
         },
@@ -96,7 +96,7 @@ fn main() -> AnyhowResult<()> {
         .unwrap();
     println!("Screenshot captured! Image size: {width}x{height}");
 
-    let image: bevy::image::Image = serde_json::from_value(image_data.clone())?;
+    let image: hearth::image::Image = serde_json::from_value(image_data.clone())?;
     let dyn_img = image
         .try_into_dynamic()
         .expect("Failed to convert screenshot to dynamic image");
@@ -110,7 +110,7 @@ fn main() -> AnyhowResult<()> {
     println!("Observing Activate on entity {button_entity}...");
     let activations = watch(
         &url,
-        BrpObserveParams {
+        HrpObserveParams {
             event: type_name::<Activate>().to_string(),
             entity: Some(serde_json::from_value(button_entity)?),
         },
@@ -142,10 +142,10 @@ fn main() -> AnyhowResult<()> {
 
     // Step 5: Ask the app to exit
     println!("Asking the app to exit...");
-    brp_request(
+    hrp_request(
         &client,
-        BRP_WRITE_MESSAGE_METHOD,
-        &BrpWriteMessageParams {
+        HRP_WRITE_MESSAGE_METHOD,
+        &HrpWriteMessageParams {
             message: type_name::<AppExit>().to_string(),
             value: Some(serde_json::json!("Success")),
         },
@@ -155,20 +155,20 @@ fn main() -> AnyhowResult<()> {
 }
 
 /// Queries for the window entity until the app answers, for up to [`STARTUP_TIMEOUT`].
-fn wait_for_window(client: &BrpClient) -> AnyhowResult<serde_json::Value> {
+fn wait_for_window(client: &HrpClient) -> AnyhowResult<serde_json::Value> {
     let start = Instant::now();
     loop {
-        let window_query = brp_request(
+        let window_query = hrp_request(
             client,
-            BRP_QUERY_METHOD,
-            &BrpQueryParams {
-                data: BrpQuery {
+            HRP_QUERY_METHOD,
+            &HrpQueryParams {
+                data: HrpQuery {
                     components: vec![type_name::<Window>().to_string()],
                     option: ComponentSelector::default(),
                     has: Vec::default(),
                 },
                 strict: false,
-                filter: BrpQueryFilter::default(),
+                filter: HrpQueryFilter::default(),
             },
         );
         match window_query {
@@ -191,18 +191,18 @@ fn wait_for_window(client: &BrpClient) -> AnyhowResult<serde_json::Value> {
 }
 
 /// Finds the button entity, and the physical position of its center.
-fn find_button(client: &BrpClient) -> AnyhowResult<(serde_json::Value, (f64, f64))> {
-    let button_query = brp_request(
+fn find_button(client: &HrpClient) -> AnyhowResult<(serde_json::Value, (f64, f64))> {
+    let button_query = hrp_request(
         client,
-        BRP_QUERY_METHOD,
-        &BrpQueryParams {
-            data: BrpQuery {
+        HRP_QUERY_METHOD,
+        &HrpQueryParams {
+            data: HrpQuery {
                 components: vec![type_name::<UiGlobalTransform>().to_string()],
                 option: ComponentSelector::default(),
                 has: Vec::default(),
             },
             strict: false,
-            filter: BrpQueryFilter {
+            filter: HrpQueryFilter {
                 with: vec![type_name::<FeathersButton>().to_string()],
                 without: Vec::default(),
             },
@@ -224,17 +224,17 @@ fn find_button(client: &BrpClient) -> AnyhowResult<(serde_json::Value, (f64, f64
 
 /// Clicks at a physical position in the window.
 fn click(
-    client: &BrpClient,
+    client: &HrpClient,
     window_entity: &serde_json::Value,
     phys_x: f64,
     phys_y: f64,
 ) -> AnyhowResult<()> {
     // Send CursorMoved via WindowEvent message, in physical pixels like the button position.
     // This lets the picking system know where the pointer is.
-    brp_request(
+    hrp_request(
         client,
-        BRP_WRITE_MESSAGE_METHOD,
-        &BrpWriteMessageParams {
+        HRP_WRITE_MESSAGE_METHOD,
+        &HrpWriteMessageParams {
             message: type_name::<WindowEvent>().to_string(),
             value: Some(serde_json::json!({
                 "CursorMoved": {
@@ -248,10 +248,10 @@ fn click(
     // Send MouseButtonInput Pressed + Released via WindowEvent messages.
     // The picking system needs both press and release to generate a PointerClick.
     for state in ["Pressed", "Released"] {
-        brp_request(
+        hrp_request(
             client,
-            BRP_WRITE_MESSAGE_METHOD,
-            &BrpWriteMessageParams {
+            HRP_WRITE_MESSAGE_METHOD,
+            &HrpWriteMessageParams {
                 message: type_name::<WindowEvent>().to_string(),
                 value: Some(serde_json::json!({
                     "MouseButtonInput": {
@@ -269,9 +269,9 @@ fn click(
 
 /// Starts watching for an event, and returns a channel receiving the events for each frame they
 /// were observed in. The channel is closed if the stream fails or ends.
-fn watch(url: &str, params: BrpObserveParams) -> AnyhowResult<Receiver<Vec<serde_json::Value>>> {
-    let request = BrpRequest {
-        method: BRP_OBSERVE_METHOD.to_string(),
+fn watch(url: &str, params: HrpObserveParams) -> AnyhowResult<Receiver<Vec<serde_json::Value>>> {
+    let request = HrpRequest {
+        method: HRP_OBSERVE_METHOD.to_string(),
         id: Some(serde_json::to_value(0)?),
         params: Some(serde_json::to_value(params)?),
     };
@@ -288,7 +288,7 @@ fn watch(url: &str, params: BrpObserveParams) -> AnyhowResult<Receiver<Vec<serde
 /// Sends a watching request, and forwards the events of each server-sent event to `sender`.
 fn read_watch_stream(
     url: &str,
-    request: BrpRequest,
+    request: HrpRequest,
     sender: mpsc::Sender<Vec<serde_json::Value>>,
 ) -> AnyhowResult<()> {
     let response = ureq::post(url).send_json(request)?;
@@ -312,8 +312,8 @@ fn read_watch_stream(
     Ok(())
 }
 
-fn brp_request(
-    client: &BrpClient,
+fn hrp_request(
+    client: &HrpClient,
     method: &str,
     params: &impl serde::Serialize,
 ) -> AnyhowResult<serde_json::Value> {

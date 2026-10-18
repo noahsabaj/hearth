@@ -44,7 +44,7 @@ Options:
 --help, help      display usage information
 ```
 
-[Alternate processed files with instancing (glTF files on discord):](https://discord.com/channels/691052431525675048/1237853896471220314/1237859248067575910)
+Alternate processed files with instancing:
 
 - Fixed most of the metallic from fbx issue by using a script that makes everything dielectric unless it has metal in the name of the material
 - Made the plants alpha clip instead of blend

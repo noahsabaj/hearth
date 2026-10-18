@@ -1,6 +1,6 @@
-//! Demonstrates the behavior-only tree widget in `bevy_ui_widgets`.
+//! Demonstrates the behavior-only tree widget in `hearth_ui_widgets`.
 
-use bevy::{
+use hearth::{
     ecs::template::{EntityTemplate, OptionTemplate},
     input_focus::{
         tab_navigation::{TabGroup, TabNavigationPlugin},

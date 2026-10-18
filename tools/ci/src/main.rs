@@ -1,4 +1,4 @@
-//! CI script used for Bevy.
+//! CI script used for Hearth.
 
 mod args;
 mod ci;

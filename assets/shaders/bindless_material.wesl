@@ -1,6 +1,6 @@
-import bevy_pbr::render::forward_io::VertexOutput;
-import bevy_pbr::render::mesh_bindings::mesh;
-import bevy_render::bindless::{bindless_samplers_filtering, bindless_textures_2d};
+import hearth_pbr::render::forward_io::VertexOutput;
+import hearth_pbr::render::mesh_bindings::mesh;
+import hearth_render::bindless::{bindless_samplers_filtering, bindless_textures_2d};
 
 struct Color {
     base_color: vec4<f32>,

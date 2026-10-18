@@ -5,7 +5,7 @@ use std::{
     fmt::{self, Formatter},
 };
 
-use bevy::{
+use hearth::{
     camera::Hdr,
     color::palettes::css::WHITE,
     feathers::{theme::UiTheme, FeathersPlugins},
@@ -76,7 +76,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Specular Tint Example".into(),
+                title: "Hearth Specular Tint Example".into(),
                 ..default()
             }),
             ..default()

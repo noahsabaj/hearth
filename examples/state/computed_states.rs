@@ -2,7 +2,7 @@
 //!
 //! In this case, we'll be implementing the following pattern:
 //! - The game will start in a `Menu` state, which we can return to with `Esc`
-//! - From there, we can enter the game - where our bevy symbol moves around and changes color
+//! - From there, we can enter the game - where our hearth symbol moves around and changes color
 //! - While in game, we can pause and unpause the game using `Space`
 //! - We can also toggle "Turbo Mode" with the `T` key - where the movement and color changes are all faster. This
 //!   is retained between pauses, but not if we exit to the main menu.
@@ -16,7 +16,7 @@
 //! And lastly, we'll add `Tutorial`, a computed state deriving from `TutorialState`, `InGame` and `IsPaused`, with 2 distinct
 //! states to display the 2 tutorial texts.
 
-use bevy::{
+use hearth::{
     dev_tools::states::*,
     input::keyboard::Key,
     picking::hover::Hovered,
@@ -566,7 +566,7 @@ mod ui {
             },
             children![
                 (
-                    Text::new("Move the bevy logo with the arrow keys"),
+                    Text::new("Move the hearth logo with the arrow keys"),
                     TextFont {
                         font_size: FontSize::Px(33.0),
                         ..default()

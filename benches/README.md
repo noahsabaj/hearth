@@ -1,6 +1,6 @@
-# Bevy Benchmarks
+# Hearth Benchmarks
 
-This is a crate with a collection of benchmarks for Bevy.
+This is a crate with a collection of benchmarks for Hearth.
 
 ## Running benchmarks
 
@@ -33,6 +33,6 @@ cargo bench -p benches -- --baseline before
 
 ## Criterion
 
-Bevy's benchmarks use [Criterion](https://crates.io/crates/criterion). If you want to learn more about using Criterion for comparing performance against a baseline or generating detailed reports, you can read the [Criterion.rs documentation](https://bheisler.github.io/criterion.rs/book/criterion_rs.html).
+Hearth's benchmarks use [Criterion](https://crates.io/crates/criterion). If you want to learn more about using Criterion for comparing performance against a baseline or generating detailed reports, you can read the [Criterion.rs documentation](https://bheisler.github.io/criterion.rs/book/criterion_rs.html).
 
 You can generate nicely formatted comparison tables of named benchmark runs (baselines) using the [critcmp](https://github.com/BurntSushi/critcmp) tool.

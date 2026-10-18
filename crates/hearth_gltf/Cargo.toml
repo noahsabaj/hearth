@@ -1,0 +1,88 @@
+[package]
+name = "hearth_gltf"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Hearth Engine GLTF loading"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+pbr_transmission_textures = []
+pbr_multi_layer_material_textures = []
+pbr_anisotropy_texture = []
+pbr_specular_textures = []
+# Decodes KHR_meshopt_compression and EXT_meshopt_compression buffer views while loading
+meshopt = ["dep:meshopt"]
+
+[dependencies]
+# hearth
+hearth_animation = { path = "../hearth_animation", version = "0.20.0-dev", optional = true, features = [
+  "hearth_mesh",
+] }
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev" }
+hearth_color = { path = "../hearth_color", version = "0.20.0-dev" }
+hearth_curve = { path = "../hearth_curve", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev" }
+hearth_light = { path = "../hearth_light", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_mesh = { path = "../hearth_mesh", version = "0.20.0-dev", features = [
+  "serialize",
+  "morph",
+  "hearth_mikktspace",
+] }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_material = { path = "../hearth_material", version = "0.20.0-dev" }
+hearth_world_serialization = { path = "../hearth_world_serialization", version = "0.20.0-dev" }
+hearth_transform = { path = "../hearth_transform", version = "0.20.0-dev" }
+hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "std",
+  "serialize",
+] }
+
+# other
+gltf = { version = "1.4.0", default-features = false, features = [
+  "KHR_lights_punctual",
+  "KHR_materials_transmission",
+  "KHR_materials_ior",
+  "KHR_materials_specular",
+  "KHR_materials_volume",
+  "KHR_materials_unlit",
+  "KHR_materials_emissive_strength",
+  "KHR_texture_transform",
+  "extras",
+  "extensions",
+  "names",
+  "utils",
+] }
+async-lock = { version = "3.0", default-features = false }
+thiserror = { version = "2", default-features = false }
+base64 = { version = "0.23.0", default-features = false, features = ["std"] }
+fixedbitset = "0.5"
+itertools = "0.14"
+meshopt = { version = "0.6.2", optional = true }
+percent-encoding = "2.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.140"
+smallvec = { version = "1", default-features = false }
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+wgpu-types = { version = "30", default-features = false }
+
+[dev-dependencies]
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

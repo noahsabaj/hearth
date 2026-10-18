@@ -1,6 +1,6 @@
 //! Demonstrates how lighting is affected by different radius of point lights.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

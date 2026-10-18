@@ -1,3 +1,0 @@
-//! Compile-fail tests for the APIs of `bevy_ecs`.
-//!
-//! Nothing here, check out the integration tests

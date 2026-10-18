@@ -1,9 +1,9 @@
 //! Showcases how fallible systems and observers can make use of Rust's powerful result handling
 //! syntax.
 
-use bevy::ecs::{entity::SpawnError, error::warn, world::DeferredWorld};
-use bevy::prelude::*;
-use bevy::shape::sampling::UniformMeshSampler;
+use hearth::ecs::{entity::SpawnError, error::warn, world::DeferredWorld};
+use hearth::prelude::*;
+use hearth::shape::sampling::UniformMeshSampler;
 
 use chacha20::ChaCha8Rng;
 use rand::distr::Distribution;
@@ -17,7 +17,7 @@ fn main() {
     // We can change this by configuring the fallback error handler, which applies to the entire app
     // (you can also set it for specific `World`s).
     // Here we are using one of the built-in error handlers.
-    // Bevy provides built-in handlers for `panic`, `error`, `warn`, `info`,
+    // Hearth provides built-in handlers for `panic`, `error`, `warn`, `info`,
     // `debug`, `trace` and `ignore`.
     app.set_error_handler(warn);
 
@@ -27,7 +27,7 @@ fn main() {
     app.add_plugins(MeshPickingPlugin);
 
     // Fallible systems can be used the same way as regular systems. The only difference is they
-    // return a `Result<(), BevyError>` instead of a `()` (unit) type. Bevy will handle both
+    // return a `Result<(), HearthError>` instead of a `()` (unit) type. Hearth will handle both
     // types of systems the same way, except for the error handling.
     app.add_systems(Startup, setup);
 
@@ -153,7 +153,7 @@ fn failing_system(world: &mut World) -> Result {
         // `get_resource` returns an `Option<T>`, so we use `ok_or` to convert it to a `Result` on
         // which we can call `?` to propagate the error.
         .get_resource::<UninitializedResource>()
-        // We can provide a `str` here because `BevyError` implements `From<&str>`.
+        // We can provide a `str` here because `HearthError` implements `From<&str>`.
         .ok_or("Resource not initialized")
         // The default error severity is Severity::Panic.
         // We can add a Severity level to any Result locally to downgrade it appropriately.

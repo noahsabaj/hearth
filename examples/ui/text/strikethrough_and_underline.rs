@@ -1,6 +1,6 @@
 //! This example illustrates UI text with strikethrough and underline decorations
 
-use bevy::{
+use hearth::{
     color::palettes::css::{GREEN, NAVY, RED, YELLOW},
     prelude::*,
 };

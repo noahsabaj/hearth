@@ -1,5 +1,5 @@
 //! Shows an "anchor layout" style of ui layout
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 const MARGIN: Val = Val::Px(12.);
 
@@ -7,7 +7,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Anchor Layout Example".to_string(),
+                title: "Hearth Anchor Layout Example".to_string(),
                 ..default()
             }),
             ..default()

@@ -1,4 +1,4 @@
-import bevy_sprite_render::mesh2d::vertex_output::VertexOutput;
+import hearth_sprite_render::mesh2d::vertex_output::VertexOutput;
 // we can import items from shader modules in the assets folder with a relative path
 import super::custom_material_import::COLOR_MULTIPLIER;
 

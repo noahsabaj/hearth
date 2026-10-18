@@ -1,6 +1,6 @@
 //! Iterates and prints gamepad input and connection events.
 
-use bevy::{
+use hearth::{
     input::gamepad::{
         GamepadAxisChangedEvent, GamepadButtonChangedEvent, GamepadButtonStateChangedEvent,
         GamepadConnectionEvent, GamepadEvent,

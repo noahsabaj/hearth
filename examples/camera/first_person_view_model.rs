@@ -44,7 +44,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 
-use bevy::{
+use hearth::{
     camera::visibility::RenderLayers, color::palettes::tailwind,
     input::mouse::AccumulatedMouseMotion, light::NotShadowCaster, prelude::*,
 };

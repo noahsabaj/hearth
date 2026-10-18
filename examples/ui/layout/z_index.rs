@@ -3,7 +3,7 @@
 //! It uses colored boxes with different z-index values to demonstrate how it can affect the order of
 //! depth of nodes compared to their siblings, but also compared to the entire UI.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::{BLUE, GRAY, LIME, PURPLE, RED, YELLOW},
     prelude::*,
 };

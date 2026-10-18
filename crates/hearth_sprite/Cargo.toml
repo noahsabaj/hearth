@@ -1,0 +1,50 @@
+[package]
+name = "hearth_sprite"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides sprite functionality for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+hearth_picking = ["dep:hearth_picking", "hearth_window"]
+hearth_text = ["dep:hearth_text", "hearth_window"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev" }
+hearth_color = { path = "../hearth_color", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_mesh = { path = "../hearth_mesh", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_picking = { path = "../hearth_picking", version = "0.20.0-dev", optional = true }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_transform = { path = "../hearth_transform", version = "0.20.0-dev" }
+hearth_window = { path = "../hearth_window", version = "0.20.0-dev", optional = true }
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_text = { path = "../hearth_text", version = "0.20.0-dev", optional = true }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+
+# other
+radsort = "0.1"
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+wgpu-types = { version = "30", default-features = false }
+
+[dev-dependencies]
+approx = "0.5.1"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

@@ -12,7 +12,7 @@
 //! - **Min / max labels** flanking the track.
 //! - A **Reset button** that snaps the value back to the default.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 const TRACK_WIDTH: f32 = 500.0;
 const TRACK_HEIGHT: f32 = 14.0;

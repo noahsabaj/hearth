@@ -1,6 +1,6 @@
 //! Showcase how to use and configure FPS overlay.
 
-use bevy::{
+use hearth::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig},
     prelude::*,
     text::FontSmoothing,

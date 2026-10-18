@@ -1,6 +1,6 @@
 //! Shows how to create a 3D orthographic view (for isometric-look games or CAD applications).
 
-use bevy::{camera::ScalingMode, prelude::*};
+use hearth::{camera::ScalingMode, prelude::*};
 
 fn main() {
     App::new()

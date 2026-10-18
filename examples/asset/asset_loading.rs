@@ -1,6 +1,6 @@
 //! This example illustrates various ways to load assets.
 
-use bevy::{asset::LoadedFolder, prelude::*};
+use hearth::{asset::LoadedFolder, prelude::*};
 
 fn main() {
     App::new()

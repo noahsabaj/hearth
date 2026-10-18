@@ -1,4 +1,4 @@
-import bevy_pbr::render::{
+import hearth_pbr::render::{
     forward_io::VertexOutput,
     mesh_functions,
     mesh_view_bindings::view,
@@ -7,7 +7,7 @@ import bevy_pbr::render::{
     pbr_bindings,
 };
 
-@if(TONEMAP_IN_SHADER) import bevy_core_pipeline::tonemapping::tone_mapping;
+@if(TONEMAP_IN_SHADER) import hearth_core_pipeline::tonemapping::tone_mapping;
 
 @group(constants::MATERIAL_BIND_GROUP) @binding(0) var my_array_texture: texture_2d_array<f32>;
 @group(constants::MATERIAL_BIND_GROUP) @binding(1) var my_array_texture_sampler: sampler;

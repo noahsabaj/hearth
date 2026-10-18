@@ -1,6 +1,6 @@
 //! A shader that uses "shaders defs", which selectively toggle parts of a shader.
 
-use bevy::{
+use hearth::{
     mesh::MeshVertexBufferLayoutRef,
     pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,

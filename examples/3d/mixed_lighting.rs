@@ -1,6 +1,6 @@
 //! Demonstrates how to combine baked and dynamic lighting.
 
-use bevy::{
+use hearth::{
     feathers::{theme::UiTheme, FeathersPlugins},
     gltf::GltfMeshName,
     pbr::Lightmap,
@@ -125,7 +125,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Mixed Lighting Example".into(),
+                    title: "Hearth Mixed Lighting Example".into(),
                     ..default()
                 }),
                 ..default()
@@ -313,7 +313,7 @@ fn update_lightmaps(
 
 /// Converts a uv rectangle from the OpenGL coordinate system (origin in the
 /// lower left) to the Vulkan coordinate system (origin in the upper left) that
-/// Bevy uses.
+/// Hearth uses.
 ///
 /// For this particular example, the baking tool happened to use the OpenGL
 /// coordinate system, so it was more convenient to do the conversion at compile

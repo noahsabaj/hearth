@@ -11,7 +11,7 @@
 
 use std::{alloc::Layout, collections::HashMap, io::Write, ptr::NonNull};
 
-use bevy::{
+use hearth::{
     ecs::{
         component::{
             ComponentCloneBehavior, ComponentDescriptor, ComponentId, ComponentInfo, StorageType,

@@ -1,6 +1,6 @@
 //! Shows how to modify mesh assets after spawning.
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages, gltf::GltfLoaderSettings,
     input::common_conditions::input_just_pressed, mesh::VertexAttributeValues, prelude::*,
 };
@@ -61,7 +61,7 @@ fn setup(
             // `RenderAssetUsages::all()` is already the default, so the line below could be omitted.
             // It's helpful to know it exists, however.
             //
-            // `RenderAssetUsages` tell Bevy whether to keep the data around:
+            // `RenderAssetUsages` tell Hearth whether to keep the data around:
             //   - for the GPU (`RenderAssetUsages::RENDER_WORLD`),
             //   - for the CPU (`RenderAssetUsages::MAIN_WORLD`),
             //   - or both.

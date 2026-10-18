@@ -1,6 +1,6 @@
 //! Tests how different transforms behave when clipped with `Overflow::Hidden`
 
-use bevy::{input::common_conditions::input_just_pressed, prelude::*, ui::widget::TextUiWriter};
+use hearth::{input::common_conditions::input_just_pressed, prelude::*, ui::widget::TextUiWriter};
 
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
@@ -140,7 +140,7 @@ fn spawn_image(
 ) {
     spawn_container(parent, update_transform, |parent| {
         parent.spawn((
-            ImageNode::new(asset_server.load("branding/bevy_logo_dark_big.png")),
+            ImageNode::new(asset_server.load("branding/hearth_logo_dark_big.png")),
             Node {
                 height: px(100),
                 position_type: PositionType::Absolute,
@@ -159,7 +159,7 @@ fn spawn_text(
 ) {
     spawn_container(parent, update_transform, |parent| {
         parent.spawn((
-            Text::new("Bevy"),
+            Text::new("Hearth"),
             TextFont {
                 font: asset_server.load("fonts/FiraSans-Bold.ttf").into(),
                 font_size: FontSize::Px(100.0),

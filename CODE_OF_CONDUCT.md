@@ -36,4 +36,4 @@ These are the policies for upholding [our community’s standards of conduct](#o
 7. If a maintainer bans someone and you think it was unjustified, please take it up with that maintainer, or with a different maintainer, in private. Complaints about bans in-channel are not allowed.
 8. Maintainers are held to a higher standard than other community members. If a maintainer creates an inappropriate situation, they should expect less leeway than others.
 
-The enforcement policies in the code of conduct apply to all official venues, including Discord channels, GitHub repositories, the Twitter community and all other forums.
+The enforcement policies in the code of conduct apply to all official venues, including GitHub repositories and all other forums.

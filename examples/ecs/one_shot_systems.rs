@@ -8,7 +8,7 @@
 //! [`World::run_system_once`](World#method.run_system_once_with)
 //! docs for more details.
 
-use bevy::{
+use hearth::{
     ecs::system::{RunSystemOnce, SystemId},
     prelude::*,
 };
@@ -104,7 +104,7 @@ fn setup_ui(mut commands: Commands) {
             (TextSpan::new("Last Triggered: ")),
             (
                 TextSpan::new("-"),
-                TextColor(bevy::color::palettes::css::ORANGE.into()),
+                TextColor(hearth::color::palettes::css::ORANGE.into()),
             )
         ],
     ));

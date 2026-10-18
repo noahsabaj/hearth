@@ -1,5 +1,5 @@
 #![expect(missing_docs, reason = "Not all docs are written yet, see #3492.")]
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Component, Default)]
 struct Enemy {

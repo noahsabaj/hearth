@@ -1,6 +1,6 @@
 //! This example demonstrates bounding volume intersections.
 
-use bevy::{
+use hearth::{
     color::palettes::css::*,
     math::{ops, Isometry2d},
     prelude::*,

@@ -5,17 +5,17 @@ edition = "2024"
 publish = false
 
 # Normally we'd put all dependencies in [dependencies], but this syntax is easier to document
-[dependencies.bevy]
-# In your library you'd use version = "x.y.z", but since this is an example inside the Bevy
+[dependencies.hearth]
+# In your library you'd use version = "x.y.z", but since this is an example inside the Hearth
 # repository we use a path instead.
 path = "../../../"
 # Since `std` is a default feature, first we disable default features
 default-features = false
 # We're free to enable any features our library needs.
-# Note that certain Bevy features rely on `std`.
+# Note that certain Hearth features rely on `std`.
 features = [
-  # "bevy_color",
-  # "bevy_state",
+  # "hearth_color",
+  # "hearth_state",
 ]
 
 [features]
@@ -25,16 +25,16 @@ default = ["std"]
 # Below are some features we recommend libraries expose to assist with their usage and their own testing.
 
 # Uses the Rust standard library.
-std = ["bevy/std"]
+std = ["hearth/std"]
 
 # Uses `libm` for floating point functions.
-libm = ["bevy/libm"]
+libm = ["hearth/libm"]
 
 # Rely on `critical-section` for synchronization primitives.
-critical-section = ["bevy/critical-section"]
+critical-section = ["hearth/critical-section"]
 
 # Enables access to browser APIs in a web context.
-web = ["bevy/web"]
+web = ["hearth/web"]
 
 [lints.clippy]
 # These lints are very helpful when working on a library with `no_std` support.

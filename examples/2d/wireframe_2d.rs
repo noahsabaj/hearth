@@ -8,7 +8,7 @@
 //!
 //! This is a native only feature.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::{GREEN, RED, WHITE},
     feathers::{theme::UiTheme, FeathersPlugins},
     prelude::*,

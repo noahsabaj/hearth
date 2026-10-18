@@ -1,13 +1,13 @@
-//! This example illustrates how to use logs in bevy.
+//! This example illustrates how to use logs in hearth.
 
-use bevy::{log::once, prelude::*};
+use hearth::{log::once, prelude::*};
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(bevy::log::LogPlugin {
+        .add_plugins(DefaultPlugins.set(hearth::log::LogPlugin {
             // Uncomment this to override the default log settings:
-            // level: bevy::log::Level::TRACE,
-            // filter: "wgpu=warn,bevy_ecs=info".to_string(),
+            // level: hearth::log::Level::TRACE,
+            // filter: "wgpu=warn,hearth_ecs=info".to_string(),
             ..default()
         }))
         .add_systems(Startup, setup)
@@ -48,7 +48,7 @@ fn log_system() {
     // by default, trace and debug logs are ignored because they are "noisy"
     // you can control what level is logged by setting up the LogPlugin
     // alternatively you can set the log level via the RUST_LOG=LEVEL environment variable
-    // ex: RUST_LOG=trace, RUST_LOG=info,bevy_ecs=warn
+    // ex: RUST_LOG=trace, RUST_LOG=info,hearth_ecs=warn
     // the format used here is super flexible. check out this documentation for more info:
     // https://docs.rs/tracing-subscriber/*/tracing_subscriber/filter/struct.EnvFilter.html
 }

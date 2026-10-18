@@ -1,9 +1,9 @@
 //! Writes a raymarched signed distance field directly into the deferred gbuffer, so
-//! Bevy's standard deferred PBR lighting shades it as if it were a mesh. This example assumes
+//! Hearth's standard deferred PBR lighting shades it as if it were a mesh. This example assumes
 //! prior familiarity with raymarching and is intended to demonstrate integration between a full-screen
 //! pass and the deferred renderer.
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     core_pipeline::{
         core_3d::CORE_3D_DEPTH_FORMAT,

@@ -1,14 +1,14 @@
-//! Shows how to return to the calling function after a windowed Bevy app has exited.
+//! Shows how to return to the calling function after a windowed Hearth app has exited.
 //!
-//! In windowed *Bevy* applications, executing code below a call to `App::run()` is
+//! In windowed *Hearth* applications, executing code below a call to `App::run()` is
 //! not recommended because:
 //! - `App::run()` will never return on iOS and Web.
 //! - It is not possible to recreate a window after the event loop has been terminated.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
-    println!("Running Bevy App");
+    println!("Running Hearth App");
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
@@ -19,9 +19,9 @@ fn main() {
         }))
         .add_systems(Update, system)
         .run();
-    println!("Bevy App has exited. We are back in our main function.");
+    println!("Hearth App has exited. We are back in our main function.");
 }
 
 fn system() {
-    info!("Logging from Bevy App");
+    info!("Logging from Hearth App");
 }

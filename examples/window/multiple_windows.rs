@@ -1,6 +1,6 @@
 //! Uses two windows to visualize a 3D model from different angles.
 
-use bevy::{camera::RenderTarget, prelude::*, window::WindowRef};
+use hearth::{camera::RenderTarget, prelude::*, window::WindowRef};
 
 fn main() {
     App::new()

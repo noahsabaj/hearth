@@ -4,10 +4,10 @@
 //! components in. This example has only the engine's.
 //!
 //! ```bash
-//! cargo run --example editor --features="bevy_editor"
+//! cargo run --example editor --features="hearth_editor"
 //! ```
 
-use bevy::{
+use hearth::{
     editor::{editor_window, EditorPlugin, EditorProject},
     prelude::*,
 };

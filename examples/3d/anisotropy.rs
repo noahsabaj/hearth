@@ -2,7 +2,7 @@
 
 use std::fmt::Display;
 
-use bevy::{
+use hearth::{
     color::palettes::{self, css::WHITE},
     light::Skybox,
     math::vec3,
@@ -84,7 +84,7 @@ fn main() {
         .init_resource::<AppStatus>()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Anisotropy Example".into(),
+                title: "Hearth Anisotropy Example".into(),
                 ..default()
             }),
             ..default()

@@ -1,19 +1,19 @@
 //! Entities generally don't exist in isolation. Instead, they are related to other entities in various ways.
-//! While Bevy comes with a built-in [`ChildOf`]/[`Children`] relationship
+//! While Hearth comes with a built-in [`ChildOf`]/[`Children`] relationship
 //! (which enables transform and visibility propagation),
 //! you can define your own relationships using components.
 //!
 //! We can define a custom relationship by creating two components:
 //! one to store the relationship itself, and another to keep track of the reverse relationship.
-//! Bevy's [`ChildOf`] component implements the [`Relationship`](bevy::ecs::relationship::Relationship) trait, serving as the source of truth,
+//! Hearth's [`ChildOf`] component implements the [`Relationship`](hearth::ecs::relationship::Relationship) trait, serving as the source of truth,
 //! while the [`Children`] component implements the [`RelationshipTarget`] trait and is used to accelerate traversals down the hierarchy.
 //!
 //! In this example we're creating a `Targeting`/`TargetedBy` relationship,
 //! demonstrating how you might model units which target a single unit in combat.
 
-use bevy::ecs::entity::EntityHashSet;
-use bevy::ecs::system::RunSystemOnce;
-use bevy::prelude::*;
+use hearth::ecs::entity::EntityHashSet;
+use hearth::ecs::system::RunSystemOnce;
+use hearth::prelude::*;
 
 /// The entity that this entity is targeting.
 ///
@@ -147,7 +147,7 @@ fn main() {
         visited: EntityHashSet,
     }
 
-    /// Bevy's relationships come with all sorts of useful methods for traversal.
+    /// Hearth's relationships come with all sorts of useful methods for traversal.
     /// Here, we're going to look for cycles using a depth-first search.
     fn check_for_cycles(
         // We want to check every entity for cycles

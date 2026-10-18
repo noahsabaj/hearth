@@ -1,4 +1,4 @@
-use bevy::{app::MainScheduleOrder, ecs::schedule::*, prelude::*};
+use hearth::{app::MainScheduleOrder, ecs::schedule::*, prelude::*};
 
 /// Independent [`Schedule`] for stepping systems.
 ///
@@ -33,7 +33,7 @@ impl SteppingPlugin {
 impl Plugin for SteppingPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, build_stepping_hint);
-        if cfg!(not(feature = "bevy_debug_stepping")) {
+        if cfg!(not(feature = "hearth_debug_stepping")) {
             return;
         }
 
@@ -105,7 +105,7 @@ fn build_ui(
 ) {
     let mut text_spans = Vec::new();
     let mut always_run: Vec<(
-        bevy::ecs::intern::Interned<dyn ScheduleLabel + 'static>,
+        hearth::ecs::intern::Interned<dyn ScheduleLabel + 'static>,
         NodeId,
     )> = Vec::new();
 
@@ -133,9 +133,9 @@ fn build_ui(
         };
 
         for (key, system) in systems {
-            // skip bevy default systems; we don't want to step those
+            // skip hearth default systems; we don't want to step those
             #[cfg(feature = "debug")]
-            if system.name().as_string().starts_with("bevy") {
+            if system.name().as_string().starts_with("hearth") {
                 always_run.push((*label, NodeId::System(key)));
                 continue;
             }
@@ -184,10 +184,10 @@ fn build_ui(
 }
 
 fn build_stepping_hint(mut commands: Commands) {
-    let hint_text = if cfg!(feature = "bevy_debug_stepping") {
+    let hint_text = if cfg!(feature = "hearth_debug_stepping") {
         "Press ` to toggle stepping mode (S: step system, Space: step frame)"
     } else {
-        "Bevy was compiled without stepping support. Run with `--features=bevy_debug_stepping` to enable stepping."
+        "Hearth was compiled without stepping support. Run with `--features=hearth_debug_stepping` to enable stepping."
     };
     info!("{}", hint_text);
     // stepping description box

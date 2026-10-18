@@ -57,10 +57,10 @@ fn basic_config(root_dir: impl Into<PathBuf>, args: &Args) -> ui_test::Result<Co
 
     config.with_args(args);
 
-    let bevy_root = "..";
+    let hearth_root = "..";
 
     // Don't leak contributor filesystem paths
-    config.path_stderr_filter(Path::new(bevy_root), b"$BEVY_ROOT");
+    config.path_stderr_filter(Path::new(hearth_root), b"$HEARTH_ROOT");
     if let Some(path) = option_env!("RUSTUP_HOME") {
         config.path_stderr_filter(Path::new(path), b"$RUSTUP_HOME");
     }

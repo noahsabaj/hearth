@@ -2,7 +2,7 @@
 
 use std::f32::consts::{FRAC_PI_2, PI};
 
-use bevy::{
+use hearth::{
     color::palettes::css::{DARK_CYAN, GOLD, GRAY, ORANGE, PURPLE},
     prelude::*,
 };

@@ -1,6 +1,6 @@
-//! A test to confirm that `bevy` allows minimizing the window
+//! A test to confirm that `hearth` allows minimizing the window
 //! This is run in CI to ensure that this doesn't regress again.
-use bevy::{diagnostic::FrameCount, prelude::*};
+use hearth::{diagnostic::FrameCount, prelude::*};
 
 fn main() {
     // TODO: Combine this with `resizing` once multiple_windows is simpler than

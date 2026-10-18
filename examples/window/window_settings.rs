@@ -2,8 +2,8 @@
 //! the mouse pointer in various ways.
 
 #[cfg(feature = "custom_cursor")]
-use bevy::window::{CustomCursor, CustomCursorImage};
-use bevy::{
+use hearth::window::{CustomCursor, CustomCursorImage};
+use hearth::{
     diagnostic::{FrameCount, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
     window::{
@@ -18,7 +18,7 @@ fn main() {
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "I am a window!".into(),
-                    name: Some("bevy.app".into()),
+                    name: Some("hearth.app".into()),
                     resolution: (500, 300).into(),
                     present_mode: PresentMode::AutoVsync,
                     // Tells Wasm to resize the window according to the available canvas
@@ -26,7 +26,7 @@ fn main() {
                     // Tells Wasm not to override default event handling, like F5, Ctrl+R etc.
                     prevent_default_event_handling: false,
                     window_theme: Some(WindowTheme::Dark),
-                    enabled_buttons: bevy::window::EnabledButtons {
+                    enabled_buttons: hearth::window::EnabledButtons {
                         maximize: false,
                         ..Default::default()
                     },
@@ -86,7 +86,7 @@ fn toggle_vsync(input: Res<ButtonInput<KeyCode>>, mut window: Single<&mut Window
 /// windows depending on the level.
 ///
 /// This feature only works on some platforms. Please check the
-/// [documentation](https://docs.rs/bevy/latest/bevy/prelude/struct.Window.html#structfield.window_level)
+/// documentation
 /// for more details.
 fn switch_level(input: Res<ButtonInput<KeyCode>>, mut window: Single<&mut Window>) {
     if input.just_pressed(KeyCode::KeyT) {
@@ -102,7 +102,7 @@ fn switch_level(input: Res<ButtonInput<KeyCode>>, mut window: Single<&mut Window
 /// This system toggles the window controls when pressing buttons 1, 2 and 3
 ///
 /// This feature only works on some platforms. Please check the
-/// [documentation](https://docs.rs/bevy/latest/bevy/prelude/struct.Window.html#structfield.enabled_buttons)
+/// documentation
 /// for more details.
 fn toggle_window_controls(input: Res<ButtonInput<KeyCode>>, mut window: Single<&mut Window>) {
     let toggle_minimize = input.just_pressed(KeyCode::Digit1);

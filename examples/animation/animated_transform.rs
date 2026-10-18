@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     animation::{animated_field, AnimatedBy, AnimationTargetId},
     prelude::*,
 };

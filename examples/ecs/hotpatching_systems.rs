@@ -12,11 +12,11 @@
 //! application.
 //!
 //! It's also possible to make any function hot patchable by wrapping it with
-//! `bevy::dev_tools::hotpatch::call`.
+//! `hearth::dev_tools::hotpatch::call`.
 
 use std::time::Duration;
 
-use bevy::{color::palettes, prelude::*};
+use hearth::{color::palettes, prelude::*};
 
 fn main() {
     let (sender, receiver) = crossbeam_channel::unbounded::<()>();
@@ -81,11 +81,11 @@ fn setup(mut commands: Commands) {
 fn start_thread(receiver: crossbeam_channel::Receiver<()>) {
     std::thread::spawn(move || {
         while receiver.recv().is_ok() {
-            let start = bevy::platform::time::Instant::now();
+            let start = hearth::platform::time::Instant::now();
 
             // You can also make any part outside of a system hot patchable by wrapping it
             // In this part, only the duration is hot patchable:
-            let duration = bevy::app::hotpatch::call(|| Duration::from_secs(2));
+            let duration = hearth::app::hotpatch::call(|| Duration::from_secs(2));
 
             std::thread::sleep(duration);
             info!("done after {:?}", start.elapsed());

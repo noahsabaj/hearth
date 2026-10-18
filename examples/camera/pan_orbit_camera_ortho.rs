@@ -5,8 +5,8 @@
 
 mod pan_orbit_camera_custom_input_plugin;
 
-use bevy::camera_controller::pan_orbit_camera::prelude::*;
-use bevy::prelude::*;
+use hearth::camera_controller::pan_orbit_camera::prelude::*;
+use hearth::prelude::*;
 
 use crate::pan_orbit_camera_custom_input_plugin::CustomInputPlugin;
 
@@ -59,7 +59,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         // correct to what the camera would see, it is not visually helpful nor appealing. It is
         // common for CAD software to render a skybox with a field of view that is decoupled from
         // the camera field of view.
-        bevy::camera_controller::pan_orbit_camera::extensions::independent_skybox::IndependentSkybox::new(
+        hearth::camera_controller::pan_orbit_camera::extensions::independent_skybox::IndependentSkybox::new(
             diffuse_map,
             2500.0,
             default(),
@@ -71,7 +71,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn spawn_helmets(n: usize, asset_server: &AssetServer, commands: &mut Commands) {
     let half_width = ((ops::powf(n as f32, 1.0 / 3.0) - 1.0) / 2.0) as i32;
-    let scene = asset_server.load("https://raw.githubusercontent.com/bevyengine/bevy_asset_files/refs/heads/main/PlaneEngine/scene.gltf#Scene0");
+    let scene = asset_server.load("https://raw.githubusercontent.com/noahsabaj/hearth_asset_files/refs/heads/main/PlaneEngine/scene.gltf#Scene0");
     let width = -half_width..=half_width;
     for x in width.clone() {
         for y in width.clone() {

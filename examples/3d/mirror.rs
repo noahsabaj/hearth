@@ -3,8 +3,8 @@
 use std::f32::consts::FRAC_PI_2;
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
-use bevy::camera::RenderTarget;
-use bevy::{
+use hearth::camera::RenderTarget;
+use hearth::{
     color::palettes::css::GREEN,
     feathers::{
         controls::FeathersRadio, dark_theme::create_dark_theme, theme::UiTheme, FeathersPlugins,
@@ -46,7 +46,7 @@ struct Mirror;
 /// We use [`ExtendedMaterial`], as that's the easiest way to implement custom
 /// shaders that modify the built-in [`StandardMaterial`]. We don't require any
 /// extra data to be passed to the shader beyond the [`StandardMaterial`] PBR
-/// fields, but currently Bevy requires at least one field to be present in the
+/// fields, but currently Hearth requires at least one field to be present in the
 /// extended material, so we simply have an unused field.
 #[derive(Clone, AsBindGroup, Asset, Reflect)]
 struct ScreenSpaceTextureExtension {
@@ -114,7 +114,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Mirror Example".into(),
+                title: "Hearth Mirror Example".into(),
                 ..default()
             }),
             ..default()

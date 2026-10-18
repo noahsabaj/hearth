@@ -3,7 +3,7 @@ title: "Solari `Mesh::enable_raytracing` is now `Mesh::raytracing`"
 pull_requests: [25951]
 ---
 
-`Mesh::enable_raytracing: bool` has been replaced by `Mesh::raytracing: MeshRaytracingFlags`, which declares which BLAS (if any) `bevy_solari` builds for the mesh.
+`Mesh::enable_raytracing: bool` has been replaced by `Mesh::raytracing: MeshRaytracingFlags`, which declares which BLAS (if any) `hearth_solari` builds for the mesh.
 
 `MeshRaytracingFlags::OPAQUE` is the new default, replacing the old default of `true`.
 

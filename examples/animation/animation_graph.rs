@@ -3,7 +3,7 @@
 //! The animation graph is shown on screen. You can change the weights of the
 //! playing animations by clicking and dragging left or right within the nodes.
 
-use bevy::{
+use hearth::{
     color::palettes::{basic::WHITE, css::DARK_GREEN},
     feathers::{
         controls::{FeathersNumberInput, NumberInputPrecision},
@@ -22,7 +22,7 @@ use crate::number_input_f32::number_input_f32;
 
 #[cfg(not(target_arch = "wasm32"))]
 use {
-    bevy::{asset::io::file::FileAssetReader, tasks::IoTaskPool},
+    hearth::{asset::io::file::FileAssetReader, tasks::IoTaskPool},
     ron::ser::PrettyConfig,
     std::{fs::File, path::Path},
 };
@@ -87,7 +87,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Animation Graph Example".into(),
+                    title: "Hearth Animation Graph Example".into(),
                     ..default()
                 }),
                 ..default()

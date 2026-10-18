@@ -1,8 +1,8 @@
 //! This example demonstrates how to use font weights, widths and styles.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
-use bevy::text::FontSource;
+use hearth::text::FontSource;
 
 fn main() {
     App::new()

@@ -6,7 +6,7 @@
 //! To recompute all text each frame run
 //! `cargo run --example many_glyphs --release recompute-text`
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     color::palettes::basic::RED,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
@@ -98,7 +98,7 @@ fn setup(mut commands: Commands, args: Res<Args>) {
             Text2d::new(text_string),
             text_font.clone(),
             TextColor(RED.into()),
-            bevy::sprite::Anchor::CENTER,
+            hearth::sprite::Anchor::CENTER,
             TextBounds::new_horizontal(1000.),
             text_block,
         ));

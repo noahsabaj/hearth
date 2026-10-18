@@ -1,6 +1,6 @@
 //! Simple example demonstrating overflow behavior.
 
-use bevy::{color::palettes::css::*, picking::hover::Hovered, prelude::*};
+use hearth::{color::palettes::css::*, picking::hover::Hovered, prelude::*};
 
 fn main() {
     App::new()

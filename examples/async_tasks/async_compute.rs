@@ -1,4 +1,4 @@
-//! This example demonstrates how to use Bevy's ECS and the [`AsyncComputeTaskPool`]
+//! This example demonstrates how to use Hearth's ECS and the [`AsyncComputeTaskPool`]
 //! to offload computationally intensive tasks to a background thread pool, process them
 //! asynchronously, and apply the results across systems and ticks.
 //!
@@ -11,12 +11,12 @@
 //! The channel-based approach, on the other hand, detaches tasks and communicates results
 //! through a channel, avoiding the need to check task statuses manually.
 
-use bevy::{
+use futures_timer::Delay;
+use hearth::{
     ecs::{system::SystemState, world::CommandQueue},
     prelude::*,
     tasks::{futures::check_ready, AsyncComputeTaskPool, Task},
 };
-use futures_timer::Delay;
 use rand::RngExt;
 use std::time::Duration;
 

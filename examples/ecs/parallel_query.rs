@@ -1,7 +1,7 @@
 //! Illustrates parallel queries with `ParallelIterator`.
 
-use bevy::{ecs::batching::BatchingStrategy, prelude::*};
 use chacha20::ChaCha8Rng;
+use hearth::{ecs::batching::BatchingStrategy, prelude::*};
 use rand::{RngExt, SeedableRng};
 
 #[derive(Component, Deref)]

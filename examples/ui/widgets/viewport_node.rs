@@ -1,7 +1,7 @@
 //! A simple scene to demonstrate spawning a viewport widget. The example will demonstrate how to
 //! pick entities visible in the widget's view.
 
-use bevy::{
+use hearth::{
     camera::RenderTarget, picking::pointer::PointerInteraction, prelude::*,
     render::render_resource::TextureFormat, ui::widget::ViewportNode,
 };
@@ -54,7 +54,7 @@ fn test(
             Shape,
         ))
         // We can observe pointer events on our objects as normal, the
-        // `bevy::ui::widget::viewport_picking` system will take care of ensuring our viewport
+        // `hearth::ui::widget::viewport_picking` system will take care of ensuring our viewport
         // clicks pass through
         .observe(on_drag_cuboid);
 

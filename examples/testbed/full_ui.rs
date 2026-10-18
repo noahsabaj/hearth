@@ -1,9 +1,9 @@
-//! This example illustrates the various features of Bevy UI.
+//! This example illustrates the various features of Hearth UI.
 
 use std::f32::consts::PI;
 
 use accesskit::{Node as Accessible, Role};
-use bevy::{
+use hearth::{
     a11y::AccessibilityNode,
     color::palettes::{
         basic::LIME,
@@ -22,7 +22,7 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(Update, update_scroll_position);
 
-    #[cfg(feature = "bevy_ui_debug")]
+    #[cfg(feature = "hearth_ui_debug")]
     app.add_systems(Update, toggle_debug_overlay);
 
     app.run();
@@ -81,7 +81,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 Label,
                             ));
 
-                            #[cfg(feature = "bevy_ui_debug")]
+                            #[cfg(feature = "hearth_ui_debug")]
                             {
                                 // Debug overlay text
                                 parent.spawn((
@@ -122,9 +122,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                     Label,
                                 ));
                             }
-                            #[cfg(not(feature = "bevy_ui_debug"))]
+                            #[cfg(not(feature = "hearth_ui_debug"))]
                             parent.spawn((
-                                Text::new("Try enabling feature \"bevy_ui_debug\"."),
+                                Text::new("Try enabling feature \"hearth_ui_debug\"."),
                                 TextFont {
                                     font: asset_server.load("fonts/FiraSans-Bold.ttf").into(),
                                     ..default()
@@ -228,7 +228,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ))
                         .with_children(|parent| {
                             parent.spawn((
-                                ImageNode::new(asset_server.load("branding/bevy_logo_light.png")),
+                                ImageNode::new(asset_server.load("branding/hearth_logo_light.png")),
                                 // Uses the transform to rotate the logo image by 45 degrees
                                 Node {
                                     border_radius: BorderRadius::all(px(10)),
@@ -333,7 +333,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                             ));
                         });
                 });
-            // bevy logo (flex center)
+            // hearth logo (flex center)
             parent
                 .spawn(Node {
                     width: percent(100),
@@ -343,10 +343,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ..default()
                 })
                 .with_children(|parent| {
-                    // bevy logo (image)
+                    // hearth logo (image)
                     parent
                         .spawn((
-                            ImageNode::new(asset_server.load("branding/bevy_logo_dark_big.png"))
+                            ImageNode::new(asset_server.load("branding/hearth_logo_dark_big.png"))
                                 .with_mode(NodeImageMode::Stretch),
                             Node {
                                 width: px(500),
@@ -364,12 +364,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                                     display: Display::None,
                                     ..default()
                                 },
-                                Text::new("Bevy logo"),
+                                Text::new("Hearth logo"),
                             ));
                         });
                 });
 
-            // four bevy icons demonstrating image flipping
+            // four hearth icons demonstrating image flipping
             parent
                 .spawn(Node {
                     width: percent(100),
@@ -404,7 +404,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         });
 }
 
-#[cfg(feature = "bevy_ui_debug")]
+#[cfg(feature = "hearth_ui_debug")]
 // The system that will enable/disable the debug outlines around the nodes
 fn toggle_debug_overlay(
     input: Res<ButtonInput<KeyCode>>,

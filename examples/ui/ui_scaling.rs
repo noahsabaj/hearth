@@ -1,6 +1,6 @@
-//! This example illustrates the [`UiScale`] resource from `bevy_ui`.
+//! This example illustrates the [`UiScale`] resource from `hearth_ui`.
 
-use bevy::{color::palettes::css::*, prelude::*};
+use hearth::{color::palettes::css::*, prelude::*};
 
 use core::time::Duration;
 

@@ -1,0 +1,93 @@
+[package]
+name = "hearth_diagnostic"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides diagnostic functionality for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+default = ["std", "hearth_ecs/default"]
+
+# Functionality
+
+## Adds serialization support through `serde`.
+serialize = [
+  "dep:serde",
+  "hearth_ecs/serialize",
+  "hearth_time/serialize",
+  "hearth_platform/serialize",
+]
+
+## Adds integration with `sysinfo`.
+sysinfo_plugin = ["sysinfo"]
+
+# Platform Compatibility
+
+## Allows access to the `std` crate. Enabling this feature will prevent compilation
+## on `no_std` targets, but provides access to certain additional features on
+## supported platforms.
+std = [
+  "serde?/std",
+  "hearth_ecs/std",
+  "hearth_app/std",
+  "hearth_platform/std",
+  "hearth_time/std",
+]
+
+## `critical-section` provides the building blocks for synchronization primitives
+## on all platforms, including `no_std`.
+critical-section = [
+  "hearth_ecs/critical-section",
+  "hearth_app/critical-section",
+  "hearth_platform/critical-section",
+  "hearth_time/critical-section",
+]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev", default-features = false }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev", default-features = false }
+hearth_time = { path = "../hearth_time", version = "0.20.0-dev", default-features = false }
+hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev", default-features = false }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "alloc",
+] }
+
+# other
+atomic-waker = { version = "1", default-features = false }
+const-fnv1a-hash = "1.1.0"
+serde = { version = "1.0", default-features = false, features = [
+  "alloc",
+], optional = true }
+log = { version = "0.4", default-features = false }
+
+# macOS
+[target.'cfg(all(target_os="macos"))'.dependencies]
+# Some features of sysinfo are not supported by apple. This will disable those features on apple devices
+sysinfo = { version = "0.39.5", optional = true, default-features = false, features = [
+  "apple-app-store",
+  "system",
+] }
+
+# Only include when on linux/windows/android/freebsd/netbsd
+[target.'cfg(any(target_os = "linux", target_os = "windows", target_os = "android", target_os = "freebsd", target_os = "netbsd"))'.dependencies]
+sysinfo = { version = "0.39.5", optional = true, default-features = false, features = [
+  "system",
+] }
+
+[dev-dependencies]
+serde_test = "1.0"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

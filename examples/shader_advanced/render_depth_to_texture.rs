@@ -7,7 +7,7 @@
 //! To create a depth-only camera, we create a [`Camera3d`] and set its
 //! [`RenderTarget`] to [`RenderTarget::None`] to disable creation of a color
 //! buffer. Then we add a system to the Core3d schedule that copies the
-//! [`bevy::render::view::ViewDepthStencilTexture`] that Bevy creates for that camera
+//! [`hearth::render::view::ViewDepthStencilTexture`] that Hearth creates for that camera
 //! to a texture. This texture can then be attached to a material and sampled in
 //! the shader.
 //!
@@ -17,7 +17,7 @@
 
 use std::f32::consts::{FRAC_PI_2, PI};
 
-use bevy::{
+use hearth::{
     asset::RenderAssetUsages,
     camera::RenderTarget,
     color::palettes::css::LIME,
@@ -60,7 +60,7 @@ struct ShowDepthTextureMaterial {
 ///
 /// We need to make a copy for two reasons:
 ///
-/// 1. The Bevy renderer automatically creates and maintains depth buffers on
+/// 1. The Hearth renderer automatically creates and maintains depth buffers on
 ///    its own. There's no mechanism to fetch the depth buffer for a camera outside
 ///    the render app. Thus it can't easily be attached to a material.
 ///
@@ -252,7 +252,7 @@ fn spawn_depth_only_camera(commands: &mut Commands) {
         // We specify no color render target, for maximum efficiency.
         RenderTarget::None {
             // When specifying no render target, we must manually specify
-            // the viewport size. Otherwise, Bevy won't know how big to make
+            // the viewport size. Otherwise, Hearth won't know how big to make
             // the depth buffer.
             size: UVec2::splat(DEPTH_TEXTURE_SIZE),
         },

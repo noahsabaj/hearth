@@ -1,6 +1,6 @@
 //! Illustrates how `Timer`s can be used both as resources and components.
 
-use bevy::{log::info, prelude::*};
+use hearth::{log::info, prelude::*};
 
 fn main() {
     App::new()
@@ -44,7 +44,7 @@ fn setup(mut commands: Commands) {
 }
 
 /// This system ticks the `Timer` on the entity with the `PrintOnCompletionTimer`
-/// component using bevy's `Time` resource to get the delta between each update.
+/// component using hearth's `Time` resource to get the delta between each update.
 fn print_when_completed(time: Res<Time>, mut query: Query<&mut PrintOnCompletionTimer>) {
     for mut timer in &mut query {
         if timer.tick(time.delta()).just_finished() {

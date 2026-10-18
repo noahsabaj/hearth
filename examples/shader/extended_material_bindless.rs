@@ -2,7 +2,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 
-use bevy::{
+use hearth::{
     color::palettes::{css::RED, tailwind::GRAY_600},
     mesh::{SphereKind, SphereMeshBuilder},
     pbr::{ExtendedMaterial, MaterialExtension, MeshMaterial3d},

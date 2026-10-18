@@ -31,8 +31,8 @@
 //! The shaders are split out into separate files intentionally, to make it easier to differentiate when specific logic is being used.
 //!
 #[cfg(feature = "free_camera")]
-use bevy::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
-use bevy::{
+use hearth::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
+use hearth::{
     camera::{MainPassResolutionOverride, Viewport},
     core_pipeline::{
         core_3d::{main_opaque_pass_3d, CORE_3D_DEPTH_FORMAT},

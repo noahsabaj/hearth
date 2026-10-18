@@ -7,7 +7,7 @@
 //! size, and mode (i.e. fullscreen) it had at closing.
 use std::time::Duration;
 
-use bevy::{
+use hearth::{
     prelude::*,
     settings::{
         ReflectSettingsGroup, SaveSettingsDeferred, SaveSettingsSync, SettingsGroup, SettingsPlugin,
@@ -27,7 +27,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(SettingsPlugin::new(
-            "org.bevy.examples.persisting_window_settings",
+            "org.hearth.examples.persisting_window_settings",
         ))
         .add_systems(Startup, setup)
         .add_systems(Update, (on_window_close, update_window_settings))

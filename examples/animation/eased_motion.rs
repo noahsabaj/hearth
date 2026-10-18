@@ -2,7 +2,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 
-use bevy::{
+use hearth::{
     animation::{animated_field, AnimatedBy, AnimationTargetId},
     color::palettes::css::{ORANGE, SILVER},
     math::vec3,

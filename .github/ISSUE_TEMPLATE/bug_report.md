@@ -6,22 +6,22 @@ labels: C-Bug, S-Needs-Triage
 assignees: ''
 ---
 
-## Bevy version and features
+## Hearth version and features
 
 - The release number or commit hash of the version you're using.
-- If you're not using default features, the combination of bevy's cargo features you are using.
+- If you're not using default features, the combination of hearth's cargo features you are using.
 
 ## \[Optional\] Relevant system information
 
-If you cannot get Bevy to build or run on your machine, please include:
+If you cannot get Hearth to build or run on your machine, please include:
 
 - the Rust version you're using (you can get this by running `cargo --version`)
-  - Bevy relies on the "latest stable release" of Rust
+  - Hearth relies on the "latest stable release" of Rust
   - nightly should generally work, but there are sometimes regressions: please let us know!
 - the operating system or browser used, including its version
   - e.g. Windows 10, Ubuntu 18.04, iOS 14
 
-If your bug is rendering-related, copy the adapter info that appears when you run Bevy.
+If your bug is rendering-related, copy the adapter info that appears when you run Hearth.
 
 ```ignore
 `AdapterInfo { name: "NVIDIA GeForce RTX 2070", vendor: 4318, device: 7938, device_type: DiscreteGpu, backend: Vulkan }`

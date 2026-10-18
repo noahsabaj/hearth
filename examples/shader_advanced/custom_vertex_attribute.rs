@@ -1,6 +1,6 @@
 //! A shader that reads a mesh's custom vertex attribute.
 
-use bevy::{
+use hearth::{
     mesh::{MeshVertexAttribute, MeshVertexBufferLayoutRef},
     pbr::{MaterialPipeline, MaterialPipelineKey},
     prelude::*,

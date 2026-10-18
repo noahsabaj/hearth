@@ -1,6 +1,6 @@
 //! This example illustrates how to play a sound effect on an event.
 //! In this case, we will play a sound effect when the space key is pressed.
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 #[derive(Resource, Deref)]
 struct SoundEffect {

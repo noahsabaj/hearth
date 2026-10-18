@@ -2,10 +2,10 @@
 //!
 //! See [`OrderIndependentTransparencyPlugin`] for the trade-offs of using OIT.
 //!
-//! [`OrderIndependentTransparencyPlugin`]: bevy::core_pipeline::oit::OrderIndependentTransparencyPlugin
+//! [`OrderIndependentTransparencyPlugin`]: hearth::core_pipeline::oit::OrderIndependentTransparencyPlugin
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
-use bevy::{
+use hearth::{
     color::palettes::css::{BLUE, GREEN, RED, YELLOW},
     core_pipeline::{oit::OrderIndependentTransparencySettings, prepass::DepthPrepass},
     ecs::system::SystemParam,
@@ -647,11 +647,11 @@ impl Material for NoisyOpacityMaterial {
 
     /// Optional: specialize the pipeline to deactivate back face culling
     fn specialize(
-        _pipeline: &bevy::pbr::MaterialPipeline,
-        descriptor: &mut bevy_render::render_resource::RenderPipelineDescriptor,
-        _layout: &bevy::mesh::MeshVertexBufferLayoutRef,
-        _key: bevy::pbr::MaterialPipelineKey<Self>,
-    ) -> Result<(), bevy_render::render_resource::SpecializedMeshPipelineError> {
+        _pipeline: &hearth::pbr::MaterialPipeline,
+        descriptor: &mut hearth_render::render_resource::RenderPipelineDescriptor,
+        _layout: &hearth::mesh::MeshVertexBufferLayoutRef,
+        _key: hearth::pbr::MaterialPipelineKey<Self>,
+    ) -> Result<(), hearth_render::render_resource::SpecializedMeshPipelineError> {
         descriptor.primitive.cull_mode = None;
         Ok(())
     }

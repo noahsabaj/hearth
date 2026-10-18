@@ -5,7 +5,7 @@
 //! to run in the `Core2d` schedule as described in the `FullscreenMaterial`
 //! comment in this file.
 
-use bevy::{
+use hearth::{
     core_pipeline::fullscreen_material::{FullscreenMaterial, FullscreenMaterialPlugin},
     prelude::*,
     render::{extract_component::ExtractComponent, render_resource::ShaderType, RenderApp},
@@ -142,14 +142,14 @@ impl FullscreenMaterial for FullscreenEffect {
     // To make this work in 2d, you would need to schedule to
     // run in `Core2d` and in a `Core2dSystems` set.
     //
-    // fn schedule() -> impl bevy::ecs::schedule::ScheduleLabel + Clone {
-    //     bevy::core_pipeline::Core2d
+    // fn schedule() -> impl hearth::ecs::schedule::ScheduleLabel + Clone {
+    //     hearth::core_pipeline::Core2d
     // }
     // fn schedule_configs(
-    //     system: bevy::ecs::schedule::ScheduleConfigs<bevy::ecs::system::BoxedSystem>,
-    // ) -> bevy::ecs::schedule::ScheduleConfigs<bevy::ecs::system::BoxedSystem> {
+    //     system: hearth::ecs::schedule::ScheduleConfigs<hearth::ecs::system::BoxedSystem>,
+    // ) -> hearth::ecs::schedule::ScheduleConfigs<hearth::ecs::system::BoxedSystem> {
     //     system
-    //         .in_set(bevy::core_pipeline::Core2dSystems::PostProcess)
-    //         .before(bevy::core_pipeline::tonemapping::tonemapping)
+    //         .in_set(hearth::core_pipeline::Core2dSystems::PostProcess)
+    //         .before(hearth::core_pipeline::tonemapping::tonemapping)
     // }
 }

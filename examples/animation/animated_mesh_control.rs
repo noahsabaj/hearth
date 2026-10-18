@@ -2,7 +2,7 @@
 
 use std::{f32::consts::PI, time::Duration};
 
-use bevy::{
+use hearth::{
     animation::RepeatAnimation, light::CascadeShadowConfigBuilder, prelude::*,
     world_serialization::WorldInstanceReady,
 };

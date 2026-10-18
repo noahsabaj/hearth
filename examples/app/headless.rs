@@ -1,25 +1,25 @@
 //! This example shows how to configure the `ScheduleRunnerPlugin` to run your
 //! application without windowing. You can completely remove rendering / windowing
-//! Plugin code from bevy by making your import look like this in your Cargo.toml.
+//! Plugin code from hearth by making your import look like this in your Cargo.toml.
 //!
 //! ```toml
 //! [dependencies]
-//! bevy = { version = "*", default-features = false }
-//! # replace "*" with the most recent version of bevy
+//! hearth = { version = "*", default-features = false }
+//! # replace "*" with the most recent version of hearth
 //! ```
 //!
 //! And then enabling the features you need.
-//! See the full list: <https://docs.rs/bevy/latest/bevy/#cargo-features>
-use bevy::{app::ScheduleRunnerPlugin, log::LogPlugin, prelude::*};
+//! See the full list in `docs/cargo_features.md`.
 use core::time::Duration;
+use hearth::{app::ScheduleRunnerPlugin, log::LogPlugin, prelude::*};
 
 fn main() {
-    if cfg!(feature = "bevy_window") {
-        println!("This example is running with the bevy_window feature enabled and will not run headless.");
+    if cfg!(feature = "hearth_window") {
+        println!("This example is running with the hearth_window feature enabled and will not run headless.");
         println!("Disable the default features and rerun the example to run headless.");
         println!("To do so, run:");
         println!();
-        println!("    cargo run --example headless --no-default-features --features bevy_log");
+        println!("    cargo run --example headless --no-default-features --features hearth_log");
         return;
     }
 

@@ -1,0 +1,17 @@
+[package]
+name = "hearth_bsn"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Enables parsing the BSN file format"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[dependencies]
+nom = "8"
+memchr = "2"
+thiserror = { version = "2", default-features = false }
+
+[lints]
+workspace = true

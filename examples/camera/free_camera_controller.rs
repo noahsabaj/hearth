@@ -47,7 +47,7 @@
 
 use std::f32::consts::{FRAC_PI_4, PI};
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{
         FreeCamera, FreeCameraPlugin, FreeCameraState, VerticalMovementAxis,
     },

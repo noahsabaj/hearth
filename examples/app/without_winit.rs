@@ -1,6 +1,6 @@
 //! Create an application without winit (runs single time, no event loop).
 
-use bevy::{prelude::*, winit::WinitPlugin};
+use hearth::{prelude::*, winit::WinitPlugin};
 
 fn main() {
     App::new()

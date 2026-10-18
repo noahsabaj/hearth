@@ -1,6 +1,6 @@
 //! This example illustrates how to create a custom diagnostic.
 
-use bevy::{
+use hearth::{
     diagnostic::{
         Diagnostic, DiagnosticPath, Diagnostics, LogDiagnosticsPlugin, RegisterDiagnostic,
     },

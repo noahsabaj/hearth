@@ -1,6 +1,6 @@
 //! A 3d Scene with a button and playing sound.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::*,
     input::{gestures::RotationGesture, touch::TouchPhase},
     log::{Level, LogPlugin},
@@ -13,8 +13,8 @@ use bevy::{
     winit::WinitSettings,
 };
 
-// the `bevy_main` proc_macro generates the required boilerplate for Android
-#[bevy_main]
+// the `hearth_main` proc_macro generates the required boilerplate for Android
+#[hearth_main]
 /// The entry point for the application. Is `pub` so that it can be used from
 /// `main.rs`.
 pub fn main() {
@@ -22,9 +22,9 @@ pub fn main() {
     app.add_plugins(
         DefaultPlugins
             .set(LogPlugin {
-                // This will show some log events from Bevy to the native logger.
+                // This will show some log events from Hearth to the native logger.
                 level: Level::DEBUG,
-                filter: "wgpu=error,naga=info,bevy_render=info,bevy_ecs=trace".to_string(),
+                filter: "wgpu=error,naga=info,hearth_render=info,hearth_ecs=trace".to_string(),
                 ..Default::default()
             })
             .set(WindowPlugin {
@@ -101,10 +101,10 @@ fn setup_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    device: Res<bevy::render::renderer::RenderDevice>,
+    device: Res<hearth::render::renderer::RenderDevice>,
 ) {
-    bevy::log::info!("Configured wgpu adapter Limits: {:#?}", device.limits());
-    bevy::log::info!("Configured wgpu adapter Features: {:#?}", device.features());
+    hearth::log::info!("Configured wgpu adapter Limits: {:#?}", device.limits());
+    hearth::log::info!("Configured wgpu adapter Features: {:#?}", device.features());
 
     // plane
     commands.spawn((
@@ -128,7 +128,7 @@ fn setup_scene(
         PointLight {
             intensity: 1_000_000.0,
             // Shadows makes some Android devices segfault, this is under investigation
-            // https://github.com/bevyengine/bevy/issues/8214
+            // upstream issue #8214
             #[cfg(not(target_os = "android"))]
             shadow_maps_enabled: true,
             ..default()
@@ -140,7 +140,7 @@ fn setup_scene(
         Camera3d::default(),
         Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
         // MSAA makes some Android devices panic, this is under investigation
-        // https://github.com/bevyengine/bevy/issues/8229
+        // upstream issue #8229
         #[cfg(target_os = "android")]
         Msaa::Off,
     ));

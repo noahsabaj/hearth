@@ -1,17 +1,17 @@
-//! This example illustrates how to create a button using the `bevy_ui_widgets` widget set:
+//! This example illustrates how to create a button using the `hearth_ui_widgets` widget set:
 //! a headless `Button` that fires an `Activate` event when clicked.
 //!
-//! The `bevy_ui_widgets` widgets are behavior-only — the `Button` tracks its own pressed state
+//! The `hearth_ui_widgets` widgets are behavior-only — the `Button` tracks its own pressed state
 //! and detects clicks, but comes with no styling. We supply the look ourselves.
 //!
 //! ## What's next?
 //!
-//! - Keyboard & accessibility: add `bevy::input_focus::tab_navigation::TabNavigationPlugin`, wrap
+//! - Keyboard & accessibility: add `hearth::input_focus::tab_navigation::TabNavigationPlugin`, wrap
 //!   your UI in a `TabGroup`, and give the button a `TabIndex`. It can then be focused with Tab and
 //!   activated with Enter/Space, firing the same `Activate` event. (`Button` already reports itself
 //!   to accessibility tools via the `AccessibilityNode` it requires.)
 //!
-//! - Disabling a button: insert the `bevy::ui::InteractionDisabled` marker to stop it from
+//! - Disabling a button: insert the `hearth::ui::InteractionDisabled` marker to stop it from
 //!   activating, and branch on `Has<InteractionDisabled>` in `update_button_appearance` to grey it
 //!   out. See the `standard_widgets` and `standard_widgets_observers` examples for that pattern.
 //!
@@ -22,7 +22,7 @@
 //!   frame, you can observe component changes (e.g. `On<Insert, Pressed>`). The
 //!   `standard_widgets_observers` example demonstrates this approach.
 
-use bevy::{
+use hearth::{
     color::palettes::basic::*,
     picking::hover::Hovered,
     prelude::*,
@@ -32,7 +32,7 @@ use bevy::{
 
 fn main() {
     App::new()
-        // `DefaultPlugins` already includes the `bevy_ui_widgets` plugins, so the `Button`
+        // `DefaultPlugins` already includes the `hearth_ui_widgets` plugins, so the `Button`
         // widget's behavior (and its `Activate` event) works out of the box.
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)

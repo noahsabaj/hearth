@@ -5,7 +5,7 @@
 mod helpers;
 
 use argh::FromArgs;
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 use helpers::Next;
 
@@ -44,7 +44,7 @@ fn main() {
         Some(scene) => app.insert_state(scene),
     };
 
-    #[cfg(feature = "bevy_ci_testing")]
+    #[cfg(feature = "hearth_ci_testing")]
     app.add_systems(Update, helpers::switch_scene_in_ci::<Scene>);
 
     app.run();
@@ -114,7 +114,7 @@ fn switch_scene(
 }
 
 mod shapes {
-    use bevy::prelude::*;
+    use hearth::prelude::*;
 
     const X_EXTENT: f32 = 900.;
 
@@ -163,7 +163,7 @@ mod shapes {
 }
 
 mod bloom {
-    use bevy::{core_pipeline::tonemapping::Tonemapping, post_process::bloom::Bloom, prelude::*};
+    use hearth::{core_pipeline::tonemapping::Tonemapping, post_process::bloom::Bloom, prelude::*};
 
     pub fn setup(
         mut commands: Commands,
@@ -194,10 +194,10 @@ mod bloom {
 }
 
 mod text {
-    use bevy::color::palettes;
-    use bevy::prelude::*;
-    use bevy::sprite::Anchor;
-    use bevy::text::TextBounds;
+    use hearth::color::palettes;
+    use hearth::prelude::*;
+    use hearth::sprite::Anchor;
+    use hearth::text::TextBounds;
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Text)));
@@ -228,7 +228,7 @@ mod text {
             let fraction = i as f32 / (NUM_ITERATIONS - 1) as f32;
 
             commands.spawn((
-                Text2d::new("Bevy"),
+                Text2d::new("Hearth"),
                 sans_serif.clone(),
                 Transform::from_xyz(0.0, fraction * 200.0, i as f32)
                     .with_scale(1.0 + Vec2::splat(fraction).extend(1.))
@@ -308,9 +308,9 @@ mod text {
 }
 
 mod sprite {
-    use bevy::color::palettes::css::{BLUE, LIME, RED};
-    use bevy::prelude::*;
-    use bevy::sprite::Anchor;
+    use hearth::color::palettes::css::{BLUE, LIME, RED};
+    use hearth::prelude::*;
+    use hearth::sprite::Anchor;
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Sprite)));
@@ -322,7 +322,7 @@ mod sprite {
         ] {
             commands.spawn((
                 Sprite {
-                    image: asset_server.load("branding/bevy_logo_dark.png"),
+                    image: asset_server.load("branding/hearth_logo_dark.png"),
                     flip_x,
                     flip_y,
                     color,
@@ -336,8 +336,8 @@ mod sprite {
 }
 
 mod sprite_slicing {
-    use bevy::prelude::*;
-    use bevy::sprite::{BorderRect, SliceScaleMode, SpriteImageMode, TextureSlicer};
+    use hearth::prelude::*;
+    use hearth::sprite::{BorderRect, SliceScaleMode, SpriteImageMode, TextureSlicer};
 
     pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::SpriteSlicing)));
@@ -421,7 +421,7 @@ mod sprite_slicing {
 }
 
 mod gizmos {
-    use bevy::{color::palettes::css::*, prelude::*};
+    use hearth::{color::palettes::css::*, prelude::*};
 
     pub fn setup(mut commands: Commands) {
         commands.spawn((Camera2d, DespawnOnExit(super::Scene::Gizmos)));
@@ -470,7 +470,7 @@ mod gizmos {
 }
 
 mod texture_atlas_builder {
-    use bevy::{
+    use hearth::{
         asset::RenderAssetUsages,
         image::ImageSampler,
         prelude::*,
@@ -585,7 +585,7 @@ mod texture_atlas_builder {
 }
 
 mod color_consistency {
-    //! Visual regression test for <https://github.com/bevyengine/bevy/issues/23577>.
+    //! Visual regression test for upstream issue #23577.
     //!
     //! The clear color and shapes rendered using different pipelines (sprites,
     //! 2D meshes, UI background) should produce identical pixel values for the
@@ -594,7 +594,7 @@ mod color_consistency {
     //! If the color conversion paths are consistent, the entire window will appear
     //! as a uniform solid color with no visible boundaries between the strips.
 
-    use bevy::{core_pipeline::tonemapping::Tonemapping, prelude::*};
+    use hearth::{core_pipeline::tonemapping::Tonemapping, prelude::*};
 
     // We've chosen the sRGB value from issue #23577, in case it can be reproduced elsewhere.
     const TEST_COLOR: Color = Color::srgb(0.1, 0.1, 0.1);

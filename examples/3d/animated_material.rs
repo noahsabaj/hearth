@@ -1,6 +1,6 @@
 //! Shows how to animate material properties
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

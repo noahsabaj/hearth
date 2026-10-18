@@ -10,13 +10,13 @@ java {
 }
 
 android {
-    namespace = "org.bevyengine.example"
+    namespace = "org.hearthengine.example"
     compileSdk = 37
 
     // https://developer.android.com/reference/tools/gradle-api/9.1/com/android/build/api/dsl/DefaultConfig
     defaultConfig {
-        applicationId = "org.bevyengine.example"
-        // NOTE: `minSdk` is 26 because this is the minimum supported by `bevy_audio`
+        applicationId = "org.hearthengine.example"
+        // NOTE: `minSdk` is 26 because this is the minimum supported by `hearth_audio`
         minSdk = 26
         targetSdk = 37
         // NOTE: Increase by 1 on each release

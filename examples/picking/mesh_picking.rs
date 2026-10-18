@@ -1,13 +1,13 @@
 //! A simple 3D scene to demonstrate mesh picking.
 //!
-//! [`bevy::picking::backend`] provides an API for adding picking hit tests to any entity. To get
+//! [`hearth::picking::backend`] provides an API for adding picking hit tests to any entity. To get
 //! started with picking 3d meshes, the [`MeshPickingPlugin`] is provided as a simple starting
 //! point, especially useful for debugging. For your game, you may want to use a 3d picking backend
 //! provided by your physics engine, or a picking shader, depending on your specific use case.
 //!
-//! [`bevy::picking`] allows you to compose backends together to make any entity on screen pickable
-//! with pointers, regardless of how that entity is rendered. For example, `bevy_ui` and
-//! `bevy_sprite` provide their own picking backends that can be enabled at the same time as this
+//! [`hearth::picking`] allows you to compose backends together to make any entity on screen pickable
+//! with pointers, regardless of how that entity is rendered. For example, `hearth_ui` and
+//! `hearth_sprite` provide their own picking backends that can be enabled at the same time as this
 //! mesh picking backend. This makes it painless to deal with cases like the UI or sprites blocking
 //! meshes underneath them, or vice versa.
 //!
@@ -21,7 +21,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{color::palettes::tailwind::*, picking::pointer::PointerInteraction, prelude::*};
+use hearth::{color::palettes::tailwind::*, picking::pointer::PointerInteraction, prelude::*};
 
 fn main() {
     App::new()

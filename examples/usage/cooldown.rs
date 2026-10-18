@@ -3,7 +3,7 @@
 //! You might want a system like this for abilities, buffs or consumables.
 //! We create four food buttons to eat with 2, 1, 10, and 4 seconds cooldown.
 
-use bevy::{
+use hearth::{
     color::palettes::tailwind::{SLATE_400, SLATE_50},
     image::TextureAtlasTemplate,
     prelude::*,

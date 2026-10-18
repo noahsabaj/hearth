@@ -1,7 +1,7 @@
 //! This example illustrates how to load and play different soundtracks,
 //! transitioning between them as the game state changes.
 
-use bevy::{audio::Volume, prelude::*};
+use hearth::{audio::Volume, prelude::*};
 
 fn main() {
     App::new()
@@ -84,7 +84,7 @@ fn change_track(
         commands.spawn((
             AudioPlayer(track),
             PlaybackSettings {
-                mode: bevy::audio::PlaybackMode::Loop,
+                mode: hearth::audio::PlaybackMode::Loop,
                 volume: Volume::SILENT,
                 ..default()
             },

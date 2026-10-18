@@ -3,7 +3,7 @@
 use std::{f32::consts::PI, path::PathBuf};
 
 use argh::FromArgs;
-use bevy::{
+use hearth::{
     prelude::*,
     render::render_resource::{
         Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,

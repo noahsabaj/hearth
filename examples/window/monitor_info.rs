@@ -1,6 +1,6 @@
 //! Displays information about available monitors (displays).
 
-use bevy::{
+use hearth::{
     camera::RenderTarget,
     prelude::*,
     window::{ExitCondition, Monitor, OnMonitor, WindowMode, WindowRef},

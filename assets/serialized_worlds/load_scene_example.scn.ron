@@ -7,9 +7,9 @@
   entities: {
     "0v0": (
       components: {
-        "bevy_ecs::name::Name": "joe",
-        "bevy_transform::components::global_transform::GlobalTransform": ((1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)),
-        "bevy_transform::components::transform::Transform": (
+        "hearth_ecs::name::Name": "joe",
+        "hearth_transform::components::global_transform::GlobalTransform": ((1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)),
+        "hearth_transform::components::transform::Transform": (
           translation: (0.0, 0.0, 0.0),
           rotation: (0.0, 0.0, 0.0, 1.0),
           scale: (1.0, 1.0, 1.0),
@@ -21,7 +21,7 @@
         "world_serialization::ComponentB": (
           value: "hello",
         ),
-        "bevy_world_serialization::components::WorldAssetRoot": (Path("models/FlightHelmet/FlightHelmet.gltf#Scene0")),
+        "hearth_world_serialization::components::WorldAssetRoot": (Path("models/FlightHelmet/FlightHelmet.gltf#Scene0")),
       },
     ),
     "1v0": (

@@ -1,6 +1,6 @@
 //! Prints out all keyboard events.
 
-use bevy::{input::keyboard::KeyboardInput, prelude::*};
+use hearth::{input::keyboard::KeyboardInput, prelude::*};
 
 fn main() {
     App::new()

@@ -4,12 +4,12 @@
 //! objects that are out of focus.
 //!
 //! The test scene is inspired by [a blog post on depth of field in Unity].
-//! However, the technique used in Bevy has little to do with that blog post,
+//! However, the technique used in Hearth has little to do with that blog post,
 //! and all the assets are original.
 //!
 //! [a blog post on depth of field in Unity]: https://catlikecoding.com/unity/tutorials/advanced-rendering/depth-of-field/
 
-use bevy::{
+use hearth::{
     camera::PhysicalCameraParameters,
     core_pipeline::tonemapping::Tonemapping,
     gltf::GltfMeshName,
@@ -54,7 +54,7 @@ fn main() {
         .init_resource::<AppSettings>()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Depth of Field Example".to_string(),
+                title: "Hearth Depth of Field Example".to_string(),
                 ..default()
             }),
             ..default()

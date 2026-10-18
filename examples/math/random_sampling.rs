@@ -1,12 +1,12 @@
 //! This example shows how to sample random points from primitive shapes.
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     input::mouse::{AccumulatedMouseMotion, MouseButtonInput},
     math::prelude::*,
     mesh::SphereKind,
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::{distr::Distribution, SeedableRng};
 
 fn main() {

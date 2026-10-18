@@ -2,7 +2,7 @@
 //! Shows the effects of different blend modes.
 //! The `fade_transparency` system smoothly changes the transparency over time.
 
-use bevy::{math::ops, prelude::*};
+use hearth::{math::ops, prelude::*};
 
 fn main() {
     App::new()

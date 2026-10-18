@@ -1,0 +1,121 @@
+[package]
+name = "hearth_app"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides core App functionality for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+default = ["std", "hearth_reflect", "hearth_ecs/default", "error_panic_hook"]
+
+# Functionality
+
+## Adds runtime reflection support using `hearth_reflect`.
+hearth_reflect = ["dep:hearth_reflect", "hearth_ecs/hearth_reflect"]
+
+## Extends reflection support to functions.
+reflect_functions = [
+  "hearth_reflect",
+  "hearth_reflect/functions",
+  "hearth_ecs/reflect_functions",
+]
+reflect_auto_register = [
+  "hearth_reflect",
+  "hearth_reflect/auto_register",
+  "hearth_ecs/reflect_auto_register",
+]
+
+# Debugging Features
+
+## Enables `tracing` integration, allowing spans and other metrics to be reported
+## through that framework.
+trace = ["dep:tracing"]
+
+## Provides system stepping support, allowing them to be paused, stepped, and
+## other debug operations which can help with diagnosing certain behaviors.
+hearth_debug_stepping = []
+
+## Will set the HearthError panic hook, which gives cleaner filtered backtraces when
+## a HearthError is hit.
+error_panic_hook = []
+
+# Platform Compatibility
+
+## Allows access to the `std` crate. Enabling this feature will prevent compilation
+## on `no_std` targets, but provides access to certain additional features on
+## supported platforms.
+std = [
+  "hearth_reflect?/std",
+  "hearth_ecs/std",
+  "dep:ctrlc",
+  "downcast-rs/std",
+  "hearth_platform/std",
+]
+
+## `critical-section` provides the building blocks for synchronization primitives
+## on all platforms, including `no_std`.
+critical-section = [
+  "hearth_ecs/critical-section",
+  "hearth_platform/critical-section",
+  "hearth_reflect?/critical-section",
+]
+
+## Enables use of browser APIs.
+## Note this is currently only applicable on `wasm32` architectures.
+web = [
+  "hearth_platform/web",
+  "hearth_reflect?/web",
+  "dep:wasm-bindgen",
+  "dep:web-sys",
+  "dep:console_error_panic_hook",
+]
+
+hotpatching = [
+  "hearth_ecs/hotpatching",
+  "dep:dioxus-devtools",
+  "dep:crossbeam-channel",
+]
+
+[dependencies]
+# hearth
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev", default-features = false }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev", default-features = false, optional = true }
+hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev", default-features = false }
+hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev", default-features = false }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false }
+
+# other
+downcast-rs = { version = "2", default-features = false }
+thiserror = { version = "2", default-features = false }
+variadics_please = "2.0"
+tracing = { version = "0.1", default-features = false, optional = true }
+log = { version = "0.4", default-features = false }
+dioxus-devtools = { version = "0.7.0-alpha.1", optional = true }
+crossbeam-channel = { version = "0.5.0", optional = true }
+
+[target.'cfg(any(all(unix, not(target_os = "horizon")), windows))'.dependencies]
+ctrlc = { version = "3.4.4", optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { version = "0.2", optional = true }
+web-sys = { version = "0.3", features = ["Window"], optional = true }
+console_error_panic_hook = { version = "0.1.6", optional = true }
+
+[dev-dependencies]
+crossbeam-channel = "0.5.0"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true
+features = ["hearth_reflect/auto_register_static"]

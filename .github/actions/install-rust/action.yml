@@ -1,4 +1,4 @@
-# This action installs the rust version used by Bevy CI. By default it installs
+# This action installs the rust version used by Hearth CI. By default it installs
 # the currently pinned stable. Versions are specified either explicitly or by channel,
 # and this action will resolve the correct version depending on the channel.
 

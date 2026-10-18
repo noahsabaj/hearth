@@ -1,30 +1,30 @@
-//! Definitions of Bevy's error codes that might occur at runtime.
+//! Definitions of Hearth's error codes that might occur at runtime.
 //!
 //! These either manifest as a warning or a panic.
 
-#[doc = include_str!("../B0001.md")]
-pub struct B0001;
+#[doc = include_str!("../H0001.md")]
+pub struct H0001;
 
-#[doc = include_str!("../B0002.md")]
-pub struct B0002;
+#[doc = include_str!("../H0002.md")]
+pub struct H0002;
 
-#[doc = include_str!("../B0003.md")]
-pub struct B0003;
+#[doc = include_str!("../H0003.md")]
+pub struct H0003;
 
-#[doc = include_str!("../B0004.md")]
-pub struct B0004;
+#[doc = include_str!("../H0004.md")]
+pub struct H0004;
 
-#[doc = include_str!("../B0005.md")]
-pub struct B0005;
+#[doc = include_str!("../H0005.md")]
+pub struct H0005;
 
-#[doc = include_str!("../B0006.md")]
-pub struct B0006;
+#[doc = include_str!("../H0006.md")]
+pub struct H0006;
 
-#[doc = include_str!("../B0007.md")]
-pub struct B0007;
+#[doc = include_str!("../H0007.md")]
+pub struct H0007;
 
-#[doc = include_str!("../B0008.md")]
-pub struct B0008;
+#[doc = include_str!("../H0008.md")]
+pub struct H0008;
 
-#[doc = include_str!("../B0009.md")]
-pub struct B0009;
+#[doc = include_str!("../H0009.md")]
+pub struct H0009;

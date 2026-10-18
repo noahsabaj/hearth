@@ -1,7 +1,7 @@
 [package]
 name = "benches"
 edition = "2024"
-description = "Benchmarks that test Bevy's performance"
+description = "Benchmarks that test Hearth's performance"
 publish = false
 license = "MIT OR Apache-2.0"
 # Do not automatically discover benchmarks, we specify them manually instead.
@@ -13,32 +13,32 @@ autobenches = false
 criterion = { version = "0.8.0", features = ["html_reports"] }
 seq-macro = "0.3.6"
 
-# Bevy crates
-bevy_app = { path = "../crates/bevy_app", optional = true }
-bevy_curve = { path = "../crates/bevy_curve", optional = true }
-bevy_ecs = { path = "../crates/bevy_ecs", optional = true, features = [
+# Hearth crates
+hearth_app = { path = "../crates/hearth_app", optional = true }
+hearth_curve = { path = "../crates/hearth_curve", optional = true }
+hearth_ecs = { path = "../crates/hearth_ecs", optional = true, features = [
   "multi_threaded",
 ] }
-bevy_extract = { path = "../crates/bevy_extract", optional = true }
-bevy_math = { path = "../crates/bevy_math", optional = true }
-bevy_shape = { path = "../crates/bevy_shape", optional = true }
-bevy_picking = { path = "../crates/bevy_picking", optional = true, features = [
+hearth_extract = { path = "../crates/hearth_extract", optional = true }
+hearth_math = { path = "../crates/hearth_math", optional = true }
+hearth_shape = { path = "../crates/hearth_shape", optional = true }
+hearth_picking = { path = "../crates/hearth_picking", optional = true, features = [
   "mesh_picking",
 ] }
-bevy_reflect = { path = "../crates/bevy_reflect", optional = true, features = [
+hearth_reflect = { path = "../crates/hearth_reflect", optional = true, features = [
   "functions",
 ] }
-bevy_camera = { path = "../crates/bevy_camera", optional = true }
-bevy_mesh = { path = "../crates/bevy_mesh", optional = true }
-bevy_asset = { path = "../crates/bevy_asset", optional = true }
-bevy_render = { path = "../crates/bevy_render", optional = true }
-bevy_scene = { path = "../crates/bevy_scene", optional = true }
-bevy_tasks = { path = "../crates/bevy_tasks", optional = true }
-bevy_text = { path = "../crates/bevy_text", optional = true }
-bevy_transform = { path = "../crates/bevy_transform", optional = true }
-bevy_ui = { path = "../crates/bevy_ui", optional = true }
-bevy_ui_widgets = { path = "../crates/bevy_ui_widgets", optional = true }
-bevy_platform = { path = "../crates/bevy_platform", optional = true, default-features = false, features = [
+hearth_camera = { path = "../crates/hearth_camera", optional = true }
+hearth_mesh = { path = "../crates/hearth_mesh", optional = true }
+hearth_asset = { path = "../crates/hearth_asset", optional = true }
+hearth_render = { path = "../crates/hearth_render", optional = true }
+hearth_scene = { path = "../crates/hearth_scene", optional = true }
+hearth_tasks = { path = "../crates/hearth_tasks", optional = true }
+hearth_text = { path = "../crates/hearth_text", optional = true }
+hearth_transform = { path = "../crates/hearth_transform", optional = true }
+hearth_ui = { path = "../crates/hearth_ui", optional = true }
+hearth_ui_widgets = { path = "../crates/hearth_ui_widgets", optional = true }
+hearth_platform = { path = "../crates/hearth_platform", optional = true, default-features = false, features = [
   "std",
   "bytemuck",
 ] }
@@ -74,73 +74,73 @@ default = [
   "bench_ui",
 ]
 
-bench_camera = ["dep:bevy_camera", "dep:bevy_math", "dep:bevy_shape"]
+bench_camera = ["dep:hearth_camera", "dep:hearth_math", "dep:hearth_shape"]
 
 bench_ecs = [
-  "dep:bevy_ecs",
-  "dep:bevy_app",
-  "dep:bevy_math",
-  "dep:bevy_reflect",
-  "dep:bevy_tasks",
-  "bevy_math/bevy_reflect",
+  "dep:hearth_ecs",
+  "dep:hearth_app",
+  "dep:hearth_math",
+  "dep:hearth_reflect",
+  "dep:hearth_tasks",
+  "hearth_math/hearth_reflect",
 ]
 
-bench_math = ["dep:bevy_math", "dep:bevy_curve", "dep:bevy_shape"]
+bench_math = ["dep:hearth_math", "dep:hearth_curve", "dep:hearth_shape"]
 
-bench_picking = ["dep:bevy_picking", "dep:bevy_math", "dep:bevy_shape"]
+bench_picking = ["dep:hearth_picking", "dep:hearth_math", "dep:hearth_shape"]
 
 bench_platform = [
-  "dep:bevy_platform",
-  "dep:bevy_math",
+  "dep:hearth_platform",
+  "dep:hearth_math",
   "bytemuck/min_const_generics",
 ]
 
-bench_reflect = ["dep:bevy_reflect", "dep:bevy_platform"]
+bench_reflect = ["dep:hearth_reflect", "dep:hearth_platform"]
 
 bench_render = [
-  "dep:bevy_render",
-  "dep:bevy_app",
-  "dep:bevy_asset",
-  "dep:bevy_camera",
-  "dep:bevy_ecs",
-  "dep:bevy_extract",
-  "dep:bevy_mesh",
-  "dep:bevy_reflect",
+  "dep:hearth_render",
+  "dep:hearth_app",
+  "dep:hearth_asset",
+  "dep:hearth_camera",
+  "dep:hearth_ecs",
+  "dep:hearth_extract",
+  "dep:hearth_mesh",
+  "dep:hearth_reflect",
 ]
 
 bench_scene = [
-  "dep:bevy_scene",
-  "dep:bevy_app",
-  "dep:bevy_asset",
-  "dep:bevy_ecs",
-  "dep:bevy_ui",
-  "dep:bevy_ui_widgets",
-  "dep:bevy_reflect",
+  "dep:hearth_scene",
+  "dep:hearth_app",
+  "dep:hearth_asset",
+  "dep:hearth_ecs",
+  "dep:hearth_ui",
+  "dep:hearth_ui_widgets",
+  "dep:hearth_reflect",
 ]
 
-bench_tasks = ["dep:bevy_tasks"]
+bench_tasks = ["dep:hearth_tasks"]
 
 bench_text = [
-  "dep:bevy_text",
-  "dep:bevy_app",
-  "dep:bevy_asset",
-  "dep:bevy_ecs",
-  "dep:bevy_math",
+  "dep:hearth_text",
+  "dep:hearth_app",
+  "dep:hearth_asset",
+  "dep:hearth_ecs",
+  "dep:hearth_math",
 ]
 
 bench_transform = [
-  "dep:bevy_transform",
-  "dep:bevy_ecs",
-  "dep:bevy_math",
-  "dep:bevy_tasks",
+  "dep:hearth_transform",
+  "dep:hearth_ecs",
+  "dep:hearth_math",
+  "dep:hearth_tasks",
 ]
 
 bench_ui = [
-  "dep:bevy_ui",
-  "dep:bevy_app",
-  "dep:bevy_camera",
-  "dep:bevy_ecs",
-  "dep:bevy_text",
+  "dep:hearth_ui",
+  "dep:hearth_app",
+  "dep:hearth_camera",
+  "dep:hearth_ecs",
+  "dep:hearth_text",
 ]
 
 [lints.clippy]
@@ -161,7 +161,7 @@ ptr_as_ptr = "warn"
 ptr_cast_constness = "warn"
 ref_as_ptr = "warn"
 
-# see: https://github.com/bevyengine/bevy/pull/15375#issuecomment-2366966219
+# see: upstream PR #15375
 too_long_first_doc_paragraph = "allow"
 
 allow_attributes = "warn"
@@ -181,72 +181,72 @@ bench = false
 
 [[bench]]
 name = "ecs"
-path = "benches/bevy_ecs/main.rs"
+path = "benches/hearth_ecs/main.rs"
 harness = false
 required-features = ["bench_ecs"]
 
 [[bench]]
 name = "math"
-path = "benches/bevy_math/main.rs"
+path = "benches/hearth_math/main.rs"
 harness = false
 required-features = ["bench_math"]
 
 [[bench]]
 name = "picking"
-path = "benches/bevy_picking/main.rs"
+path = "benches/hearth_picking/main.rs"
 harness = false
 required-features = ["bench_picking"]
 
 [[bench]]
 name = "reflect"
-path = "benches/bevy_reflect/main.rs"
+path = "benches/hearth_reflect/main.rs"
 harness = false
 required-features = ["bench_reflect"]
 
 [[bench]]
 name = "render"
-path = "benches/bevy_render/main.rs"
+path = "benches/hearth_render/main.rs"
 harness = false
 required-features = ["bench_render"]
 
 [[bench]]
 name = "scene"
-path = "benches/bevy_scene/main.rs"
+path = "benches/hearth_scene/main.rs"
 harness = false
 required-features = ["bench_scene"]
 
 [[bench]]
 name = "tasks"
-path = "benches/bevy_tasks/main.rs"
+path = "benches/hearth_tasks/main.rs"
 harness = false
 required-features = ["bench_tasks"]
 
 [[bench]]
 name = "camera"
-path = "benches/bevy_camera/main.rs"
+path = "benches/hearth_camera/main.rs"
 harness = false
 required-features = ["bench_camera"]
 
 [[bench]]
 name = "transform"
-path = "benches/bevy_transform/main.rs"
+path = "benches/hearth_transform/main.rs"
 harness = false
 required-features = ["bench_transform"]
 
 [[bench]]
 name = "platform"
-path = "benches/bevy_platform/main.rs"
+path = "benches/hearth_platform/main.rs"
 harness = false
 required-features = ["bench_platform"]
 
 [[bench]]
 name = "ui"
-path = "benches/bevy_ui/main.rs"
+path = "benches/hearth_ui/main.rs"
 harness = false
 required-features = ["bench_ui"]
 
 [[bench]]
 name = "text"
-path = "benches/bevy_text/main.rs"
+path = "benches/hearth_text/main.rs"
 harness = false
 required-features = ["bench_text"]

@@ -1,6 +1,6 @@
 //! Simple example demonstrating the `OverflowClipMargin` style property.
 
-use bevy::{color::palettes::css::*, prelude::*};
+use hearth::{color::palettes::css::*, prelude::*};
 
 fn main() {
     App::new()

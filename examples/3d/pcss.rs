@@ -3,8 +3,8 @@
 use std::f32::consts::PI;
 
 #[cfg(feature = "free_camera")]
-use bevy::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
-use bevy::{
+use hearth::camera_controller::free_camera::{FreeCamera, FreeCameraPlugin};
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     camera::{
         primitives::{CubemapFrusta, Frustum},
@@ -112,7 +112,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Percentage Closer Soft Shadows Example".into(),
+                    title: "Hearth Percentage Closer Soft Shadows Example".into(),
                     ..default()
                 }),
                 ..default()

@@ -35,7 +35,7 @@ jobs:
       - name: get MSRV
         id: msrv
         run: |
-          msrv=`cargo metadata --no-deps --format-version 1 | jq --raw-output '.packages[] | select(.name=="bevy") | .rust_version'`
+          msrv=`cargo metadata --no-deps --format-version 1 | jq --raw-output '.packages[] | select(.name=="hearth") | .rust_version'`
           echo "MSRV=$msrv" >> $GITHUB_OUTPUT
 
   build-caches:
@@ -84,38 +84,38 @@ jobs:
             toolchain: stable
             target: x86_64-unknown-none
             command: |
-              cargo check -p bevy --no-default-features --features default_no_std --target x86_64-unknown-none
-              cargo check -p bevy --no-default-features --features default_no_std,web --target x86_64-unknown-none
+              cargo check -p hearth --no-default-features --features default_no_std --target x86_64-unknown-none
+              cargo check -p hearth --no-default-features --features default_no_std,web --target x86_64-unknown-none
               cd examples/no_std/library && cargo check --no-default-features --features libm,critical-section --target x86_64-unknown-none
           # ci.yml / check-compiles-no-std-portable-atomic
           - os: ubuntu-latest
             toolchain: stable
             target: thumbv6m-none-eabi
-            command: cargo check -p bevy --no-default-features --features default_no_std --target thumbv6m-none-eabi
+            command: cargo check -p hearth --no-default-features --features default_no_std --target thumbv6m-none-eabi
           # validation-jobs.yml / build-android
           - os: ubuntu-latest
             toolchain: stable
             target: aarch64-linux-android
             command: |
               cargo install cargo-ndk
-              cargo ndk -t arm64-v8a -P 26 -o android_example/app/src/main/jniLibs build --package bevy_mobile_example
+              cargo ndk -t arm64-v8a -P 26 -o android_example/app/src/main/jniLibs build --package hearth_mobile_example
           # validation-jobs.yml / build-and-install-on-iOS builds through Xcode, no shared build cache
           - os: macos-14
             toolchain: stable
             target: aarch64-apple-ios-sim
 
     steps:
-      # prepare the date - used to rebuild the cache daily to update the cache for rust nightly, even if no change on Bevy dependencies
+      # prepare the date - used to rebuild the cache daily to update the cache for rust nightly, even if no change on Hearth dependencies
       - name: Get Date
         id: get-date
         run: |
           echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Checkout Bevy main branch
+      - name: Checkout Hearth main branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: "bevyengine/bevy"
+          repository: "noahsabaj/hearth"
           ref: "main"
           persist-credentials: false
 
@@ -155,15 +155,15 @@ jobs:
           x264: true
           fontconfig: true
 
-      # Build Bevy for the dev profile, used by check, doc, ...
+      # Build Hearth for the dev profile, used by check, doc, ...
       - name: Build dev cache
         if: steps.cache.outputs.cache-hit != 'true' && matrix.target == ''
-        run: cargo build --profile dev --package bevy
+        run: cargo build --profile dev --package hearth
 
-      # Build Bevy for the test profile, used by test
+      # Build Hearth for the test profile, used by test
       - name: Build test cache
         if: steps.cache.outputs.cache-hit != 'true' && matrix.target == ''
-        run: cargo build --profile test --package bevy
+        run: cargo build --profile test --package hearth
 
       - name: Build cross-target cache
         if: steps.cache.outputs.cache-hit != 'true' && matrix.command != ''

@@ -1,5 +1,5 @@
 //! Renders text to multiple windows with different scale factors using both Text and Text2d.
-use bevy::{
+use hearth::{
     camera::{visibility::RenderLayers, RenderTarget},
     color::palettes::css::{LIGHT_CYAN, YELLOW},
     prelude::*,
@@ -62,7 +62,7 @@ fn setup_scene(mut commands: Commands) {
     let text_font = TextFont::from_font_size(30.);
 
     // UI nodes can only be rendered by one camera at a time and ignore `RenderLayers`.
-    // This root UI node has no `UiTargetCamera` so `bevy_ui` will try to find a
+    // This root UI node has no `UiTargetCamera` so `hearth_ui` will try to find a
     // camera with the `IsDefaultUiCamera` marker component. When that fails (neither
     // camera spawned here has an `IsDefaultUiCamera`), it queries for the
     // first camera targeting the primary window and uses that.

@@ -1,6 +1,6 @@
 //! Shows a tilemap chunk rendered with a single draw call, including different orientations of tiles (rotated, mirrored) and using different tileset indices, colors, alpha and visibility to show all tile features.
 
-use bevy::{
+use hearth::{
     image::{ImageArrayLayout, ImageLoaderSettings},
     prelude::*,
     sprite_render::{AlphaMode2d, TileData, TileOrientation, TilemapChunk, TilemapChunkTileData},

@@ -1,0 +1,21 @@
+[package]
+name = "hearth_derive_compile_fail"
+edition = "2024"
+description = "Compile fail tests for Hearth Engine's various macros"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+hearth_derive = { path = "../" }
+
+[dev-dependencies]
+compile_fail_utils = { path = "../../../tools/compile_fail_utils" }
+
+[[test]]
+name = "derive"
+harness = false
+
+[lints]
+workspace = true

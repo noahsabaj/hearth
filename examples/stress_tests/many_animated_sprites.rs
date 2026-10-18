@@ -5,7 +5,7 @@
 
 use std::time::Duration;
 
-use bevy::{
+use hearth::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
     window::{PresentMode, WindowResolution},

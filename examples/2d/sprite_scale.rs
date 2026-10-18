@@ -1,6 +1,6 @@
 //! Shows how to use sprite scaling to fill and fit textures into the sprite.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -126,7 +126,7 @@ fn setup_sprites(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextLayout::justify(Justify::Center),
                 TextFont::from_font_size(15.),
                 Transform::from_xyz(0., -0.5 * rect.size.y - 10., 0.),
-                bevy::sprite::Anchor::TOP_CENTER,
+                hearth::sprite::Anchor::TOP_CENTER,
             )],
         ));
     }
@@ -268,7 +268,7 @@ fn setup_texture_atlas(
                 TextLayout::justify(Justify::Center),
                 TextFont::from_font_size(15.),
                 Transform::from_xyz(0., -0.5 * sprite_sheet.size.y - 10., 0.),
-                bevy::sprite::Anchor::TOP_CENTER,
+                hearth::sprite::Anchor::TOP_CENTER,
             )],
         ));
     }

@@ -1,10 +1,8 @@
-//! Renders the [Bistro] scene, a large glTF scene used as a rendering stress test.
+//! Renders the Bistro scene, a large glTF scene used as a rendering stress test.
 //!
 //! Bistro has a high draw call count, many textures, and (unusually for a real-time scene) a large
 //! number of light sources, which makes it useful for exercising batching, material and light
 //! specialization, and mipmap generation.
-//!
-//! [Bistro]: https://github.com/bevyengine/bevy-assets/tree/main/scenes/bistro
 //!
 //! Press B for benchmark.
 //! Preferably after frame time is reading consistently, rust-analyzer has calmed down, and with locked gpu clocks.
@@ -17,8 +15,8 @@ use std::{
 };
 
 use argh::FromArgs;
-use bevy::pbr::ContactShadows;
-use bevy::{
+use hearth::pbr::ContactShadows;
+use hearth::{
     anti_alias::taa::TemporalAntiAliasing,
     camera::visibility::{NoCpuCulling, NoFrustumCulling},
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
@@ -36,7 +34,7 @@ use bevy::{
     },
     world_serialization::WorldInstanceReady,
 };
-use bevy::{
+use hearth::{
     camera::Hdr,
     diagnostic::FrameTimeDiagnosticsPlugin,
     light::CascadeShadowConfigBuilder,

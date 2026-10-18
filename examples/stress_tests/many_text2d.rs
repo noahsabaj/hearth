@@ -2,7 +2,7 @@
 
 use std::ops::RangeInclusive;
 
-use bevy::{
+use hearth::{
     camera::visibility::NoFrustumCulling,
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
@@ -222,7 +222,7 @@ fn random_text_font(rng: &mut ChaCha8Rng, args: &Args, font: Handle<Font>) -> Te
 
 fn random_text(rng: &mut ChaCha8Rng, args: &Args) -> String {
     if !args.many_glyphs {
-        return "Bevy".to_string();
+        return "Hearth".to_string();
     }
 
     CODE_POINT_RANGES

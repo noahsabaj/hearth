@@ -1,6 +1,6 @@
-//! A test to confirm that `bevy` allows disabling the prepass of the standard material.
+//! A test to confirm that `hearth` allows disabling the prepass of the standard material.
 //! This is run in CI to ensure that this doesn't regress again.
-use bevy::{pbr::PbrPlugin, prelude::*};
+use hearth::{pbr::PbrPlugin, prelude::*};
 
 fn main() {
     App::new()

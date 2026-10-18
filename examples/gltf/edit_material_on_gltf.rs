@@ -1,6 +1,6 @@
 //! Showcases how to change the material of a `Scene` spawned from a Gltf
 
-use bevy::{
+use hearth::{
     audio::AudioPlugin, color::palettes, gltf::GltfMaterialName, prelude::*,
     world_serialization::WorldInstanceReady,
 };

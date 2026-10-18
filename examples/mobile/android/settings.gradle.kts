@@ -21,5 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "bevy_mobile_example"
+rootProject.name = "hearth_mobile_example"
 include(":app")

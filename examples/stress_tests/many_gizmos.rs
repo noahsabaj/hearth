@@ -2,7 +2,7 @@
 
 use std::f32::consts::TAU;
 
-use bevy::{
+use hearth::{
     diagnostic::{Diagnostic, DiagnosticsStore, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
     window::{PresentMode, WindowResolution},

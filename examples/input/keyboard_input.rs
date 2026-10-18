@@ -1,6 +1,6 @@
 //! Demonstrates handling a key press/release.
 
-use bevy::{input::keyboard::Key, prelude::*};
+use hearth::{input::keyboard::Key, prelude::*};
 
 fn main() {
     App::new()

@@ -1,5 +1,5 @@
 //! Demonstrates how to set up automatic reflect types registration for platforms without `inventory` support
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 // The type that should be automatically registered.
 // All types subject to automatic registration must not be defined in the same crate as `load_type_registrations!``.
@@ -11,7 +11,7 @@ struct Struct {
 
 mod private {
     mod very_private {
-        use bevy::prelude::*;
+        use hearth::prelude::*;
 
         // Works with private types too!
         #[allow(

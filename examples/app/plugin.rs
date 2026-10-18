@@ -1,11 +1,11 @@
 //! Demonstrates the creation and registration of a custom plugin.
 //!
-//! Plugins are the foundation of Bevy. They are scoped sets of components, resources, and systems
+//! Plugins are the foundation of Hearth. They are scoped sets of components, resources, and systems
 //! that provide a specific piece of functionality (generally the smaller the scope, the better).
 //! This example illustrates how to create a simple plugin that prints out a message.
 
-use bevy::prelude::*;
 use core::time::Duration;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

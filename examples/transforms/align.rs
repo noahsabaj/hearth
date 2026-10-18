@@ -1,12 +1,12 @@
 //! This example shows how to align the orientations of objects in 3D space along two axes using the `Transform::align` API.
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     color::palettes::basic::{GRAY, RED, WHITE},
     input::mouse::{AccumulatedMouseMotion, MouseButtonInput},
     math::StableInterpolate,
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {

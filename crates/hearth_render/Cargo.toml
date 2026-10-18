@@ -1,0 +1,172 @@
+[package]
+name = "hearth_render"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides rendering functionality for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+multi_threaded = ["hearth_tasks/multi_threaded", "hearth_transform/multi_threaded"]
+
+morph = ["hearth_mesh/morph"]
+
+shader_format_spirv = ["wgpu/spirv"]
+
+# Enable SPIR-V shader passthrough
+spirv_shader_passthrough = ["wgpu/spirv"]
+
+# Statically linked DXC shader compiler for DirectX 12
+# TODO: When wgpu switches to DirectX 12 instead of Vulkan by default on windows, make this a default feature
+statically-linked-dxc = ["wgpu/static-dxc"]
+
+# Forces the wgpu instance to be initialized using the raw Vulkan HAL, enabling additional configuration
+raw_vulkan_init = ["wgpu/vulkan"]
+
+trace = ["profiling"]
+tracing-tracy = ["dep:tracy-client"]
+ci_limits = []
+webgl = ["wgpu/webgl"]
+webgpu = ["wgpu/webgpu"]
+vulkan-portability = ["wgpu/vulkan-portability"]
+gles = ["wgpu/gles"]
+detailed_trace = []
+# Pre-populate buffer labels with buffer types for debugging.
+type_label_buffers = []
+# Enables collecting extra information for debugging.
+debug = ["type_label_buffers", "hearth_utils/debug"]
+## Adds serialization support through `serde`.
+serialize = ["hearth_mesh/serialize"]
+
+reflect_auto_register = ["hearth_app/reflect_auto_register"]
+reflect_functions = ["hearth_app/reflect_functions"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev" }
+hearth_color = { path = "../hearth_color", version = "0.20.0-dev", features = [
+  "serialize",
+  "wgpu-types",
+] }
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_diagnostic = { path = "../hearth_diagnostic", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_encase_derive = { path = "../hearth_encase_derive", version = "0.20.0-dev" }
+hearth_extract = { path = "../hearth_extract", version = "0.20.0-dev" }
+hearth_extract_macros = { path = "../hearth_extract/macros", version = "0.20.0-dev" }
+hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
+hearth_material = { path = "../hearth_material", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+hearth_material_macros = { path = "../hearth_material/macros", version = "0.20.0-dev" }
+hearth_render_macros = { path = "../hearth_render/macros", version = "0.20.0-dev" }
+hearth_shape = { path = "../hearth_shape", version = "0.20.0-dev" }
+hearth_time = { path = "../hearth_time", version = "0.20.0-dev" }
+hearth_transform = { path = "../hearth_transform", version = "0.20.0-dev" }
+hearth_window = { path = "../hearth_window", version = "0.20.0-dev" }
+hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev" }
+hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev" }
+hearth_mesh = { path = "../hearth_mesh", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_shader = { path = "../hearth_shader", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "std",
+  "serialize",
+  "bytemuck",
+] }
+
+# rendering
+image = { version = "0.25.2", default-features = false }
+
+# misc
+# `fragile-send-sync-non-atomic-wasm` feature means we can't use Wasm threads for rendering
+# It is enabled for now to avoid having to do a significant overhaul of the renderer just for wasm.
+# When the 'atomics' feature is enabled `fragile-send-sync-non-atomic` does nothing
+# and Hearth instead wraps `wgpu` types to verify they are not used off their origin thread.
+wgpu = { version = "30", default-features = false, features = [
+  "wgsl",
+  "dx12",
+  "metal",
+  "vulkan",
+  "fragile-send-sync-non-atomic-wasm",
+] }
+wgpu-types = { version = "30", default-features = false }
+bytemuck = { version = "1.5", features = ["derive", "must_cast"] }
+downcast-rs = { version = "2", default-features = false, features = ["std"] }
+thiserror = { version = "2", default-features = false }
+derive_more = { version = "2", default-features = false, features = ["from"] }
+encase = "0.13"
+glam = { version = "0.33.9", default-features = false, features = [
+  "std",
+  "encase-013",
+] }
+# For wgpu profiling using tracing. Use `RUST_LOG=info` to also capture the wgpu spans.
+profiling = { version = "1", features = [
+  "profile-with-tracing",
+], optional = true }
+async-channel = "2.3.0"
+nonmax = "0.5"
+smallvec = { version = "1", default-features = false, features = ["const_new"] }
+offset-allocator = "0.2"
+variadics_please = "2.0"
+tracy-client = { version = "0.19.0", optional = true }
+indexmap = { version = "2" }
+bitflags = "2"
+itertools = "0.14"
+weak-table = "0.4"
+tracing = "0.1"
+static_assertions = "1"
+
+[dev-dependencies]
+proptest = "1"
+proptest-derive = "0.8"
+# noop backend used for tests via test_utils.rs
+wgpu = { version = "30", default-features = false, features = ["noop"] }
+
+[target.'cfg(all(target_arch = "wasm32", target_feature = "atomics"))'.dependencies]
+send_wrapper = { version = "0.6.0" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys = "0.3.83"
+web-sys = { version = "0.3.67", features = [
+  'Blob',
+  'Document',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Url',
+  'Window',
+] }
+wasm-bindgen = "0.2"
+# TODO: Assuming all wasm builds are for the browser. Require `no_std` support to break assumption.
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev", default-features = false, features = [
+  "web",
+] }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false, features = [
+  "web",
+] }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev", default-features = false, features = [
+  "web",
+] }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true
+
+[package.metadata.wgsl-analyzer]
+edition = "2026_pre"
+root = "src"
+
+[package.metadata.wgsl-analyzer.dependencies]
+hearth_core_pipeline = { path = "../hearth_core_pipeline" }

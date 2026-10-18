@@ -1,6 +1,6 @@
 //! This example illustrates how to create a context menu that changes the clear color
 
-use bevy::{
+use hearth::{
     color::palettes::basic,
     ecs::event::{PropagateEntityTrigger, SetEntityEventTarget},
     prelude::*,

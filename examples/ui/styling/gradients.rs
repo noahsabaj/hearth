@@ -1,6 +1,6 @@
 //! Simple example demonstrating linear gradients.
 
-use bevy::{
+use hearth::{
     color::palettes::css::{BLUE, GREEN, INDIGO, LIME, ORANGE, RED, VIOLET, YELLOW},
     prelude::*,
     ui::ColorStop,

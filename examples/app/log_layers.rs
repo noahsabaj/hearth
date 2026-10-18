@@ -1,6 +1,6 @@
-//! This example illustrates how to add custom log layers in bevy.
+//! This example illustrates how to add custom log layers in hearth.
 
-use bevy::{
+use hearth::{
     log::{
         tracing::{self, Subscriber},
         tracing_subscriber::{field::MakeExt, Layer},
@@ -15,7 +15,7 @@ impl<S: Subscriber> Layer<S> for CustomLayer {
     fn on_event(
         &self,
         event: &tracing::Event<'_>,
-        _ctx: bevy::log::tracing_subscriber::layer::Context<'_, S>,
+        _ctx: hearth::log::tracing_subscriber::layer::Context<'_, S>,
     ) {
         println!("Got event!");
         println!("  level={}", event.metadata().level());
@@ -29,7 +29,7 @@ impl<S: Subscriber> Layer<S> for CustomLayer {
 fn custom_layer(_app: &mut App) -> Option<BoxedLayer> {
     // You can provide multiple layers like this, since Vec<Layer> is also a layer:
     Some(Box::new(vec![
-        bevy::log::tracing_subscriber::fmt::layer()
+        hearth::log::tracing_subscriber::fmt::layer()
             .with_file(true)
             .boxed(),
         CustomLayer.boxed(),
@@ -44,7 +44,7 @@ fn custom_layer(_app: &mut App) -> Option<BoxedLayer> {
 // This formatting inserts newlines into logs that use the debug sigil (`?`) like `info!(foo=?bar)`
 fn fmt_layer(_app: &mut App) -> Option<BoxedFmtLayer> {
     Some(Box::new(
-        bevy::log::tracing_subscriber::fmt::Layer::default()
+        hearth::log::tracing_subscriber::fmt::Layer::default()
             .without_time()
             .map_fmt_fields(MakeExt::debug_alt)
             .with_writer(std::io::stderr),
@@ -53,7 +53,7 @@ fn fmt_layer(_app: &mut App) -> Option<BoxedFmtLayer> {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(bevy::log::LogPlugin {
+        .add_plugins(DefaultPlugins.set(hearth::log::LogPlugin {
             custom_layer,
             fmt_layer,
 
@@ -69,7 +69,7 @@ fn log_system() {
     error!("something failed");
     warn!("something bad happened that isn't a failure, but thats worth calling out");
     info!("helpful information that is worth printing by default");
-    let secret_message = "Bevy";
+    let secret_message = "Hearth";
     info!(?secret_message, "Here's a log that uses the debug sigil");
     debug!("helpful for debugging");
     trace!("very noisy");

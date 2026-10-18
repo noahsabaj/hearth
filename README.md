@@ -4,21 +4,18 @@
 
 ## What is Hearth?
 
-Hearth is a data-driven game engine built in Rust, free and open source. It is a fork of
-[Bevy](https://github.com/bevyengine/bevy) that keeps Bevy's crate names and module paths, so Bevy code, examples
-and plugins work in Hearth as they are, and Hearth keeps taking in Bevy's improvements.
+Hearth is a data-driven game engine built in Rust, free and open source.
 
-What Hearth adds:
-
-* **The `hearth` CLI** ([crates/bevy_cli](crates/bevy_cli)): create, build and run projects, and inspect and drive
-  a running app over the Bevy Remote Protocol. Every command speaks JSON, so scripts and coding agents can use it
+* **The `hearth` CLI** ([crates/hearth_cli](crates/hearth_cli)): create, build and run projects, and inspect and drive
+  a running app over the Hearth Remote Protocol. Every command speaks JSON, so scripts and coding agents can use it
   as well as people, and it ships an agent skill and an MCP server.
+* **The editor** ([crates/hearth_editor](crates/hearth_editor)): `hearth editor` opens a project's scenes in a 3D
+  viewport with a hierarchy, an inspector, undo, and a Play button that runs the game and shows it live.
 
 ## WARNING
 
-Hearth, like the Bevy it builds on, is still early. Important features are missing, documentation is sparse, and
-breaking changes arrive with each Bevy release that Hearth takes in. Use it only if you are willing to work in
-this environment.
+Hearth is still early. Important features are missing, documentation is sparse, and breaking changes are frequent.
+Use it only if you are willing to work in this environment.
 
 **MSRV:** the Minimum Supported Rust Version is generally close to the latest stable release of Rust.
 
@@ -34,10 +31,10 @@ this environment.
 ## Getting Started
 
 Install the CLI from a checkout of this repository (or anywhere, with
-`cargo install --git https://github.com/noahsabaj/hearth bevy_cli`), then make a project and run it:
+`cargo install --git https://github.com/noahsabaj/hearth hearth_cli`), then make a project and run it:
 
 ```sh
-cargo install --path crates/bevy_cli
+cargo install --path crates/hearth_cli
 hearth new my_game
 cd my_game
 hearth run --detach    # build and start the game in the background
@@ -53,7 +50,7 @@ cargo run --example breakout
 To draw a window with standard functionality enabled, use:
 
 ```rust
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -62,8 +59,8 @@ fn main() {
 }
 ```
 
-Bevy's [Quick Start Guide](https://bevy.org/learn/quick-start/introduction), [API docs](https://docs.rs/bevy) and
-[examples](examples/README.md) apply to Hearth too, since the APIs are the same.
+The [examples](examples/README.md) show most of what the engine can do, and `cargo doc --open` builds the API
+documentation.
 
 ## Cargo Features
 
@@ -71,8 +68,8 @@ Bevy's [Quick Start Guide](https://bevy.org/learn/quick-start/introduction), [AP
 
 ## Thanks
 
-Hearth is built on Bevy, the result of the hard work of many people. A huge thanks to all Bevy contributors, the
-many open source projects that came before, the [Rust gamedev ecosystem](https://arewegameyet.rs/), and the many
+Hearth is the result of the hard work of many people. A huge thanks to all its contributors, the many open source
+projects that came before, the [Rust gamedev ecosystem](https://arewegameyet.rs/), and the many
 libraries the engine builds on.
 
 ## License
@@ -85,7 +82,8 @@ Except where noted (below and/or in individual files), all code in this reposito
 
 at your option.
 
-Hearth is a modified version of Bevy, distributed under Bevy's licenses with its license files and notices kept as they are.
+Hearth's files have been modified from their original versions, and are distributed under these licenses with their
+license files and notices kept as they are.
 Some of the engine's code carries additional copyright notices and license terms due to their external origins.
 These are generally BSD-like, but exact details vary by crate:
 If the README of a crate contains a 'License' header (or similar), the additional copyright notices and license terms applicable to that crate will be listed.

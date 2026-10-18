@@ -1,6 +1,6 @@
 //! Showcases the [`RelativeCursorPosition`] component, used to check the position of the cursor relative to a UI node.
 
-use bevy::{camera::Viewport, prelude::*, ui::RelativeCursorPosition};
+use hearth::{camera::Viewport, prelude::*, ui::RelativeCursorPosition};
 
 fn main() {
     App::new()

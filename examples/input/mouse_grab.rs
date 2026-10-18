@@ -1,6 +1,6 @@
 //! Demonstrates how to grab and hide the mouse cursor.
 
-use bevy::{
+use hearth::{
     prelude::*,
     window::{CursorGrabMode, CursorOptions},
 };

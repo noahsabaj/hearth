@@ -1,0 +1,50 @@
+[package]
+name = "hearth_clipboard"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides clipboard support for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth", "clipboard"]
+
+[features]
+default = []
+system_clipboard = ["dep:arboard"]
+image = [
+  "system_clipboard",
+  "dep:hearth_asset",
+  "dep:hearth_image",
+  "dep:wgpu-types",
+  "arboard/image-data",
+]
+wayland = ["arboard?/wayland-data-control"]
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev", default-features = false }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev", default-features = false }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev", default-features = false }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev", default-features = false }
+
+[target.'cfg(any(windows, unix))'.dependencies]
+hearth_asset = { path = "../hearth_asset", version = "0.20.0-dev", default-features = false, optional = true }
+hearth_image = { path = "../hearth_image", version = "0.20.0-dev", default-features = false, optional = true }
+wgpu-types = { version = "30", default-features = false, optional = true }
+arboard = { version = "3.6.1", default-features = false, optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = { version = "0.2" }
+web-sys = { version = "0.3", features = ["Window", "Navigator", "Clipboard"] }
+wasm-bindgen-futures = "0.4"
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

@@ -1,6 +1,6 @@
 //! A shader that samples a texture with view-independent UV coordinates.
 
-use bevy::{
+use hearth::{
     prelude::*, reflect::TypePath, render::render_resource::AsBindGroup, shader::ShaderRef,
 };
 

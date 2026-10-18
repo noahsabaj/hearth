@@ -10,7 +10,7 @@
 //!
 //! The `start_drag_resize()` function behaves similarly but permits a window to
 //! be resized.
-use bevy::{math::CompassOctant, prelude::*};
+use hearth::{math::CompassOctant, prelude::*};
 
 /// Determine what do on left click.
 #[derive(Resource, Debug)]

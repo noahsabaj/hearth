@@ -2,7 +2,7 @@
 //! how to control system ordering so that messages are processed in a specific order.
 //! It does this by simulating a damage over time effect that you might find in a game.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 // In order to send or receive messages first you must define them
 // This message should be sent when something attempts to deal damage to another entity.

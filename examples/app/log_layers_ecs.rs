@@ -1,7 +1,7 @@
-//! This example illustrates how to transfer log events from the [`Layer`] to Bevy's ECS.
+//! This example illustrates how to transfer log events from the [`Layer`] to Hearth's ECS.
 //!
 //! The way we will do this is via a [`mpsc`] channel. [`mpsc`] channels allow 2 unrelated
-//! parts of the program to communicate (in this case, [`Layer`]s and Bevy's ECS).
+//! parts of the program to communicate (in this case, [`Layer`]s and Hearth's ECS).
 //!
 //! Inside the `custom_layer` function we will create a [`mpsc::Sender`] and a [`mpsc::Receiver`] from a
 //! [`mpsc::channel`]. The [`Sender`](mpsc::Sender) will go into the `AdvancedLayer` and the [`Receiver`](mpsc::Receiver) will
@@ -13,7 +13,7 @@
 
 use std::sync::mpsc;
 
-use bevy::{
+use hearth::{
     log::{
         tracing::{self, Subscriber},
         tracing_subscriber::{self, Layer},
@@ -24,7 +24,7 @@ use bevy::{
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(bevy::log::LogPlugin {
+        .add_plugins(DefaultPlugins.set(hearth::log::LogPlugin {
             // Show logs all the way up to the trace level, but only for logs
             // produced by this example.
             level: Level::TRACE,
@@ -58,7 +58,7 @@ fn transfer_log_messages(
     message_writer.write_batch(receiver.try_iter());
 }
 
-/// This is the [`Layer`] that we will use to capture log messages and then send them to Bevy's
+/// This is the [`Layer`] that we will use to capture log messages and then send them to Hearth's
 /// ECS via its [`mpsc::Sender`].
 struct CaptureLayer {
     sender: mpsc::Sender<LogMessage>,
@@ -165,7 +165,7 @@ fn print_logs(
 }
 
 fn level_color(level: &Level) -> Color {
-    use bevy::color::palettes::tailwind::*;
+    use hearth::color::palettes::tailwind::*;
     Color::from(match *level {
         Level::WARN => ORANGE_400,
         Level::ERROR => RED_400,

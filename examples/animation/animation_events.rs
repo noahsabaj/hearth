@@ -1,6 +1,6 @@
 //! Demonstrate how to use animation events.
 
-use bevy::{
+use hearth::{
     animation::AnimationEvent,
     color::palettes::css::{ALICE_BLUE, BLACK, CRIMSON},
     post_process::bloom::Bloom,

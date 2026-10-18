@@ -1,4 +1,4 @@
-describe("Running Bevy Example", () => {
+describe("Running Hearth Example", () => {
   it("can take a screenshot", async () => {
     // Sleep to wait for app startup, device rotation, ...
     await new Promise((r) => setTimeout(r, 5000));

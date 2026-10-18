@@ -1,0 +1,37 @@
+[package]
+name = "hearth_extract"
+version = "0.20.0-dev"
+edition = "2024"
+description = "Provides extract functionality between ECS worlds for Hearth Engine"
+homepage = "https://github.com/noahsabaj/hearth"
+repository = "https://github.com/noahsabaj/hearth"
+license = "MIT OR Apache-2.0"
+keywords = ["hearth"]
+
+[features]
+default = []
+trace = []
+
+[dependencies]
+# hearth
+hearth_app = { path = "../hearth_app", version = "0.20.0-dev" }
+hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
+hearth_derive = { path = "../hearth_derive", version = "0.20.0-dev" }
+hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
+hearth_extract_macros = { path = "../hearth_extract/macros", version = "0.20.0-dev" }
+hearth_log = { path = "../hearth_log", version = "0.20.0-dev" }
+hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev" }
+hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
+hearth_time = { path = "../hearth_time", version = "0.20.0-dev" }
+hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev" }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = [
+  "-Zunstable-options",
+  "--generate-link-to-definition",
+  "--generate-macro-expansion",
+]
+all-features = true

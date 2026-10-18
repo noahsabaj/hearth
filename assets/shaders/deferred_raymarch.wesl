@@ -1,11 +1,11 @@
 //! Raymarches a signed distance field and packs it into the deferred gbuffer exactly as
-//! a `StandardMaterial` would (via `deferred_gbuffer_from_pbr_input`), so Bevy's deferred
+//! a `StandardMaterial` would (via `deferred_gbuffer_from_pbr_input`), so Hearth's deferred
 //! PBR lighting shades it like any other geometry. This example assumes familiarity with
 //! raymarching.
 
-import bevy_core_pipeline::fullscreen_vertex_shader::FullscreenVertexOutput;
-import bevy_pbr::render::mesh_view_bindings::view;
-import bevy_pbr::render::view_transformations::{
+import hearth_core_pipeline::fullscreen_vertex_shader::FullscreenVertexOutput;
+import hearth_pbr::render::mesh_view_bindings::view;
+import hearth_pbr::render::view_transformations::{
     uv_to_ndc,
     position_ndc_to_view,
     position_ndc_to_world,
@@ -13,10 +13,10 @@ import bevy_pbr::render::view_transformations::{
     position_world_to_view,
     view_z_to_depth_ndc,
 };
-import bevy_pbr::deferred::functions::deferred_gbuffer_from_pbr_input;
-import bevy_pbr::render::pbr_types::{pbr_input_new, STANDARD_MATERIAL_FLAGS_ALPHA_MODE_OPAQUE};
-import bevy_pbr::render::mesh_types::MESH_FLAGS_SHADOW_RECEIVER_BIT;
-import bevy_render::globals::Globals;
+import hearth_pbr::deferred::functions::deferred_gbuffer_from_pbr_input;
+import hearth_pbr::render::pbr_types::{pbr_input_new, STANDARD_MATERIAL_FLAGS_ALPHA_MODE_OPAQUE};
+import hearth_pbr::render::mesh_types::MESH_FLAGS_SHADOW_RECEIVER_BIT;
+import hearth_render::globals::Globals;
 
 @group(0) @binding(1) var<uniform> globals: Globals;
 
@@ -133,7 +133,7 @@ fn fragment(in: FullscreenVertexOutput) -> GBufferOutput {
     var out: GBufferOutput;
     out.deferred = deferred_gbuffer_from_pbr_input(pbr_input);
     // The lighting pass reads this per-pixel id to choose which lighting shader runs.
-    //  1 is Bevy's built-in PBR deferred shader.
+    //  1 is Hearth's built-in PBR deferred shader.
     out.deferred_lighting_pass_id = 1u;
     out.depth = pbr_input.frag_coord.z;
     return out;

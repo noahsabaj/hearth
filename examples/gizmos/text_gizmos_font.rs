@@ -1,7 +1,7 @@
 //! Example displaying all the available glyphs from the Simplex Hershey font
-//! used by `bevy_gizmos`
+//! used by `hearth_gizmos`
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 const ALL_GLYPHS: &str = " !\"#$%&'()*\n\
 +,-./012345\n\

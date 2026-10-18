@@ -16,11 +16,11 @@
 //! To learn more about setting the fallback behavior for [`SystemParamValidationError`] failures,
 //! please see the `error_handling.rs` example.
 //!
-//! [`SystemParamValidationError`]: bevy::ecs::system::SystemParamValidationError
-//! [`SystemParam::get_param`]: bevy::ecs::system::SystemParam::get_param
+//! [`SystemParamValidationError`]: hearth::ecs::system::SystemParamValidationError
+//! [`SystemParam::get_param`]: hearth::ecs::system::SystemParam::get_param
 
-use bevy::ecs::error::warn;
-use bevy::prelude::*;
+use hearth::ecs::error::warn;
+use hearth::prelude::*;
 use rand::RngExt;
 
 fn main() {
@@ -74,7 +74,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Sprite {
             image: texture,
-            color: bevy::color::palettes::tailwind::BLUE_800.into(),
+            color: hearth::color::palettes::tailwind::BLUE_800.into(),
             ..Default::default()
         },
         Transform::from_translation(Vec3::ZERO),
@@ -105,7 +105,7 @@ fn user_input(
             },
             Sprite {
                 image: texture,
-                color: bevy::color::palettes::tailwind::RED_800.into(),
+                color: hearth::color::palettes::tailwind::RED_800.into(),
                 ..default()
             },
             Transform::from_translation(Vec3::ZERO),

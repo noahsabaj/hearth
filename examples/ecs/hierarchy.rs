@@ -6,7 +6,7 @@
 
 use std::{f32::consts::*, time::Duration};
 
-use bevy::{color::palettes::css::*, ecs::relationship::RelatedSpawner, prelude::*};
+use hearth::{color::palettes::css::*, ecs::relationship::RelatedSpawner, prelude::*};
 
 fn main() {
     App::new()

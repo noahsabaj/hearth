@@ -1,12 +1,12 @@
 <script>
-    // Adds tags to documentation pages for common Bevy traits like `Component` or `Resource`.
+    // Adds tags to documentation pages for common Hearth traits like `Component` or `Resource`.
     // This makes it easier to see at a glance what types are used for.
     //
     // This extension is passed to `rustdoc` using the `--html-after-content` flag.
 
     // Traits that we want to show as tags.
     // Order determines sort order of items in listings.
-    const bevyTraits = [
+    const hearthTraits = [
         'Plugin',
         'PluginGroup',
         'Component',
@@ -28,21 +28,21 @@
     ];
 
     // Find all traits that are implemented by the current type.
-    const implementedBevyTraits = findImplementedBevyTraits(document);
+    const implementedHearthTraits = findImplementedHearthTraits(document);
 
     // Resource already implies component
-    if (implementedBevyTraits.has("Resource")) {
-        implementedBevyTraits.delete("Component");
+    if (implementedHearthTraits.has("Resource")) {
+        implementedHearthTraits.delete("Component");
     }
 
     // SceneComponent already implies component
-    if (implementedBevyTraits.has("SceneComponent")) {
-        implementedBevyTraits.delete("Component");
+    if (implementedHearthTraits.has("SceneComponent")) {
+        implementedHearthTraits.delete("Component");
     }
 
     // FromTemplate already implies Template
-    if (implementedBevyTraits.has("FromTemplate")) {
-        implementedBevyTraits.delete("Template");
+    if (implementedHearthTraits.has("FromTemplate")) {
+        implementedHearthTraits.delete("Template");
     }
 
     // Check if an implemented trait has a `type Mutability = Immutable` associated type.
@@ -52,32 +52,32 @@
     const associatedTypeHeader = document.querySelectorAll(".trait-impl.associatedtype .code-header");
     const isImmutable = [...associatedTypeHeader].some(el => el.innerText.includes('type Mutability = Immutable'));
 
-    if (isImmutable & implementedBevyTraits.has("Component")) {
-        implementedBevyTraits.set("Immutable Component", implementedBevyTraits.get("Component"));
-        implementedBevyTraits.delete("Component");
+    if (isImmutable & implementedHearthTraits.has("Component")) {
+        implementedHearthTraits.set("Immutable Component", implementedHearthTraits.get("Component"));
+        implementedHearthTraits.delete("Component");
     }
 
-    if (isImmutable & implementedBevyTraits.has("Resource")) {
-        implementedBevyTraits.set("Immutable Resource", implementedBevyTraits.get("Resource"));
-        implementedBevyTraits.delete("Resource");
+    if (isImmutable & implementedHearthTraits.has("Resource")) {
+        implementedHearthTraits.set("Immutable Resource", implementedHearthTraits.get("Resource"));
+        implementedHearthTraits.delete("Resource");
     }
 
     // If we found any implemented traits, add them as tags to the top of the page.
-    if (implementedBevyTraits.size > 0) {
+    if (implementedHearthTraits.size > 0) {
         // Create a container for the tags.
         const heading = document.body.querySelector(".main-heading h1");
         const tagContainer = document.createElement('div');
-        tagContainer.className = 'bevy-tag-container';
+        tagContainer.className = 'hearth-tag-container';
         heading.appendChild(tagContainer);
 
         // Create a tag for each implemented trait.
-        for (let [tagName, href] of implementedBevyTraits) {
+        for (let [tagName, href] of implementedHearthTraits) {
             // Create the tag and append it to the container.
-            tagContainer.appendChild(createBevyTag(tagName, href));
+            tagContainer.appendChild(createHearthTag(tagName, href));
         }
     }
 
-    function findImplementedBevyTraits(doc) {
+    function findImplementedHearthTraits(doc) {
         // Traits that are implemented by the current type.
         // The key is the trait name, and the value is the href to the trait's documentation.
         const implementedTraits = new Map();
@@ -100,11 +100,11 @@
             implementedTraits.set(traitName, href);
         }
 
-        const implementedBevyTraits = new Map(
-            [...implementedTraits].filter(([traitName, _]) => bevyTraits.find((x) => x == traitName))
+        const implementedHearthTraits = new Map(
+            [...implementedTraits].filter(([traitName, _]) => hearthTraits.find((x) => x == traitName))
         );
 
-        return implementedBevyTraits;
+        return implementedHearthTraits;
     }
 
     // Helper function to remove generics from a string of Rust code.
@@ -124,7 +124,7 @@
 
     // Helper function to create a tag element with the given name and href,
     // if available.
-    function createBevyTag(tagName, href) {
+    function createHearthTag(tagName, href) {
         const el = document.createElement('a');
         const kebabCaseName = tagName.toLowerCase().replace(' ', '-');
 
@@ -133,20 +133,20 @@
         }
 
         el.innerText = tagName;
-        el.className = `bevy-tag ${kebabCaseName}-tag`;
+        el.className = `hearth-tag ${kebabCaseName}-tag`;
         return el;
     }
 </script>
 
 <style>
-    .bevy-tag-container {
+    .hearth-tag-container {
         padding: 0.5rem 0;
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
     }
 
-    .bevy-tag {
+    .hearth-tag {
         display: flex;
         align-items: center;
         width: fit-content;
@@ -158,7 +158,7 @@
         color: white;
     }
 
-    .bevy-tag {
+    .hearth-tag {
         background-color: var(--tag-color);
     }
 

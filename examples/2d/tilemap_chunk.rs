@@ -1,12 +1,12 @@
 //! Shows a tilemap chunk rendered with a single draw call.
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     color::palettes::tailwind::RED_400,
     image::{ImageArrayLayout, ImageLoaderSettings},
     prelude::*,
     sprite_render::{TileData, TilemapChunk, TilemapChunkTileData},
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {

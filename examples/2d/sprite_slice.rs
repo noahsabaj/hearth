@@ -1,6 +1,6 @@
 //! Showcases sprite 9 slice scaling and tiling features, enabling usage of
 //! sprites in multiple resolutions while keeping it in proportion
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
@@ -96,7 +96,7 @@ fn spawn_sprites(
                 text_style,
                 TextLayout::justify(Justify::Center),
                 Transform::from_xyz(0., -0.5 * size.y - 10., 0.0),
-                bevy::sprite::Anchor::TOP_CENTER,
+                hearth::sprite::Anchor::TOP_CENTER,
             )],
         ));
         position.x += 0.5 * size.x + gap;

@@ -1,7 +1,7 @@
 //! This example illustrates how to create buttons with their texture atlases sliced
 //! and kept in proportion instead of being stretched by the button dimensions
 
-use bevy::{
+use hearth::{
     color::palettes::css::{GOLD, ORANGE},
     picking::hover::Hovered,
     platform::collections::HashSet,

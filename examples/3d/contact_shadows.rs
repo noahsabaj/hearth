@@ -2,13 +2,13 @@
 
 use crate::radio::{feathers_option_buttons, main_ui_node_scene, RadioButtonOptionValue};
 use crate::theme::basic_example_theme;
-use bevy::anti_alias::taa::TemporalAntiAliasing;
-use bevy::core_pipeline::tonemapping::Tonemapping;
-use bevy::light::Skybox;
-use bevy::pbr::ScreenSpaceAmbientOcclusion;
-use bevy::post_process::motion_blur::MotionBlur;
-use bevy::window::{CursorIcon, PrimaryWindow, SystemCursorIcon};
-use bevy::{
+use hearth::anti_alias::taa::TemporalAntiAliasing;
+use hearth::core_pipeline::tonemapping::Tonemapping;
+use hearth::light::Skybox;
+use hearth::pbr::ScreenSpaceAmbientOcclusion;
+use hearth::post_process::motion_blur::MotionBlur;
+use hearth::window::{CursorIcon, PrimaryWindow, SystemCursorIcon};
+use hearth::{
     camera::Hdr,
     feathers::{theme::UiTheme, FeathersPlugins},
     light::NotShadowReceiver,
@@ -98,7 +98,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
-                    title: "Bevy Contact Shadows Example".into(),
+                    title: "Hearth Contact Shadows Example".into(),
                     ..default()
                 }),
                 ..default()

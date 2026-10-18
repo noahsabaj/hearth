@@ -1,6 +1,6 @@
 //! This example shows how to make an externally driven headless renderer,
 //! pumping the update loop manually.
-use bevy::{
+use hearth::{
     app::SubApps,
     asset::RenderAssetUsages,
     camera::RenderTarget,
@@ -18,7 +18,7 @@ use bevy::{
 };
 
 fn main() {
-    let mut bw = BevyWrapper::new();
+    let mut bw = HearthWrapper::new();
 
     let target = bw.new_render_target(500, 500);
     bw.spawn_camera(target.clone());
@@ -33,9 +33,9 @@ fn main() {
     bw.update();
 }
 
-struct BevyWrapper(SubApps);
+struct HearthWrapper(SubApps);
 
-impl BevyWrapper {
+impl HearthWrapper {
     fn new() -> Self {
         let render_plugin = RenderPlugin {
             // Make sure all shaders are loaded for the first frame
@@ -43,7 +43,7 @@ impl BevyWrapper {
             ..default()
         };
         // We don't have any windows, but the WindowPlugin is still needed
-        // because a lot of bevy expects it to be there. Just configure it
+        // because a lot of hearth expects it to be there. Just configure it
         // to not have any windows and not exit automatically.
         let window_plugin = WindowPlugin {
             primary_window: None,

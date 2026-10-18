@@ -1,9 +1,9 @@
 //! Load a cubemap texture onto a cube like a skybox and cycle through different compressed texture formats
 
 #[cfg(any(feature = "webgpu", not(target_arch = "wasm32")))]
-use bevy::anti_alias::taa::TemporalAntiAliasing;
+use hearth::anti_alias::taa::TemporalAntiAliasing;
 
-use bevy::{
+use hearth::{
     camera_controller::free_camera::{FreeCamera, FreeCameraPlugin},
     image::CompressedImageFormats,
     light::Skybox,

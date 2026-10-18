@@ -1,8 +1,8 @@
 // these functions cause additional bindings to be brought in, which
 // fails the shader compilations. We should improve the ability to import these
 // in the future and then use the imports here.
-// import bevy_pbr::render::view_transformations::position_world_to_clip;
-// import bevy_pbr::render::mesh_functions::mesh_position_local_to_world;
+// import hearth_pbr::render::view_transformations::position_world_to_clip;
+// import hearth_pbr::render::mesh_functions::mesh_position_local_to_world;
 import super::{
     bindings::{globals, view, VertexOutput, TaskPayload},
 };

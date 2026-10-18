@@ -1,9 +1,9 @@
 //! A shader showing how to use the vertex position data to output the
 //! stencil in the right position
 
-// First we import everything we need from bevy_pbr
-// A 2d shader would be vevry similar but import from bevy_sprite_render instead
-import bevy_pbr::render::{
+// First we import everything we need from hearth_pbr
+// A 2d shader would be vevry similar but import from hearth_sprite_render instead
+import hearth_pbr::render::{
     mesh_functions,
     view_transformations::position_world_to_clip
 };
@@ -29,12 +29,12 @@ struct VertexOutput {
 @vertex
 fn vertex(vertex: Vertex) -> VertexOutput {
     var out: VertexOutput;
-    // This is how bevy computes the world position
+    // This is how hearth computes the world position
     // The vertex.instance_index is very important. Especially if you are using batching and gpu preprocessing
     var world_from_local = mesh_functions::get_world_from_local(vertex.instance_index);
 @if(VERTEX_POSITIONS_COMPRESSED) {
-    let mesh_metadata = bevy_pbr::render::mesh_functions::get_metadata(vertex.instance_index);
-    let vertex_position = bevy_render::utils::decompress_vertex_position(vertex.compressed_position, mesh_metadata.aabb_center, mesh_metadata.aabb_half_extents);
+    let mesh_metadata = hearth_pbr::render::mesh_functions::get_metadata(vertex.instance_index);
+    let vertex_position = hearth_render::utils::decompress_vertex_position(vertex.compressed_position, mesh_metadata.aabb_center, mesh_metadata.aabb_half_extents);
 }
 @else {
     let vertex_position = vertex.position;

@@ -12,7 +12,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use bevy::{
+use hearth::{
     color::palettes::css::{SILVER, WHITE},
     core_pipeline::{core_3d::Opaque3d, prepass::DepthPrepass, Core3d, Core3dSystems},
     feathers::{theme::UiTheme, FeathersPlugins},
@@ -146,7 +146,7 @@ fn init_saved_indirect_parameters(
         count: 0,
         occlusion_culling_supported: gpu_preprocessing_support.is_culling_supported(),
         // In order to determine how many meshes were culled, we look at the indirect count buffer
-        // that Bevy only populates if the platform supports `multi_draw_indirect_count`. So, if we
+        // that Hearth only populates if the platform supports `multi_draw_indirect_count`. So, if we
         // don't have that feature, then we don't bother to display how many meshes were culled.
         occlusion_culling_introspection_supported: render_device
             .features()
@@ -179,7 +179,7 @@ fn main() {
             DefaultPlugins
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        title: "Bevy Occlusion Culling Example".into(),
+                        title: "Hearth Occlusion Culling Example".into(),
                         ..default()
                     }),
                     ..default()

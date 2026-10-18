@@ -1,7 +1,7 @@
-//! This example illustrates scrolling in Bevy UI.
+//! This example illustrates scrolling in Hearth UI.
 
 use accesskit::{Node as Accessible, Role};
-use bevy::{
+use hearth::{
     a11y::AccessibilityNode,
     color::palettes::css::{BLACK, BLUE, RED},
     ecs::spawn::SpawnIter,
@@ -232,7 +232,7 @@ fn vertically_scrolling_list(font_handle: Handle<Font>) -> impl Bundle {
                     scrollbar_width: 20.,
                     ..default()
                 },
-                #[cfg(feature = "bevy_ui_debug")]
+                #[cfg(feature = "hearth_ui_debug")]
                 UiDebugOptions {
                     enabled: true,
                     outline_border_box: false,

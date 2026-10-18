@@ -1,6 +1,6 @@
 //! Prints out all chars as they are inputted.
 
-use bevy::{
+use hearth::{
     input::keyboard::{Key, KeyboardInput},
     prelude::*,
 };

@@ -1,6 +1,6 @@
 //! Shows how to create graphics that snap to the pixel grid by rendering to a texture in 2D
 
-use bevy::{
+use hearth::{
     camera::visibility::RenderLayers, camera::RenderTarget, color::palettes::css::GRAY, prelude::*,
     render::render_resource::TextureFormat, window::WindowResized,
 };
@@ -45,7 +45,7 @@ struct Rotate;
 fn setup_sprite(mut commands: Commands, asset_server: Res<AssetServer>) {
     // The sample sprite that will be rendered to the pixel-perfect canvas
     commands.spawn((
-        Sprite::from_image(asset_server.load("pixel/bevy_pixel_dark.png")),
+        Sprite::from_image(asset_server.load("pixel/hearth_pixel_dark.png")),
         Transform::from_xyz(-45., 20., 2.),
         Rotate,
         PIXEL_PERFECT_LAYERS,
@@ -53,7 +53,7 @@ fn setup_sprite(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     // The sample sprite that will be rendered to the high-res "outer world"
     commands.spawn((
-        Sprite::from_image(asset_server.load("pixel/bevy_pixel_light.png")),
+        Sprite::from_image(asset_server.load("pixel/hearth_pixel_light.png")),
         Transform::from_xyz(-45., -20., 2.),
         Rotate,
         HIGH_RES_LAYERS,

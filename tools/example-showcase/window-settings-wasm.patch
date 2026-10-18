@@ -1,7 +1,7 @@
-diff --git a/crates/bevy_window/src/window.rs b/crates/bevy_window/src/window.rs
+diff --git a/crates/hearth_window/src/window.rs b/crates/hearth_window/src/window.rs
 index ccc861a78..0cae580cd 100644
---- a/crates/bevy_window/src/window.rs
-+++ b/crates/bevy_window/src/window.rs
+--- a/crates/hearth_window/src/window.rs
++++ b/crates/hearth_window/src/window.rs
 @@ -293,9 +293,9 @@ impl Default for Window {
              transparent: false,
              focused: true,
@@ -10,7 +10,7 @@ index ccc861a78..0cae580cd 100644
 +            fit_canvas_to_parent: true,
              prevent_default_event_handling: true,
 -            canvas: None,
-+            canvas: Some("#bevy".to_owned()),
++            canvas: Some("#hearth".to_owned()),
              window_theme: None,
              visible: true,
              skip_taskbar: false,

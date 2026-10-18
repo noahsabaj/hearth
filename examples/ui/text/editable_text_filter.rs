@@ -1,11 +1,11 @@
 //! Demonstrates a minimal [`EditableTextFilter`] with an 8-character hex input.
 
-use bevy::color::palettes::css::DARK_SLATE_GRAY;
-use bevy::color::palettes::tailwind::SLATE_300;
-use bevy::input_focus::AutoFocus;
-use bevy::prelude::*;
-use bevy::text::{EditableText, EditableTextFilter, TextCursorStyle};
-use bevy::ui_widgets::TextInput;
+use hearth::color::palettes::css::DARK_SLATE_GRAY;
+use hearth::color::palettes::tailwind::SLATE_300;
+use hearth::input_focus::AutoFocus;
+use hearth::prelude::*;
+use hearth::text::{EditableText, EditableTextFilter, TextCursorStyle};
+use hearth::ui_widgets::TextInput;
 
 fn main() {
     App::new()

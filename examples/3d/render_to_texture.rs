@@ -2,8 +2,10 @@
 
 use std::f32::consts::PI;
 
-use bevy::camera::RenderTarget;
-use bevy::{camera::visibility::RenderLayers, prelude::*, render::render_resource::TextureFormat};
+use hearth::camera::RenderTarget;
+use hearth::{
+    camera::visibility::RenderLayers, prelude::*, render::render_resource::TextureFormat,
+};
 
 fn main() {
     App::new()

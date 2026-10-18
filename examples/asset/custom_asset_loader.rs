@@ -1,6 +1,6 @@
 //! Implements loader for a custom asset type.
 
-use bevy::{
+use hearth::{
     asset::{io::Reader, AssetLoader, LoadContext},
     prelude::*,
     reflect::TypePath,

@@ -1,13 +1,13 @@
 //! An example demonstrating how to translate, rotate and scale UI elements.
-use bevy::color::palettes::css::DARK_GRAY;
-use bevy::color::palettes::css::RED;
-use bevy::color::palettes::css::YELLOW;
-use bevy::picking::hover::Hovered;
-use bevy::platform::collections::HashSet;
-use bevy::prelude::*;
-use bevy::ui::Pressed;
-use bevy::ui_widgets::Button;
 use core::f32::consts::FRAC_PI_8;
+use hearth::color::palettes::css::DARK_GRAY;
+use hearth::color::palettes::css::RED;
+use hearth::color::palettes::css::YELLOW;
+use hearth::picking::hover::Hovered;
+use hearth::platform::collections::HashSet;
+use hearth::prelude::*;
+use hearth::ui::Pressed;
+use hearth::ui_widgets::Button;
 
 fn main() {
     App::new()

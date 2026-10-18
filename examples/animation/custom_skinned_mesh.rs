@@ -3,7 +3,8 @@
 
 use std::f32::consts::*;
 
-use bevy::{
+use chacha20::ChaCha8Rng;
+use hearth::{
     asset::RenderAssetUsages,
     camera::visibility::DynamicSkinnedMeshBounds,
     math::ops,
@@ -13,7 +14,6 @@ use bevy::{
     },
     prelude::*,
 };
-use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {
@@ -132,7 +132,7 @@ fn setup(
             [0.00, 1.00, 0.0, 0.0],
         ],
     )
-    // Tell bevy to construct triangles from a list of vertex indices,
+    // Tell hearth to construct triangles from a list of vertex indices,
     // where each 3 vertex indices form a triangle.
     .with_inserted_indices(Indices::U16(vec![
         0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4, 4, 5, 7, 4, 7, 6, 6, 7, 9, 6, 9, 8,

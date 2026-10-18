@@ -2,7 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
+use hearth::{
     camera::visibility::{NoCpuCulling, VisibilityRange},
     core_pipeline::prepass::{DepthPrepass, NormalPrepass},
     input::mouse::MouseWheel,
@@ -87,7 +87,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy Visibility Range Example".into(),
+                title: "Hearth Visibility Range Example".into(),
                 ..default()
             }),
             ..default()

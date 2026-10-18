@@ -1,7 +1,7 @@
 //! A shader that uses dynamic data like the time since startup.
 //! The time data is in the globals binding which is part of the `mesh_view_bindings` shader import.
 
-use bevy::{
+use hearth::{
     prelude::*, reflect::TypePath, render::render_resource::AsBindGroup, shader::ShaderRef,
 };
 

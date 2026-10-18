@@ -2,7 +2,7 @@
 //! Try running this example in a graphics profiler and all the cubes should be only a single draw call.
 //! Also demonstrates how to use `MeshTag` to use external data in a custom material.
 
-use bevy::{
+use hearth::{
     mesh::MeshTag, prelude::*, reflect::TypePath, render::render_resource::AsBindGroup,
     shader::ShaderRef,
 };

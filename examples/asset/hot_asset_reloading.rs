@@ -2,10 +2,10 @@
 //! running. This lets you immediately see the results of your changes without restarting the game.
 //! This example illustrates hot reloading mesh changes.
 //!
-//! Note that hot asset reloading requires the [`AssetWatcher`](bevy::asset::io::AssetWatcher) to be enabled
+//! Note that hot asset reloading requires the [`AssetWatcher`](hearth::asset::io::AssetWatcher) to be enabled
 //! for your current platform. For desktop platforms, enable the `file_watcher` cargo feature.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()

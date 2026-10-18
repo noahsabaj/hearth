@@ -1,7 +1,7 @@
 //! This example illustrates the basic usage of [`ImageNode`],
 //! a UI node that renders an image.
 
-use bevy::prelude::*;
+use hearth::prelude::*;
 
 fn main() {
     App::new()
