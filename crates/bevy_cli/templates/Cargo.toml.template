@@ -6,11 +6,15 @@ edition = "2024"
 [dependencies]
 bevy = {{bevy}}
 
+# Both default features are for development. Build the release you ship with
+# `--no-default-features`.
 [features]
-default = ["remote"]
+default = ["remote", "dynamic_linking"]
 # Lets the `hearth` CLI inspect and drive the app while it runs, over the Bevy Remote Protocol.
-# Leave it out of releases you ship with `--no-default-features`.
 remote = ["bevy/bevy_remote"]
+# Links the engine as a shared library, so that a change to the game relinks only the game: a few
+# seconds instead of half a minute.
+dynamic_linking = ["bevy/dynamic_linking"]
 
 # `hearth editor` builds the editor with this package's library linked in, and calls this function
 # of the library with the editor's `App` at startup, so the editor knows the game's types.

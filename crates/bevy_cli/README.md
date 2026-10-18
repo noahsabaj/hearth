@@ -55,10 +55,12 @@ fn main() {
 
 Projects made with `hearth new` depend on Hearth's git repository (`--engine-path`, `--engine-git` and
 `--bevy-version` choose another engine), do this behind a `remote` cargo feature, on by default, and read the port
-from `HEARTH_REMOTE_PORT`, which `hearth run` sets so that several apps can run at once. Leave the feature out of
-the builds you ship with `--no-default-features`. Their dev profile optimizes the engine but keeps only line tables
-in its debug info, and on Windows, when rustup's `rust-lld` is on `PATH`, a `.cargo/config.toml` links with it. With
-both, rebuilding the 3D template after a one-line change takes about 10 seconds instead of 30.
+from `HEARTH_REMOTE_PORT`, which `hearth run` sets so that several apps can run at once. A second default feature,
+`dynamic_linking`, links the engine as a shared library, so that a change to the game relinks only the game's small
+executable. Leave both out of the builds you ship with `--no-default-features`. The dev profile optimizes the
+engine but keeps only line tables in its debug info, and on Windows, when rustup's `rust-lld` is on `PATH`, a
+`.cargo/config.toml` links with it. With all three, rebuilding the 3D template after a one-line change to the game
+takes about 3 seconds instead of 20.
 
 To reflect your own components and resources, derive `Reflect` and add `#[reflect(Component)]` or
 `#[reflect(Resource)]`.

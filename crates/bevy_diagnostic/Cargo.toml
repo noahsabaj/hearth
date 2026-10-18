@@ -21,9 +21,6 @@ serialize = [
   "bevy_platform/serialize",
 ]
 
-## Disables diagnostics that are unsupported when Bevy is dynamically linked
-dynamic_linking = []
-
 ## Adds integration with `sysinfo`.
 sysinfo_plugin = ["sysinfo"]
 

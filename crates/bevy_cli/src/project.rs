@@ -148,6 +148,8 @@ pub struct Package {
     pub rust_version: Option<String>,
     /// Its `[package.metadata]`.
     pub metadata: Value,
+    /// Its `[features]`: each feature's name, and what it turns on.
+    pub features: Value,
 }
 
 impl Package {
@@ -180,7 +182,7 @@ pub struct Metadata {
     pub target_directory: PathBuf,
 }
 
-fn strings(value: &Value) -> Vec<String> {
+pub(crate) fn strings(value: &Value) -> Vec<String> {
     value
         .as_array()
         .map(|items| {
@@ -232,6 +234,7 @@ fn parse_package(package: &Value) -> Package {
         default_run: text("default_run"),
         rust_version: text("rust_version"),
         metadata: package["metadata"].clone(),
+        features: package["features"].clone(),
     }
 }
 
@@ -928,6 +931,7 @@ mod tests {
             default_run: None,
             rust_version: None,
             metadata: Value::Null,
+            features: Value::Null,
         };
         assert_eq!(
             run_target(&package, None, None).unwrap().0,

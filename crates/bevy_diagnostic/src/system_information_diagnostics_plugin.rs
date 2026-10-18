@@ -58,7 +58,7 @@ pub struct SystemInfo {
     pub memory: String,
 }
 
-// NOTE: sysinfo fails to compile when using bevy dynamic or on iOS and does nothing on Wasm
+// NOTE: sysinfo fails to compile on iOS and does nothing on Wasm
 #[cfg(all(
     any(
         target_os = "linux",
@@ -66,7 +66,6 @@ pub struct SystemInfo {
         target_os = "android",
         target_os = "macos"
     ),
-    not(feature = "dynamic_linking"),
     feature = "std",
 ))]
 mod internal {
@@ -283,7 +282,6 @@ mod internal {
         target_os = "android",
         target_os = "macos"
     ),
-    not(feature = "dynamic_linking"),
     feature = "std",
 )))]
 mod internal {

@@ -1,0 +1,8 @@
+# Link with LLVM's linker, which ships with Rust, instead of MSVC's link.exe: it links about a
+# fifth faster, and an incremental rebuild is mostly linking. `config_fast_builds.toml` has more
+# options to copy in, some of them nightly-only.
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld.exe"
+
+[target.aarch64-pc-windows-msvc]
+linker = "rust-lld.exe"

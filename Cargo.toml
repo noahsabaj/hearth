@@ -284,7 +284,7 @@ ui_picking = ["bevy_internal/ui_picking"]
 bevy_ui_debug = ["bevy_internal/bevy_ui_debug"]
 
 # Force dynamic linking, which improves iterative compile times
-dynamic_linking = ["dep:bevy_dylib", "bevy_internal/dynamic_linking"]
+dynamic_linking = ["dep:bevy_dylib"]
 
 # Enables system information diagnostic plugin
 sysinfo_plugin = ["bevy_internal/sysinfo_plugin"]

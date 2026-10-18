@@ -16,7 +16,6 @@ dxil.dll
 # Cargo
 Cargo.lock
 .cargo/config
-.cargo/config.toml
 
 # Bevy Assets
 assets/**/*.meta

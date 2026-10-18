@@ -286,6 +286,8 @@ struct Library {
     dir: PathBuf,
     /// Features of the package to enable, besides its default ones.
     features: Vec<String>,
+    /// When set, the package's default features are off, and these are on in their place.
+    defaults: Option<Vec<String>>,
 }
 
 impl Library {
@@ -295,11 +297,47 @@ impl Library {
             format!("path = {}", toml_path(&self.dir)),
             format!("package = {}", toml_string(&self.package)),
         ];
-        if !self.features.is_empty() {
-            fields.push(format!("features = {}", toml_list(&self.features)));
+        let mut features = self.features.clone();
+        if let Some(defaults) = &self.defaults {
+            fields.push("default-features = false".to_string());
+            features.splice(0..0, defaults.iter().cloned());
+        }
+        if !features.is_empty() {
+            fields.push(format!("features = {}", toml_list(&features)));
         }
         format!("{{ {} }}", fields.join(", "))
     }
+}
+
+/// The package's default features without those that link the engine dynamically, or `None` when
+/// none of them does.
+///
+/// The editor links the engine statically. Dynamically linked, the engine with the editor in it
+/// exports more symbols than a Windows DLL can hold (65,535). The game, when Play runs it, still
+/// links it dynamically, and both builds share the engine's compiled crates.
+fn static_defaults(features: &Value) -> Option<Vec<String>> {
+    let defaults = project::strings(&features["default"]);
+    let kept: Vec<String> = defaults
+        .iter()
+        .filter(|feature| !links_dynamically(features, feature, &mut Vec::new()))
+        .cloned()
+        .collect();
+    (kept.len() != defaults.len()).then_some(kept)
+}
+
+/// Whether `feature` turns on a dependency's `dynamic_linking`, directly or through the package's
+/// other features.
+fn links_dynamically(features: &Value, feature: &str, seen: &mut Vec<String>) -> bool {
+    if feature.ends_with("/dynamic_linking") {
+        return true;
+    }
+    if seen.iter().any(|done| done == feature) {
+        return false;
+    }
+    seen.push(feature.to_string());
+    project::strings(&features[feature])
+        .iter()
+        .any(|enabled| links_dynamically(features, enabled, seen))
 }
 
 /// What the editor crate is generated from.
@@ -499,6 +537,7 @@ pub fn editor(ctx: &mut Ctx, args: EditorArgs) -> Result<Outcome, CliError> {
                 .map(|feature| feature.trim().to_string())
                 .filter(|feature| !feature.is_empty())
                 .collect(),
+            defaults: static_defaults(&package.features),
         });
     match (&library, &hook) {
         (None, Some(hook)) if package.name != "bevy" => {
@@ -655,6 +694,7 @@ mod tests {
             default_run: None,
             rust_version: None,
             metadata: Value::Null,
+            features: Value::Null,
         }
     }
 
@@ -843,7 +883,30 @@ mod tests {
             package: "my-game".to_string(),
             dir: PathBuf::from("C:/games/my-game"),
             features: Vec::new(),
+            defaults: None,
         }
+    }
+
+    #[test]
+    fn the_editor_drops_the_games_dynamic_linking() {
+        let features = serde_json::json!({
+            "default": ["remote", "fast", "dynamic_linking"],
+            "remote": ["bevy/bevy_remote"],
+            "fast": ["dynamic_linking"],
+            "dynamic_linking": ["bevy/dynamic_linking"],
+        });
+        assert_eq!(static_defaults(&features), Some(vec!["remote".to_string()]));
+        let plain = serde_json::json!({ "default": ["remote"], "remote": ["bevy/bevy_remote"] });
+        assert_eq!(static_defaults(&plain), None);
+        assert_eq!(static_defaults(&Value::Null), None);
+
+        let mut library = library();
+        library.defaults = Some(vec!["remote".to_string()]);
+        library.features = vec!["debug".to_string()];
+        assert_eq!(
+            library.toml(),
+            r#"{ path = "C:/games/my-game", package = "my-game", default-features = false, features = ["remote", "debug"] }"#
+        );
     }
 
     #[test]
