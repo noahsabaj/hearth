@@ -7,13 +7,14 @@ use bevy_ecs::{
     lifecycle::RemovedComponents,
     message::MessageWriter,
     prelude::{Changed, Commands, Component},
+    query::{Added, Or},
     system::{Local, NonSendMarker, Query, SystemParamItem},
 };
 use bevy_input::keyboard::{Key, KeyCode, KeyboardFocusLost, KeyboardInput};
 use bevy_window::{
     ClosingWindow, CursorOptions, HasWindows, Monitor, OnMonitor, PrimaryMonitor, RawHandleWrapper,
     VideoMode, Window, WindowClosed, WindowClosing, WindowCreated, WindowEvent, WindowFocused,
-    WindowMode, WindowScaleFactorChanged, WindowWrapper,
+    WindowIcon, WindowMode, WindowScaleFactorChanged, WindowWrapper,
 };
 use tracing::{error, info, warn};
 
@@ -585,6 +586,40 @@ pub(crate) fn changed_windows(
             **cache = window.clone();
         }
     });
+}
+
+/// Shows each window's [`WindowIcon`] once its winit window exists, and again whenever the icon
+/// changes or is removed.
+pub(crate) fn changed_window_icons(
+    icons: Query<(Entity, &WindowIcon), Or<(Changed<WindowIcon>, Added<CachedWindow>)>>,
+    mut removed: RemovedComponents<WindowIcon>,
+    _non_send_marker: NonSendMarker,
+) {
+    WINIT_WINDOWS.with_borrow(|winit_windows| {
+        for entity in removed.read() {
+            if let Some(winit_window) = winit_windows.get_window(entity) {
+                set_window_icon(winit_window, None);
+            }
+        }
+        // A window that doesn't exist yet gets its icon when it does, as `CachedWindow` arrives.
+        for (entity, icon) in &icons {
+            let Some(winit_window) = winit_windows.get_window(entity) else {
+                continue;
+            };
+            match winit::window::Icon::from_rgba(icon.rgba().to_vec(), icon.width(), icon.height())
+            {
+                Ok(icon) => set_window_icon(winit_window, Some(icon)),
+                Err(error) => warn!("Could not set the icon of window {entity}: {error}"),
+            }
+        }
+    });
+}
+
+fn set_window_icon(winit_window: &winit::window::Window, icon: Option<winit::window::Icon>) {
+    // Windows keeps the taskbar's icon apart from the title bar's.
+    #[cfg(target_os = "windows")]
+    winit::platform::windows::WindowExtWindows::set_taskbar_icon(winit_window, icon.clone());
+    winit_window.set_window_icon(icon);
 }
 
 pub(crate) fn changed_cursor_options(
