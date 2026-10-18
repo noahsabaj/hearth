@@ -46,6 +46,8 @@ pub use bevy_curve as curve;
 pub use bevy_dev_tools as dev_tools;
 pub use bevy_diagnostic as diagnostic;
 pub use bevy_ecs as ecs;
+#[cfg(feature = "bevy_editor")]
+pub use bevy_editor as editor;
 #[cfg(feature = "bevy_extract")]
 pub use bevy_extract as extract;
 #[cfg(feature = "bevy_feathers")]

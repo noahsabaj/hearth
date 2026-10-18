@@ -440,6 +440,9 @@ bevy_feathers = ["bevy_internal/bevy_feathers", "bevy_ui_widgets"]
 # Entity inspector built on bevy_ui and bevy_feathers.
 bevy_inspector = ["bevy_internal/bevy_inspector", "bevy_feathers"]
 
+# The Hearth editor: scenes, a 3D viewport, and a live link to the running game.
+bevy_editor = ["bevy_internal/bevy_editor", "bevy_inspector", "bevy_remote_client"]
+
 # Enable passthrough loading for SPIR-V shaders (Only supported on Vulkan, shader capabilities and extensions must agree with the platform implementation)
 spirv_shader_passthrough = ["bevy_internal/spirv_shader_passthrough"]
 
@@ -4889,6 +4892,18 @@ name = "local_inspector"
 path = "examples/inspector/local_inspector.rs"
 doc-scrape-examples = true
 required-features = ["bevy_inspector"]
+
+[[example]]
+name = "editor"
+path = "examples/tools/editor.rs"
+doc-scrape-examples = true
+required-features = ["bevy_editor"]
+
+[package.metadata.example.editor]
+name = "Editor"
+description = "The Hearth editor, editing the scenes in this repository's assets folder"
+category = "Tools"
+wasm = false
 
 [package.metadata.example.local_inspector]
 name = "Local Inspector"

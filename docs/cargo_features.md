@@ -81,6 +81,7 @@ This is the complete `bevy` cargo feature list, without "profiles" or "collectio
 |bevy_curve|Provides mathematical curve functionality|
 |bevy_debug_stepping|Enable stepping-based debugging of Bevy systems|
 |bevy_dev_tools|Provides a collection of developer tools|
+|bevy_editor|The Hearth editor: scenes, a 3D viewport, and a live link to the running game.|
 |bevy_extract|Provides the ability to extract entities from an ECS main world to a sub world|
 |bevy_feathers|Feathers widget collection.|
 |bevy_gilrs|Adds gamepad support|
