@@ -1,19 +1,25 @@
 //! `window.screenshot+watch`: capturing a window and sending its pixels.
 //!
+//! With `hearth_render`, it takes a screenshot, which the GPU reads back a few frames later.
 //! Observing `ScreenshotCaptured` with `world.observe+watch` also delivers the pixels, but as the
 //! reflected `Image`, with one JSON number per byte, which takes seconds for a whole window. This
 //! method sends them as a single base64 string instead.
+//!
+//! With `hearth_soft_render`, it sends the window's `Framebuffer` as last drawn.
 
 use alloc::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::anyhow;
 use base64::{prelude::BASE64_STANDARD, Engine as _};
-use hearth_ecs::{
-    entity::Entity, observer::On, query::With, resource::Resource, system::In, world::World,
-};
+#[cfg(feature = "hearth_render")]
+use hearth_ecs::observer::On;
+use hearth_ecs::{entity::Entity, query::With, resource::Resource, system::In, world::World};
 use hearth_platform::collections::HashMap;
+#[cfg(feature = "hearth_render")]
 use hearth_render::view::screenshot::{Screenshot, ScreenshotCaptured};
+#[cfg(feature = "hearth_soft_render")]
+use hearth_soft_render::Framebuffer;
 use hearth_window::{PrimaryWindow, Window};
 use serde::Deserialize;
 use serde_json::{json, Value};
@@ -48,6 +54,10 @@ pub struct HrpScreenshots {
 
 pub(crate) enum Capture {
     /// Spawned, and the observer fills this in once the image is read back.
+    #[cfg_attr(
+        not(feature = "hearth_render"),
+        expect(dead_code, reason = "Only screenshots from the GPU wait.")
+    )]
     Pending(Arc<Mutex<Option<Value>>>),
     /// The result went to the client.
     Sent,
@@ -88,7 +98,7 @@ pub fn process_remote_screenshot_watching_request(
         Some(Some(slot)) => slot,
         Some(None) => return Ok(None),
         None => {
-            let screenshot = match window {
+            let window = match window {
                 Some(window) => {
                     if world.get_entity(window).is_err() {
                         return Err(HrpError::entity_not_found(window));
@@ -99,31 +109,44 @@ pub fn process_remote_screenshot_watching_request(
                             window,
                         ));
                     }
-                    Screenshot::window(window)
+                    window
                 }
                 None => {
-                    let mut primary = world.query_filtered::<(), With<PrimaryWindow>>();
-                    if primary.iter(world).next().is_none() {
+                    let mut primary = world.query_filtered::<Entity, With<PrimaryWindow>>();
+                    let Some(window) = primary.iter(world).next() else {
                         return Err(HrpError {
                             code: error_codes::RESOURCE_NOT_PRESENT,
                             message: "The app has no primary window".to_string(),
                             data: None,
                         });
-                    }
-                    Screenshot::primary_window()
+                    };
+                    window
                 }
             };
-            let slot = Arc::new(Mutex::new(None));
-            let sink = slot.clone();
-            world
-                .spawn(screenshot)
-                .observe(move |captured: On<ScreenshotCaptured>| {
-                    *sink.lock().unwrap() = Some(encode(&captured));
-                });
-            world
-                .resource_mut::<HrpScreenshots>()
-                .captures
-                .insert(request, Capture::Pending(slot));
+            #[cfg(feature = "hearth_soft_render")]
+            if let Some(framebuffer) = world.get::<Framebuffer>(window) {
+                let result = encode_framebuffer(framebuffer);
+                world
+                    .resource_mut::<HrpScreenshots>()
+                    .captures
+                    .insert(request, Capture::Sent);
+                return Ok(Some(result));
+            }
+            #[cfg(feature = "hearth_render")]
+            {
+                let slot = Arc::new(Mutex::new(None));
+                let sink = slot.clone();
+                world.spawn(Screenshot::window(window)).observe(
+                    move |captured: On<ScreenshotCaptured>| {
+                        *sink.lock().unwrap() = Some(encode(&captured));
+                    },
+                );
+                world
+                    .resource_mut::<HrpScreenshots>()
+                    .captures
+                    .insert(request, Capture::Pending(slot));
+            }
+            // Without the GPU, the window gets its framebuffer at the end of its first frame.
             return Ok(None);
         }
     };
@@ -139,6 +162,7 @@ pub fn process_remote_screenshot_watching_request(
 }
 
 /// The captured image as the method's result.
+#[cfg(feature = "hearth_render")]
 fn encode(captured: &ScreenshotCaptured) -> Value {
     let descriptor = &captured.image.texture_descriptor;
     let data = captured.image.data.as_deref().unwrap_or_default();
@@ -150,11 +174,46 @@ fn encode(captured: &ScreenshotCaptured) -> Value {
     })
 }
 
+/// A framebuffer as the method's result, with its unused bytes made opaque alpha.
+#[cfg(feature = "hearth_soft_render")]
+fn encode_framebuffer(framebuffer: &Framebuffer) -> Value {
+    let data: Vec<u8> = framebuffer
+        .pixels()
+        .iter()
+        .flat_map(|pixel| (pixel | 0xFF00_0000).to_le_bytes())
+        .collect();
+    json!({
+        "width": framebuffer.width(),
+        "height": framebuffer.height(),
+        "format": "bgra8unorm-srgb",
+        "data": BASE64_STANDARD.encode(data),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use hearth_ecs::system::RunSystemOnce;
 
     use super::*;
+
+    #[cfg(feature = "hearth_soft_render")]
+    #[test]
+    fn sends_the_framebuffer() {
+        let mut world = World::new();
+        let mut framebuffer = Framebuffer::new(2, 1);
+        framebuffer
+            .pixels_mut()
+            .copy_from_slice(&[0x00_11_22_33, 0x00_44_55_66]);
+        world.spawn((Window::default(), PrimaryWindow, framebuffer));
+        world.insert_resource(CurrentWatchingRequest(Some(WatchingRequestId(0))));
+        let sent = poll(&mut world, None).unwrap().unwrap();
+        assert_eq!(sent["format"], "bgra8unorm-srgb");
+        assert_eq!(
+            sent["data"],
+            BASE64_STANDARD.encode([0x33, 0x22, 0x11, 0xFF, 0x66, 0x55, 0x44, 0xFF])
+        );
+        assert_eq!(poll(&mut world, None).unwrap(), None);
+    }
 
     fn poll(world: &mut World, params: Option<Value>) -> HrpResult<Option<Value>> {
         world
@@ -173,6 +232,7 @@ mod tests {
         assert_eq!(error.code, error_codes::COMPONENT_NOT_PRESENT);
     }
 
+    #[cfg(feature = "hearth_render")]
     #[test]
     fn sends_the_capture_once() {
         let mut world = World::new();

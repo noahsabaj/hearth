@@ -65,6 +65,8 @@ plugin_group! {
         hearth_sprite:::SpritePlugin,
         #[cfg(feature = "hearth_sprite_render")]
         hearth_sprite_render:::SpriteRenderPlugin,
+        #[cfg(feature = "hearth_soft_render")]
+        hearth_soft_render:::SoftRenderPlugin,
         #[cfg(feature = "hearth_clipboard")]
         hearth_clipboard:::ClipboardPlugin,
         #[cfg(feature = "hearth_text")]

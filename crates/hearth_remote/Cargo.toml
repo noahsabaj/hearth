@@ -33,6 +33,8 @@ hearth_render = [
   "dep:base64",
   "hearth_dev_tools/render",
 ]
+# Screenshots of windows the soft renderer draws.
+hearth_soft_render = ["dep:hearth_soft_render", "dep:hearth_window", "dep:base64"]
 
 [dependencies]
 # hearth
@@ -50,6 +52,7 @@ hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev", features = [
 hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
 hearth_render = { path = "../hearth_render", version = "0.20.0-dev", optional = true }
 hearth_window = { path = "../hearth_window", version = "0.20.0-dev", optional = true }
+hearth_soft_render = { path = "../hearth_soft_render", version = "0.20.0-dev", optional = true }
 hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
 hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev", features = [
   "debug",

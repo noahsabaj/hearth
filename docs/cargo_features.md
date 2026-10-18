@@ -23,6 +23,7 @@ hearth = { version = "0.18", default-features = false, features = ["2d"] }
 |-|-|
 |default|The full default Hearth experience. This is a combination of the following profiles: 2d, 3d, ui, audio|
 |2d|The default 2D Hearth experience. This includes the core Hearth framework, 2D functionality, scenes and picking.|
+|2d_soft|The 2D Hearth experience drawn on the CPU, with no GPU: the same pixels on every machine. This includes the core Hearth framework, 2D functionality, scenes and picking.|
 |3d|The default 3D Hearth experience. This includes the core Hearth framework, 3D functionality, scenes and picking.|
 |ui|The default Hearth UI experience. This includes the core Hearth framework, Hearth UI, scenes, and picking.|
 
@@ -46,6 +47,7 @@ collections to build your own "profile" equivalent, without needing to manually 
 |common_api|Default scene definition features. Note that this does not include an actual renderer, such as hearth_render (Hearth's default render backend). **Feature set:** `hearth_animation`, `hearth_camera`, `hearth_color`, `hearth_curve`, `hearth_gizmos`, `hearth_image`, `hearth_mesh`, `hearth_shader`, `hearth_material`, `hearth_text`, `hearth_window`, `hdr`, `png`.|
 |2d_api|Features used to build 2D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `common_api`, `hearth_sprite`.|
 |2d_hearth_render|Hearth's built-in 2D renderer, built on top of `hearth_render`. **Feature set:** `2d_api`, `hearth_render`, `hearth_core_pipeline`, `hearth_post_process`, `hearth_sprite_render`, `hearth_gizmos_render`.|
+|2d_soft_render|Hearth's CPU 2D renderer, `hearth_soft_render`: sprites and 2D text drawn into a framebuffer for each window, with no GPU. **Feature set:** `2d_api`, `hearth_soft_render`.|
 |3d_api|Features used to build 3D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `common_api`, `hearth_light`, `hearth_mikktspace`, `ktx2`, `morph_animation`, `morph`, `smaa_luts`, `tonemapping_luts`, `zstd_rust`.|
 |3d_hearth_render|Hearth's built-in 3D renderer, built on top of `hearth_render`. **Feature set:** `3d_api`, `hearth_render`, `hearth_core_pipeline`, `hearth_gizmos_render`, `hearth_anti_alias`, `hearth_gltf`, `hearth_pbr`, `hearth_post_process`, `gltf_animation`.|
 |ui_api|Features used to build UI Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer. **Feature set:** `default_app`, `common_api`, `hearth_input_focus`, `hearth_ui`.|
@@ -67,6 +69,38 @@ This is the complete `hearth` cargo feature list, without "profiles" or "collect
 |async-io|Use async-io's implementation of block_on instead of futures-lite's implementation. This is preferred if your application uses async-io.|
 |async_executor|Uses `async-executor` as a task execution backend.|
 |basis-universal|Basis Universal compressed texture support|
+|bluenoise_texture|Include spatio-temporal blue noise KTX2 file used by generated environment maps, Solari and atmosphere|
+|bmp|BMP image format support|
+|clipboard_image|Enables image copy/paste via the system clipboard. Not supported on WASM.|
+|complex_script_segmentation|Enables dictionary-based segmentation for complex scripts (CJK, Thai, Khmer, Lao, Myanmar), at the cost of a larger binary|
+|compressed_image_saver|Texture compression asset processor (BCn for desktop, ASTC for mobile via env var)|
+|compressed_image_saver_universal|Texture compression asset processor (cross-platform, transcodes to any GPU format at load time)|
+|critical-section|`critical-section` provides the building blocks for synchronization primitives on all platforms, including `no_std`.|
+|custom_cursor|Enable winit custom cursor support|
+|dds|DDS compressed texture support|
+|debug|Enable collecting debug information about systems and components to help with diagnostics|
+|debug_glam_assert|Enable assertions in debug builds to check the validity of parameters passed to glam|
+|default_font|Include a default font, containing only ASCII characters, at the cost of a 20kB binary size increase|
+|detailed_trace|Enable detailed trace event logging. These trace events are expensive even when off, thus they require compile time opt-in|
+|dfg_lut|Include a preintegrated BRDF Look Up Table for more accurate specular shading.|
+|dlss|NVIDIA Deep Learning Super Sampling|
+|dynamic_linking|Force dynamic linking, which improves iterative compile times|
+|embedded_watcher|Enables watching in memory asset providers for Hearth Asset hot-reloading|
+|equirectangular_cubemap|Equirectangular (lat-long) panorama to cubemap conversion|
+|experimental_pbr_pcss|Enable support for PCSS, at the risk of blowing past the global, per-shader sampler limit on older/lower-end GPUs|
+|exr|EXR image format support|
+|ff|Farbfeld image format support|
+|file_watcher|Enables watching the filesystem for Hearth Asset hot-reloading|
+|flac|FLAC audio format support (through `claxon`)|
+|force_disable_dlss|Forcibly disable DLSS so that `cargo build --all-features` works without the DLSS SDK being installed. Not meant for users.|
+|free_camera|Enables the free cam from hearth_camera_controller|
+|gamepad|Gamepad support. Automatically enabled by `hearth_gilrs`.|
+|gestures|Gestures support. Automatically enabled by `hearth_window`.|
+|gif|GIF image format support|
+|glam_assert|Enable assertions to check the validity of parameters passed to glam|
+|gltf_animation|Enable glTF animation loading|
+|gltf_meshopt|Enables loading glTF files that use KHR_meshopt_compression or EXT_meshopt_compression|
+|hdr|HDR image format support|
 |hearth_animation|Provides animation functionality|
 |hearth_anti_alias|Provides various anti-aliasing solutions|
 |hearth_asset|Provides asset functionality|
@@ -105,6 +139,7 @@ This is the complete `hearth` cargo feature list, without "profiles" or "collect
 |hearth_scene|Provides scene functionality|
 |hearth_settings|Load and save settings|
 |hearth_shader|Provides shaders usable through asset handles.|
+|hearth_soft_render|Draws 2D scenes on the CPU, into a framebuffer for each window|
 |hearth_solari|Provides raytraced lighting (experimental)|
 |hearth_sprite|Provides sprite functionality|
 |hearth_sprite_render|Provides sprite rendering functionality|
@@ -117,38 +152,6 @@ This is the complete `hearth` cargo feature list, without "profiles" or "collect
 |hearth_window|Windowing layer|
 |hearth_winit|winit window and input backend|
 |hearth_world_serialization|Provides ECS serialization functionality|
-|bluenoise_texture|Include spatio-temporal blue noise KTX2 file used by generated environment maps, Solari and atmosphere|
-|bmp|BMP image format support|
-|clipboard_image|Enables image copy/paste via the system clipboard. Not supported on WASM.|
-|complex_script_segmentation|Enables dictionary-based segmentation for complex scripts (CJK, Thai, Khmer, Lao, Myanmar), at the cost of a larger binary|
-|compressed_image_saver|Texture compression asset processor (BCn for desktop, ASTC for mobile via env var)|
-|compressed_image_saver_universal|Texture compression asset processor (cross-platform, transcodes to any GPU format at load time)|
-|critical-section|`critical-section` provides the building blocks for synchronization primitives on all platforms, including `no_std`.|
-|custom_cursor|Enable winit custom cursor support|
-|dds|DDS compressed texture support|
-|debug|Enable collecting debug information about systems and components to help with diagnostics|
-|debug_glam_assert|Enable assertions in debug builds to check the validity of parameters passed to glam|
-|default_font|Include a default font, containing only ASCII characters, at the cost of a 20kB binary size increase|
-|detailed_trace|Enable detailed trace event logging. These trace events are expensive even when off, thus they require compile time opt-in|
-|dfg_lut|Include a preintegrated BRDF Look Up Table for more accurate specular shading.|
-|dlss|NVIDIA Deep Learning Super Sampling|
-|dynamic_linking|Force dynamic linking, which improves iterative compile times|
-|embedded_watcher|Enables watching in memory asset providers for Hearth Asset hot-reloading|
-|equirectangular_cubemap|Equirectangular (lat-long) panorama to cubemap conversion|
-|experimental_pbr_pcss|Enable support for PCSS, at the risk of blowing past the global, per-shader sampler limit on older/lower-end GPUs|
-|exr|EXR image format support|
-|ff|Farbfeld image format support|
-|file_watcher|Enables watching the filesystem for Hearth Asset hot-reloading|
-|flac|FLAC audio format support (through `claxon`)|
-|force_disable_dlss|Forcibly disable DLSS so that `cargo build --all-features` works without the DLSS SDK being installed. Not meant for users.|
-|free_camera|Enables the free cam from hearth_camera_controller|
-|gamepad|Gamepad support. Automatically enabled by `hearth_gilrs`.|
-|gestures|Gestures support. Automatically enabled by `hearth_window`.|
-|gif|GIF image format support|
-|glam_assert|Enable assertions to check the validity of parameters passed to glam|
-|gltf_animation|Enable glTF animation loading|
-|gltf_meshopt|Enables loading glTF files that use KHR_meshopt_compression or EXT_meshopt_compression|
-|hdr|HDR image format support|
 |hotpatching|Enable hotpatching of Hearth systems|
 |http|Enables downloading assets from HTTP sources. Warning: there are security implications. Read the docs on WebAssetPlugin.|
 |https|Enables downloading assets from HTTPS sources. Warning: there are security implications. Read the docs on WebAssetPlugin.|

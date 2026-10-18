@@ -248,13 +248,14 @@ hearth_text = [
   "hearth_image",
   "hearth_sprite?/hearth_text",
   "hearth_sprite_render?/hearth_text",
+  "hearth_soft_render?/hearth_text",
 ]
 hearth_ui = ["dep:hearth_ui", "hearth_text", "hearth_sprite"]
 hearth_mesh = ["dep:hearth_mesh", "hearth_image", "hearth_gizmos?/hearth_mesh"]
 hearth_animation = ["dep:hearth_animation", "hearth_mesh"]
 hearth_mikktspace = ["hearth_mesh?/hearth_mikktspace"]
 hearth_window = ["dep:hearth_window", "dep:hearth_a11y", "hearth_image"]
-hearth_winit = ["dep:hearth_winit", "hearth_window"]
+hearth_winit = ["dep:hearth_winit", "hearth_window", "hearth_soft_render?/desktop"]
 hearth_camera = ["dep:hearth_camera", "hearth_mesh", "hearth_window"]
 hearth_world_serialization = ["dep:hearth_world_serialization", "hearth_asset"]
 hearth_material = ["dep:hearth_material", "hearth_image", "hearth_shader"]
@@ -266,6 +267,7 @@ hearth_render = [
   "hearth_shader",
   "hearth_color/wgpu-types",
   "hearth_color/encase",
+  "hearth_remote?/hearth_render",
 ]
 hearth_core_pipeline = ["dep:hearth_core_pipeline", "hearth_render"]
 hearth_anti_alias = ["dep:hearth_anti_alias", "hearth_core_pipeline"]
@@ -276,6 +278,11 @@ hearth_pbr = [
   "hearth_material",
   "hearth_core_pipeline",
   "hearth_gizmos_render?/hearth_pbr",
+]
+hearth_soft_render = [
+  "dep:hearth_soft_render",
+  "hearth_sprite",
+  "hearth_remote?/hearth_soft_render",
 ]
 hearth_sprite_render = [
   "dep:hearth_sprite_render",
@@ -610,13 +617,13 @@ hearth_picking = { path = "../hearth_picking", optional = true, version = "0.20.
 hearth-settings = { path = "../hearth_settings", optional = true, version = "0.20.0-dev" }
 hearth_remote = { path = "../hearth_remote", optional = true, version = "0.20.0-dev", default-features = false, features = [
   "hearth_asset",
-  "hearth_render",
 ] }
 hearth_render = { path = "../hearth_render", optional = true, version = "0.20.0-dev" }
 hearth_world_serialization = { path = "../hearth_world_serialization", optional = true, version = "0.20.0-dev" }
 hearth_scene = { path = "../hearth_scene", optional = true, version = "0.20.0-dev" }
 hearth_solari = { path = "../hearth_solari", optional = true, version = "0.20.0-dev" }
 hearth_sprite = { path = "../hearth_sprite", optional = true, version = "0.20.0-dev" }
+hearth_soft_render = { path = "../hearth_soft_render", optional = true, version = "0.20.0-dev" }
 hearth_sprite_render = { path = "../hearth_sprite_render", optional = true, version = "0.20.0-dev" }
 hearth_state = { path = "../hearth_state", optional = true, version = "0.20.0-dev", default-features = false, features = [
   "hearth_app",
@@ -634,9 +641,12 @@ hearth_winit = { path = "../hearth_winit", optional = true, version = "0.20.0-de
 [target.'cfg(target_os = "android")'.dependencies]
 hearth_android = { path = "../hearth_android", version = "0.20.0-dev", default-features = false }
 
-# Only enable hearth_remote/http (default features) on non-WASM targets.
+# Only enable hearth_remote/http on non-WASM targets.
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-hearth_remote = { path = "../hearth_remote", version = "0.20.0-dev", default-features = true, optional = true }
+hearth_remote = { path = "../hearth_remote", version = "0.20.0-dev", default-features = false, optional = true, features = [
+  "http",
+  "hearth_asset",
+] }
 
 [lints]
 workspace = true

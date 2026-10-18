@@ -96,6 +96,8 @@ pub use hearth_settings as settings;
 #[cfg(feature = "hearth_shader")]
 pub use hearth_shader as shader;
 pub use hearth_shape as shape;
+#[cfg(feature = "hearth_soft_render")]
+pub use hearth_soft_render as soft_render;
 #[cfg(feature = "hearth_solari")]
 pub use hearth_solari as solari;
 #[cfg(feature = "hearth_sprite")]
