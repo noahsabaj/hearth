@@ -38,6 +38,7 @@ extern crate alloc;
 pub mod assets;
 pub mod history;
 pub mod icon;
+mod idle;
 mod layout;
 pub mod ops;
 pub mod play;
@@ -95,6 +96,7 @@ impl Plugin for EditorPlugin {
                 status::plugin,
                 history::plugin,
                 icon::plugin,
+                idle::plugin,
                 scene::plugin,
                 viewport::plugin,
                 layout::plugin,
