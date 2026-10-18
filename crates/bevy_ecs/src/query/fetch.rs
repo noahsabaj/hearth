@@ -2541,8 +2541,15 @@ unsafe impl<'__w, T: Component<Mutability = Mutable>> QueryData for &'__w mut T 
                     callers.map(|callers| unsafe { callers.get_unchecked(table_row.index()) });
                 // Make it statically known whether the atomic tick is present or not.
                 let summary_tick = if T::HAS_SUMMARY_TICK {
-                    // SAFETY: Summary tick presence always matches `T::HAS_SUMMARY_TICK`.
-                    Some(unsafe { summary_tick.debug_checked_unwrap() }.row(table_row.index()))
+                    // SAFETY:
+                    // - Summary tick presence always matches `T::HAS_SUMMARY_TICK`.
+                    // - The column's summary covers the whole column, and the caller ensures
+                    //   `table_row` is in range.
+                    Some(unsafe {
+                        summary_tick
+                            .debug_checked_unwrap()
+                            .row_unchecked(table_row.index())
+                    })
                 } else {
                     None
                 };

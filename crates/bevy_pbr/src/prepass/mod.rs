@@ -232,9 +232,17 @@ pub fn update_mesh_previous_global_transforms(
         (Entity, &GlobalTransform),
         (PreviousMeshFilter, Without<PreviousGlobalTransform>),
     >,
-    mut meshes: Query<(Ref<GlobalTransform>, &mut PreviousGlobalTransform), PreviousMeshFilter>,
+    mut meshes: ParamSet<(
+        Query<(Ref<GlobalTransform>, &mut PreviousGlobalTransform), PreviousMeshFilter>,
+        Query<
+            (Ref<GlobalTransform>, &mut PreviousGlobalTransform),
+            (PreviousMeshFilter, Changed<GlobalTransform>),
+        >,
+    )>,
+    mut skipped_a_frame: Local<bool>,
 ) {
     if !views.iter().any(|camera| camera.is_active) {
+        *skipped_a_frame = true;
         return;
     }
 
@@ -242,11 +250,20 @@ pub fn update_mesh_previous_global_transforms(
         let new_previous_transform = PreviousGlobalTransform(transform.affine());
         commands.entity(entity).try_insert(new_previous_transform);
     }
-    meshes.par_iter_mut().for_each(|(transform, mut previous)| {
+
+    fn update((transform, mut previous): (Ref<GlobalTransform>, Mut<PreviousGlobalTransform>)) {
         if transform.is_changed_after(previous.last_changed()) {
             *previous = PreviousGlobalTransform(transform.affine());
         }
-    });
+    }
+    // Only meshes that moved since the last run need updating, and `Changed` lets the query skip
+    // the rest without looking at them. After frames without an active view, which returned
+    // early, look at every mesh, since those frames' changes are older than the last run.
+    if core::mem::take(&mut *skipped_a_frame) {
+        meshes.p0().par_iter_mut().for_each(update);
+    } else {
+        meshes.p1().par_iter_mut().for_each(update);
+    }
 }
 
 #[derive(Resource, Clone)]

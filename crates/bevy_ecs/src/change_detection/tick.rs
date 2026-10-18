@@ -216,6 +216,23 @@ impl<'a> SummaryTicks<'a> {
         }
     }
 
+    /// Like [`Self::row`], without checking that the chunk exists, so that narrowing compiles to
+    /// nothing when the result goes unused, as it does for every value a query fetches mutably
+    /// but never changes.
+    ///
+    /// # Safety
+    ///
+    /// `self` must cover the whole column, and `row` must be less than the column's capacity.
+    #[inline(always)]
+    pub(crate) unsafe fn row_unchecked(self, row: usize) -> Self {
+        let chunk = Self::chunk_of(row);
+        Self {
+            column: self.column,
+            // SAFETY: The caller ensures the column, and so its chunk ticks, covers `row`.
+            chunks: core::slice::from_ref(unsafe { self.chunks.get_unchecked(chunk) }),
+        }
+    }
+
     /// Narrows the chunks to the ones that `rows` lie in. `self` must cover the whole column.
     #[inline]
     pub fn rows(self, rows: core::ops::Range<usize>) -> Self {
