@@ -370,11 +370,11 @@ pub fn ui_layout_system(
     >,
     style_query: Query<&'static TaffyStyle>,
     mut node_queries: ParamSet<(
-        Query<&'static mut ComputedLayout>,
+        Query<&mut ComputedLayout>,
         Query<(
-            &'static mut ComputedNode,
-            &'static mut UiGlobalTransform,
-            &'static mut ComputedLayout,
+            &mut ComputedNode,
+            &mut UiGlobalTransform,
+            &mut ComputedLayout,
             Has<GhostNode>,
         )>,
     )>,

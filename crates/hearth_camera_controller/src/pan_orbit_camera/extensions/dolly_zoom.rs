@@ -58,7 +58,7 @@ impl DollyZoomTrigger {
                 Mut<'static, Projection>,
                 &'static mut PanOrbitCamera,
             )>,
-            Query<&'static mut Transform, With<PanOrbitCamera>>,
+            Query<&mut Transform, With<PanOrbitCamera>>,
         )>,
         mut redraw: MessageWriter<RequestRedraw>,
     ) {
@@ -186,7 +186,7 @@ impl DollyZoom {
                 Mut<'static, Projection>,
                 &'static mut PanOrbitCamera,
             )>,
-            Query<&'static mut Transform, With<PanOrbitCamera>>,
+            Query<&mut Transform, With<PanOrbitCamera>>,
         )>,
         mut redraw: MessageWriter<RequestRedraw>,
         time: Res<Time<Real>>,

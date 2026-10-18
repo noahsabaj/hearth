@@ -660,7 +660,7 @@ unsafe impl<P: SystemParam, B: SystemParamBuilder<P>, const N: usize>
 /// # world.run_system_once(system);
 ///
 /// fn buildable_system_with_tuple(
-///     mut set: ParamSet<(Query<&'static mut Health>, Query<&'static mut Health>, &'static World)>,
+///     mut set: ParamSet<(Query<&mut Health>, Query<&mut Health>, &World)>,
 /// ) {
 ///     // The first parameter is built from the first builder,
 ///     // so this will iterate over enemies.
@@ -684,7 +684,7 @@ unsafe impl<P: SystemParam, B: SystemParamBuilder<P>, const N: usize>
 ///     .build_system(buildable_system_with_vec);
 /// # world.run_system_once(system);
 ///
-/// fn buildable_system_with_vec(mut set: ParamSet<Vec<Query<&'static mut Health>>>) {
+/// fn buildable_system_with_vec(mut set: ParamSet<Vec<Query<&mut Health>>>) {
 ///     // As with tuples, the first parameter is built from the first builder,
 ///     // so this will iterate over enemies.
 ///     for mut health in set.get_mut(0).iter_mut() {}
@@ -1125,7 +1125,7 @@ mod tests {
             }),
         ]),)
             .build_state(&mut world)
-            .build_system(|mut params: ParamSet<Vec<Query<&'static mut A>>>| {
+            .build_system(|mut params: ParamSet<Vec<Query<&mut A>>>| {
                 let mut count = 0;
                 params.for_each(|mut query| count += query.iter_mut().count());
                 count

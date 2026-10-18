@@ -466,7 +466,7 @@ fn update_tree_item_levels(
                 Or<(With<TreeView>, With<TreeItem>, With<TreeItemChildren>)>,
             ),
         >,
-        Query<&'static mut TreeItem>,
+        Query<&mut TreeItem>,
     )>,
 ) {
     let changed_trees = owning_trees(queries.p0().iter(), &parents, &trees);

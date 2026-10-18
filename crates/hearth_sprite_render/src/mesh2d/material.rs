@@ -1476,7 +1476,7 @@ pub fn mark_2d_meshes_as_changed_if_their_materials_changed<M>(
             &'static mut Mesh2d,
             Or<(Changed<MeshMaterial2d<M>>, AssetChanged<MeshMaterial2d<M>>)>,
         >,
-        Query<&'static mut Mesh2d>,
+        Query<&mut Mesh2d>,
     )>,
     mut removed_materials_query: RemovedComponents<MeshMaterial2d<M>>,
 ) where

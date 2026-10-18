@@ -677,10 +677,6 @@ unsafe impl<F: QueryFilter + 'static> ReadOnlySystemParam for SkipIfAny<F> {}
 /// Conflicting `SystemParam`s like these can be placed in a `ParamSet`,
 /// which leverages the borrow checker to ensure that only one of the contained parameters are accessed at a given time.
 ///
-/// Inside a `ParamSet`, a query's references are written with `'static`, as in
-/// `Query<&'static mut Health>`. A system's other parameters can leave it out, but a `ParamSet`
-/// holds its parameters as types the system is generic over, and those must be `'static`.
-///
 /// ```
 /// # use hearth_ecs::prelude::*;
 /// #
@@ -696,8 +692,8 @@ unsafe impl<F: QueryFilter + 'static> ReadOnlySystemParam for SkipIfAny<F> {}
 /// // Given the following system
 /// fn fancy_system(
 ///     mut set: ParamSet<(
-///         Query<&'static mut Health, With<Enemy>>,
-///         Query<&'static mut Health, With<Ally>>,
+///         Query<&mut Health, With<Enemy>>,
+///         Query<&mut Health, With<Ally>>,
 ///     )>
 /// ) {
 ///     // This will access the first `SystemParam`.
@@ -734,11 +730,11 @@ unsafe impl<F: QueryFilter + 'static> ReadOnlySystemParam for SkipIfAny<F> {}
 ///         // which both reads and writes messages with a single parameter.
 ///         MessageReader<MyMessage>,
 ///         MessageWriter<MyMessage>,
-///         // PROBLEM: `&'static World` needs read access to everything, which conflicts with
+///         // PROBLEM: `&World` needs read access to everything, which conflicts with
 ///         // any mutable access in the same system.
-///         // SOLUTION: `ParamSet` ensures `&'static World` is only accessed when we're not
+///         // SOLUTION: `ParamSet` ensures `&World` is only accessed when we're not
 ///         // using the other mutable parameters.
-///         &'static World,
+///         &World,
 ///     )>,
 /// ) {
 ///     for message in set.p0().read() {
@@ -753,7 +749,14 @@ unsafe impl<F: QueryFilter + 'static> ReadOnlySystemParam for SkipIfAny<F> {}
 /// }
 /// # hearth_ecs::system::assert_is_system(message_system);
 /// ```
-pub struct ParamSet<'w, 's, T: SystemParam> {
+///
+/// In a struct that derives [`SystemParam`], the parameters inside a `ParamSet` are written with
+/// `'static` lifetimes rather than the struct's own, as in
+/// `ParamSet<'w, 's, (Query<'static, 'static, &'static mut Health>,)>`.
+// `T: 'static` lets a system leave out the lifetimes inside its `ParamSet`, as in
+// `ParamSet<(Query<&mut A>, Query<&A>)>`: the bound tells the compiler that those lifetimes are
+// `'static`, which the parameters' `SystemParam` impls need.
+pub struct ParamSet<'w, 's, T: SystemParam + 'static> {
     param_states: &'s mut T::State,
     world: UnsafeWorldCell<'w>,
     system_meta: SystemMeta,
@@ -3177,12 +3180,13 @@ mod tests {
         assert_is_system(my_system);
     }
 
-    // Regression test for upstream issue #8192.
+    // Regression test for upstream issue #8192. A `ParamSet`'s parameters are `'static`, so the
+    // query inside it is written with `'static` rather than with the struct's lifetimes.
     #[test]
     fn system_param_invariant_lifetime() {
         #[derive(SystemParam)]
         pub struct InvariantParam<'w, 's> {
-            _set: ParamSet<'w, 's, (Query<'w, 's, ()>,)>,
+            _set: ParamSet<'w, 's, (Query<'static, 'static, ()>,)>,
         }
 
         fn my_system(_: InvariantParam) {}
@@ -3447,7 +3451,7 @@ mod tests {
 
     #[test]
     fn mutable_world_param_set_works() {
-        fn system(_: ParamSet<(&'static mut World, &'static mut World, &'static Entities)>) {}
+        fn system(_: ParamSet<(&mut World, &mut World, &Entities)>) {}
         assert_is_system(system);
     }
 
@@ -3455,7 +3459,7 @@ mod tests {
     #[cfg_attr(feature = "debug", should_panic(expected = "World"))]
     #[cfg_attr(not(feature = "debug"), should_panic)]
     fn mutable_world_param_set_conflicts_outside() {
-        fn system(_: &Entities, _: ParamSet<(&'static mut World, &'static Entities)>) {}
+        fn system(_: &Entities, _: ParamSet<(&mut World, &Entities)>) {}
         assert_is_system(system);
     }
 
@@ -3463,7 +3467,7 @@ mod tests {
     #[cfg_attr(feature = "debug", should_panic(expected = "Entities"))]
     #[cfg_attr(not(feature = "debug"), should_panic)]
     fn mutable_world_param_set_conflicts_outside_reverse() {
-        fn system(_: ParamSet<(&'static mut World, &'static Entities)>, _: &Entities) {}
+        fn system(_: ParamSet<(&mut World, &Entities)>, _: &Entities) {}
         assert_is_system(system);
     }
 

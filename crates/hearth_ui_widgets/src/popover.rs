@@ -112,8 +112,8 @@ pub(crate) fn position_popover(
         &ChildOf,
     )>,
     mut qs_transform: ParamSet<(
-        Query<(&'static ComputedNode, &'static UiGlobalTransform), Without<Popover>>,
-        Query<&'static mut UiGlobalTransform, Without<Popover>>,
+        Query<(&ComputedNode, &UiGlobalTransform), Without<Popover>>,
+        Query<&mut UiGlobalTransform, Without<Popover>>,
     )>,
     q_children: Query<&Children>,
 ) {

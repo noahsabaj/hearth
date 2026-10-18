@@ -98,7 +98,7 @@ pub fn update_orthographic(
             &'static mut PanOrbitCamera,
             Mut<'static, Projection>,
         )>,
-        Query<&'static mut Transform, With<PanOrbitCamera>>,
+        Query<&mut Transform, With<PanOrbitCamera>>,
     )>,
 ) {
     camera_set

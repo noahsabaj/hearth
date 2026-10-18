@@ -882,7 +882,7 @@ mod validation_tests {
     fn param_set_validation_skip() {
         // A system using ParamSet with a Single sub-param should be skipped
         // when the Single has no matching entities, rather than panicking.
-        fn system(mut _set: ParamSet<(Single<&'static TestComponent>,)>) {}
+        fn system(mut _set: ParamSet<(Single<&TestComponent>,)>) {}
 
         let mut world = World::new();
         let result = world.run_system_once(system);
@@ -896,7 +896,7 @@ mod validation_tests {
     fn param_set_validation_failure() {
         // A system using ParamSet with a Res sub-param should fail validation
         // when the resource does not exist.
-        fn system(mut _set: ParamSet<(Query<&'static TestComponent>, Res<MissingResource>)>) {}
+        fn system(mut _set: ParamSet<(Query<&TestComponent>, Res<MissingResource>)>) {}
 
         let mut world = World::new();
         let result = world.run_system_once(system);
@@ -909,7 +909,7 @@ mod validation_tests {
     #[test]
     fn param_set_validation_success() {
         // A system using ParamSet with valid sub-params should succeed.
-        fn system(mut set: ParamSet<(Query<&'static TestComponent>, Res<Counter>)>) {
+        fn system(mut set: ParamSet<(Query<&TestComponent>, Res<Counter>)>) {
             let _q = set.p0();
         }
 

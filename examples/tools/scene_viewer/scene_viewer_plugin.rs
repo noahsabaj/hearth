@@ -219,9 +219,9 @@ fn camera_tracker(
     mut camera_tracker: ResMut<CameraTracker>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut queries: ParamSet<(
-        Query<(Entity, &'static mut Camera), (Added<Camera>, Without<FreeCamera>)>,
-        Query<(Entity, &'static mut Camera), (Added<Camera>, With<FreeCamera>)>,
-        Query<&'static mut Camera>,
+        Query<(Entity, &mut Camera), (Added<Camera>, Without<FreeCamera>)>,
+        Query<(Entity, &mut Camera), (Added<Camera>, With<FreeCamera>)>,
+        Query<&mut Camera>,
     )>,
 ) {
     // track added scene camera entities first, to ensure they are preferred for the

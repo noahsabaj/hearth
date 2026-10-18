@@ -42,7 +42,7 @@ pub use serial::propagate_parent_transforms;
 pub fn sync_simple_transforms(
     mut query: ParamSet<(
         Query<
-            (&'static Transform, &'static mut GlobalTransform),
+            (&Transform, &mut GlobalTransform),
             (
                 Or<(Changed<Transform>, Added<GlobalTransform>)>,
                 Without<ChildOf>,

@@ -73,3 +73,7 @@ pub use texture_atlas_builder::*;
 
 pub(crate) mod image_texture_conversion;
 pub use image_texture_conversion::IntoDynamicImageError;
+
+/// The types an [`Image`]'s size and format are written with, so that building an image doesn't
+/// need the renderer.
+pub use wgpu_types::{Extent3d, TextureDimension, TextureFormat, TextureUsages};

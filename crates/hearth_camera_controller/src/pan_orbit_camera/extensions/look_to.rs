@@ -97,8 +97,8 @@ impl LookToTrigger {
         mut events: MessageReader<Self>,
         mut state: ResMut<LookTo>,
         mut camera_set: ParamSet<(
-            Query<&'static mut PanOrbitCamera, Without<IsResource>>,
-            Query<&'static Transform, (With<PanOrbitCamera>, Without<IsResource>)>,
+            Query<&mut PanOrbitCamera, Without<IsResource>>,
+            Query<&Transform, (With<PanOrbitCamera>, Without<IsResource>)>,
         )>,
         mut redraw: MessageWriter<RequestRedraw>,
     ) {
@@ -177,9 +177,9 @@ impl LookTo {
     fn update(
         mut state: ResMut<Self>,
         mut camera_set: ParamSet<(
-            Query<&'static mut PanOrbitCamera>,
-            Query<&'static Transform, With<PanOrbitCamera>>,
-            Query<&'static mut Transform, With<PanOrbitCamera>>,
+            Query<&mut PanOrbitCamera>,
+            Query<&Transform, With<PanOrbitCamera>>,
+            Query<&mut Transform, With<PanOrbitCamera>>,
         )>,
         mut redraw: MessageWriter<RequestRedraw>,
         time: Res<Time<Real>>,

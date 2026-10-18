@@ -196,8 +196,8 @@ fn update_column_splits(
     q_leading: Query<Entity, With<ColumnSplitLeading>>,
     q_parents: Query<&ChildOf>,
     mut nodes: ParamSet<(
-        Query<Geometry<'static>>,
-        Query<&'static mut Node, Or<(With<ColumnSplitLeading>, With<ColumnSplitHandle>)>>,
+        Query<Geometry>,
+        Query<&mut Node, Or<(With<ColumnSplitLeading>, With<ColumnSplitHandle>)>>,
     )>,
 ) {
     let geometry = nodes.p0();

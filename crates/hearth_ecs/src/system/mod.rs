@@ -954,7 +954,7 @@ mod tests {
 
     #[test]
     fn query_set_system() {
-        fn sys(mut _set: ParamSet<(Query<&'static mut A>, Query<&'static A>)>) {}
+        fn sys(mut _set: ParamSet<(Query<&mut A>, Query<&A>)>) {}
         let mut world = World::default();
         run_system(&mut world, sys);
     }
@@ -962,7 +962,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn conflicting_query_with_query_set_system() {
-        fn sys(_query: Query<&mut A>, _set: ParamSet<(Query<&'static mut A>, Query<&'static B>)>) {}
+        fn sys(_query: Query<&mut A>, _set: ParamSet<(Query<&mut A>, Query<&B>)>) {}
 
         let mut world = World::default();
         run_system(&mut world, sys);
@@ -1334,7 +1334,7 @@ mod tests {
         let mut system_state: SystemState<(
             Res<A>,
             Option<Single<&B>>,
-            ParamSet<(Query<&'static C>, Query<&'static D>)>,
+            ParamSet<(Query<&C>, Query<&D>)>,
         )> = SystemState::new(&mut world);
         let (a, query, _) = system_state.get(&world).unwrap();
         assert_eq!(*a, A(42), "returned resource matches initial value");

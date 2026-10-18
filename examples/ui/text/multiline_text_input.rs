@@ -228,8 +228,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         .observe(
                             |on: On<FocusedInput<KeyboardInput>>,
                              mut query_set: ParamSet<(
-                                Query<&'static EditableText, With<VisibleLinesInput>>,
-                                Query<&'static mut EditableText, With<MultilineInput>>,
+                                Query<&EditableText, With<VisibleLinesInput>>,
+                                Query<&mut EditableText, With<MultilineInput>>,
                             )>| {
                                 if !(on.input.state.is_pressed()
                                     && on.input.logical_key == Key::Enter)

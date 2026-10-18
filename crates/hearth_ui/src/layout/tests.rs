@@ -505,7 +505,7 @@ fn compute_layout_uses_camera_viewport() {
             With<Node>,
         >,
         style_query: Query<&'static TaffyStyle>,
-        mut node_queries: ParamSet<(Query<&'static mut ComputedLayout>,)>,
+        mut node_queries: ParamSet<(Query<&mut ComputedLayout>,)>,
         mut buffer_query: Query<&mut hearth_text::ComputedTextBlock>,
         mut font_system: ResMut<hearth_text::FontCx>,
         mut child_stack: Local<Vec<taffy::NodeId>>,

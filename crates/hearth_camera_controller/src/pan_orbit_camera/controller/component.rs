@@ -316,13 +316,13 @@ impl PanOrbitCamera {
     /// Called once every frame to compute motions and update the transforms of all [`PanOrbitCamera`]s
     pub fn update_camera_positions(
         mut camera_set: ParamSet<(
-            Query<(&'static Transform, Entity), With<PanOrbitCamera>>,
+            Query<(&Transform, Entity), With<PanOrbitCamera>>,
             Query<(
                 &'static mut PanOrbitCamera,
                 &'static Camera,
                 Mut<'static, Projection>,
             )>,
-            Query<&'static mut Transform, With<PanOrbitCamera>>,
+            Query<&mut Transform, With<PanOrbitCamera>>,
         )>,
         mut event: MessageWriter<RequestRedraw>,
         time: Res<Time<Real>>,
