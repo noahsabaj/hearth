@@ -49,6 +49,7 @@ mod parallax;
 mod pbr_material;
 mod prepass;
 mod render;
+mod shape;
 mod ssao;
 mod ssr;
 mod transmission;
@@ -74,6 +75,7 @@ pub use parallax::*;
 pub use pbr_material::*;
 pub use prepass::*;
 pub use render::*;
+pub use shape::*;
 pub use ssao::*;
 pub use ssr::*;
 pub use transmission::*;
@@ -91,6 +93,7 @@ pub mod prelude {
         mesh_material::MeshMaterial3d,
         parallax::ParallaxMappingMethod,
         pbr_material::StandardMaterial,
+        shape::{Shape3d, ShapeMesh},
         ssao::ScreenSpaceAmbientOcclusionPlugin,
     };
 }
@@ -233,6 +236,7 @@ impl Plugin for PbrPlugin {
                 ClusteredDecalPlugin,
                 ContactShadowsPlugin,
             ))
+            .add_plugins(ShapeMeshPlugin)
             .add_plugins((
                 decal::ForwardDecalPlugin,
                 SyncComponentPlugin::<DirectionalLight, Self>::default(),
