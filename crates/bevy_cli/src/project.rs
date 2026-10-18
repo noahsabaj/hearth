@@ -109,6 +109,24 @@ impl Target {
     }
 }
 
+/// A dependency as a package's `Cargo.toml` declares it.
+#[derive(Clone, Debug, Default)]
+pub struct Dependency {
+    /// The package it names, which is not the name it's renamed to.
+    pub name: String,
+    /// Where it comes from, such as `git+https://github.com/noahsabaj/hearth?branch=main` or
+    /// `registry+https://github.com/rust-lang/crates.io-index`. `None` for a path dependency.
+    pub source: Option<String>,
+    /// Its version requirement, such as `^0.19`.
+    pub req: String,
+    /// `dev` or `build`, or `None` for a normal dependency.
+    pub kind: Option<String>,
+    /// The directory of a path dependency.
+    pub path: Option<PathBuf>,
+    /// The index of the registry it comes from, when that isn't crates.io.
+    pub registry: Option<String>,
+}
+
 /// A package of the workspace.
 #[derive(Clone, Debug)]
 pub struct Package {
@@ -116,10 +134,14 @@ pub struct Package {
     pub name: String,
     /// Its version.
     pub version: String,
+    /// Where it comes from, as `cargo metadata` resolved it; `None` for a local package.
+    pub source: Option<String>,
     /// Its `Cargo.toml`.
     pub manifest_path: PathBuf,
     /// Its targets.
     pub targets: Vec<Target>,
+    /// Its dependencies, as its `Cargo.toml` declares them.
+    pub dependencies: Vec<Dependency>,
     /// The binary `cargo run` runs by default.
     pub default_run: Option<String>,
     /// The Rust version it needs.
@@ -152,6 +174,10 @@ pub struct Metadata {
     pub all: Vec<Package>,
     /// The resolved dependency graph, when it was resolved.
     pub resolve: Value,
+    /// The directory of the workspace's root `Cargo.toml`, where its `Cargo.lock` is.
+    pub workspace_root: PathBuf,
+    /// Where the workspace builds to.
+    pub target_directory: PathBuf,
 }
 
 fn strings(value: &Value) -> Vec<String> {
@@ -172,6 +198,7 @@ fn parse_package(package: &Value) -> Package {
     Package {
         name: text("name").unwrap_or_default(),
         version: text("version").unwrap_or_default(),
+        source: text("source"),
         manifest_path: PathBuf::from(text("manifest_path").unwrap_or_default()),
         targets: package["targets"]
             .as_array()
@@ -183,6 +210,23 @@ fn parse_package(package: &Value) -> Package {
                 kinds: strings(&target["kind"]),
                 required_features: strings(&target["required-features"]),
                 src_path: PathBuf::from(target["src_path"].as_str().unwrap_or_default()),
+            })
+            .collect(),
+        dependencies: package["dependencies"]
+            .as_array()
+            .map(Vec::as_slice)
+            .unwrap_or_default()
+            .iter()
+            .map(|dependency| {
+                let text = |key: &str| dependency[key].as_str().map(str::to_string);
+                Dependency {
+                    name: text("name").unwrap_or_default(),
+                    source: text("source"),
+                    req: text("req").unwrap_or_default(),
+                    kind: text("kind"),
+                    path: text("path").map(PathBuf::from),
+                    registry: text("registry"),
+                }
             })
             .collect(),
         default_run: text("default_run"),
@@ -243,6 +287,8 @@ pub fn metadata(
             Vec::new()
         },
         resolve: raw["resolve"].clone(),
+        workspace_root: PathBuf::from(raw["workspace_root"].as_str().unwrap_or_default()),
+        target_directory: PathBuf::from(raw["target_directory"].as_str().unwrap_or_default()),
     })
 }
 
@@ -615,6 +661,18 @@ pub fn build(
     flags: &[String],
     toolchain: Option<&str>,
 ) -> Result<Build, CliError> {
+    build_with(out, command, flags, toolchain, |_| {})
+}
+
+/// [`build`], with `configure` setting up the cargo command further, such as its working
+/// directory and environment.
+pub fn build_with(
+    out: &Output,
+    command: &str,
+    flags: &[String],
+    toolchain: Option<&str>,
+    configure: impl FnOnce(&mut Command),
+) -> Result<Build, CliError> {
     let show = out.format == Format::Human && !out.capture;
     let format = if show && out.color {
         "json-diagnostic-rendered-ansi"
@@ -633,6 +691,7 @@ pub fn build(
         } else {
             Stdio::piped()
         });
+    configure(&mut cargo);
     let started = Instant::now();
     let mut child = cargo
         .spawn()
@@ -858,12 +917,14 @@ mod tests {
         let mut package = Package {
             name: "game".to_string(),
             version: "0.1.0".to_string(),
+            source: None,
             manifest_path: PathBuf::from("Cargo.toml"),
             targets: vec![
                 target("game", "bin"),
                 target("server", "example"),
                 target("game", "lib"),
             ],
+            dependencies: Vec::new(),
             default_run: None,
             rust_version: None,
             metadata: Value::Null,

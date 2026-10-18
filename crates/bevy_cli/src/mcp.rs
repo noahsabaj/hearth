@@ -49,7 +49,7 @@ const NUMERIC: &[&str] = &[
 const JSON_VALUES: &[&str] = &["value", "params"];
 
 /// What the server tells clients about using its tools.
-const INSTRUCTIONS: &str = "Tools to build, run, inspect and drive Hearth (and Bevy) apps. Live tools talk to a running app over the Bevy Remote Protocol: start one with `run` (it runs detached as a session and returns once the app answers), then use `status`, `tree`, `find`, `get`, `set`, `screenshot`, `input_*` and the rest. Entities are names or ids such as \"495v0\"; types are short names such as \"Transform\" or full type paths; values are JSON. Every result is a JSON envelope: on failure `errors[0]` has a stable `code`, a `hint` and often `data.candidates` to retry with. Pass `count` or `duration` to streaming tools. `skill_show` has the full guide; `skill_show` with topic \"recipes\" has step-by-step recipes.";
+const INSTRUCTIONS: &str = "Tools to build, run, inspect and drive Hearth (and Bevy) apps. Live tools talk to a running app over the Bevy Remote Protocol: start one with `run` (it runs detached as a session and returns once the app answers; `editor` starts the project's editor the same way), then use `status`, `tree`, `find`, `get`, `set`, `screenshot`, `input_*` and the rest. Entities are names or ids such as \"495v0\"; types are short names such as \"Transform\" or full type paths; values are JSON. Every result is a JSON envelope: on failure `errors[0]` has a stable `code`, a `hint` and often `data.candidates` to retry with. Pass `count` or `duration` to streaming tools. `skill_show` has the full guide; `skill_show` with topic \"recipes\" has step-by-step recipes.";
 
 /// A tool's name: the command's words joined by `_`, such as `resource_get`.
 fn tool_name(command: &CommandInfo) -> String {

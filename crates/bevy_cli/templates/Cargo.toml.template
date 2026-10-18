@@ -12,6 +12,11 @@ default = ["remote"]
 # Leave it out of releases you ship with `--no-default-features`.
 remote = ["bevy/bevy_remote"]
 
+# `hearth editor` builds the editor with this package's library linked in, and calls this function
+# of the library with the editor's `App` at startup, so the editor knows the game's types.
+[package.metadata.hearth]
+editor-hook = "register_types"
+
 # Compile your code with some optimization, so the game runs smoothly while you work on it.
 [profile.dev]
 opt-level = 1

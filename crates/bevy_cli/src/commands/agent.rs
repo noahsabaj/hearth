@@ -165,6 +165,14 @@ pub const ERROR_CODES: &[(&str, &str)] = &[
         "DIRECTORY_NOT_EMPTY",
         "The new project's directory already has files",
     ),
+    (
+        "NO_ENGINE_DEPENDENCY",
+        "The package doesn't depend on the engine, so `hearth editor` can't build an editor for it",
+    ),
+    (
+        "INVALID_EDITOR_HOOK",
+        "`[package.metadata.hearth] editor-hook` isn't the path of a function in the package's library",
+    ),
     ("APP_FAILED", "The app exited with a failure"),
     (
         "APP_EXITED",
@@ -211,7 +219,27 @@ pub const ENVIRONMENT: &[(&str, &str)] = &[
     ("NO_COLOR", "Disables colors"),
     (
         "HEARTH_REMOTE_PORT",
-        "Set by `hearth run` for the app: the port to answer BRP on",
+        "Set by `hearth run` and `hearth editor` for the app: the port to answer BRP on",
+    ),
+    (
+        "HEARTH_PROJECT",
+        "Set by `hearth editor` for the editor: the directory of the project's package",
+    ),
+    (
+        "BEVY_ASSET_ROOT",
+        "Set by `hearth editor` for the editor: the project's directory, which `assets` is in",
+    ),
+    (
+        "HEARTH_EDITOR_PACKAGE",
+        "Set by `hearth editor` for the editor: the project's package name",
+    ),
+    (
+        "HEARTH_EDITOR_SCENE",
+        "Set by `hearth editor --scene` for the editor: the full path of the scene to open",
+    ),
+    (
+        "HEARTH_CLI",
+        "Set by `hearth editor` for the editor: the path of the `hearth` executable",
     ),
 ];
 
@@ -591,6 +619,7 @@ mod tests {
         for expected in [
             "new",
             "run",
+            "editor",
             "get",
             "resource get",
             "input key",
@@ -632,6 +661,17 @@ mod tests {
             .find(|command| command.name() == "run")
             .unwrap();
         assert!(run.args.iter().any(|arg| arg.last));
+        let editor = commands
+            .iter()
+            .find(|command| command.name() == "editor")
+            .unwrap();
+        assert_eq!(editor.group, "Project");
+        assert!(!editor.read_only() && !editor.destructive() && !editor.streams());
+        assert!(editor.args.iter().any(|arg| arg.id == "detach"));
+        assert!(editor
+            .notes
+            .as_deref()
+            .is_some_and(|notes| notes.contains("editor-hook")));
     }
 
     #[test]

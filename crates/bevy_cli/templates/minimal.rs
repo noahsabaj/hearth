@@ -1,37 +1,23 @@
-//! {{title}}, made with Hearth.
+//! {{title}}'s game: its components and systems. `src/main.rs` runs it, and `hearth editor`
+//! links it so that the editor knows the game's types.
 
 use bevy::prelude::*;
 
-fn main() {
-    let mut app = App::new();
-    app.add_plugins(DefaultPlugins.set(WindowPlugin {
-        primary_window: Some(Window {
-            title: "{{title}}".into(),
-            ..default()
-        }),
-        ..default()
-    }))
-    .add_systems(Startup, setup);
+/// The game: its systems and the types they use.
+pub struct GamePlugin;
 
-    // Lets the `hearth` CLI inspect and drive the app while it runs.
-    #[cfg(feature = "remote")]
-    app.add_plugins((
-        bevy::remote::RemotePlugin::default(),
-        bevy::remote::http::RemoteHttpPlugin::default().with_port(remote_port()),
-    ));
-
-    app.run();
+impl Plugin for GamePlugin {
+    fn build(&self, app: &mut App) {
+        register_types(app);
+        app.add_systems(Startup, setup);
+    }
 }
 
-/// The port the app answers the Bevy Remote Protocol on: `HEARTH_REMOTE_PORT`, which `hearth run`
-/// sets, else the default.
-#[cfg(feature = "remote")]
-fn remote_port() -> u16 {
-    std::env::var("HEARTH_REMOTE_PORT")
-        .ok()
-        .and_then(|port| port.parse().ok())
-        .unwrap_or(bevy::remote::http::DEFAULT_PORT)
-}
+/// Registers the game's components for reflection, so that the editor and the `hearth` CLI can
+/// show and change them, as in `app.register_type::<Health>();` for a component declared with
+/// `#[derive(Component, Reflect)]` and `#[reflect(Component)]`. `hearth editor` calls this, as
+/// `[package.metadata.hearth]` in `Cargo.toml` says.
+pub fn register_types(_app: &mut App) {}
 
 fn setup(mut commands: Commands) {
     commands.spawn((Name::new("Camera"), Camera2d));

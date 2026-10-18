@@ -63,11 +63,41 @@ both, rebuilding the 3D template after a one-line change takes about 10 seconds 
 To reflect your own components and resources, derive `Reflect` and add `#[reflect(Component)]` or
 `#[reflect(Resource)]`.
 
+The game's code lives in `src/lib.rs`: its components, a `GamePlugin` with its systems, and a `register_types`
+function that registers its components for reflection. `src/main.rs` adds `DefaultPlugins`, `GamePlugin` and the
+remote plugins. The 3D and 2D templates start from `assets/scenes/main.scn.ron` when the editor has saved one, and
+otherwise build their scene in code.
+
+## The editor
+
+```sh
+hearth editor                       # build the editor for this project and open it
+hearth editor --detach              # as a session, like `hearth run --detach`
+hearth editor --scene assets/scenes/level.scn.ron
+```
+
+The editor has to be built with the game's code to know the game's types, so `hearth editor` generates a small crate
+in the project's target directory, at `hearth-editor/`, and builds it into the same target directory, sharing the
+engine build with `hearth run`. The crate depends on the engine from the same source as the project (a path, a git
+repository at the same branch, tag or revision, or a registry version) with the `bevy_editor` feature, uses a copy
+of the project's `Cargo.lock` and its profiles, and depends on the project's library when it has one. When
+`Cargo.toml` names a function of the library, the editor calls it with its `App` at startup, as `hearth new`
+projects do:
+
+```toml
+[package.metadata.hearth]
+editor-hook = "register_types"
+```
+
+The editor runs with the project's directory as its asset root and with `HEARTH_PROJECT`, `HEARTH_EDITOR_PACKAGE`,
+`HEARTH_CLI`, `HEARTH_REMOTE_PORT` and, with `--scene`, `HEARTH_EDITOR_SCENE` set. The generated files are only
+rewritten when they change, so running it again doesn't rebuild anything that didn't change.
+
 ## Commands
 
 | Group      | Commands                                                                                    |
 |------------|---------------------------------------------------------------------------------------------|
-| Project    | `new`, `build`, `check`, `run`, `ps`, `logs`, `stop`, `examples`, `doctor`                  |
+| Project    | `new`, `build`, `check`, `run`, `editor`, `ps`, `logs`, `stop`, `examples`, `doctor`        |
 | Live app   | `status`, `tree`, `find`, `get`, `set`, `insert`, `remove`, `spawn`, `despawn`, `reparent`, |
 |            | `query`, `resource`, `types`, `schema`, `watch`, `observe`, `trigger`, `send`,              |
 |            | `screenshot`, `input`, `time`, `schedules`, `diagnostics`, `methods`, `call`, `exit`        |
@@ -134,5 +164,11 @@ installed skill points at `hearth skill show`, so it stays current as the CLI up
 | `HEARTH_TOOLCHAIN`   | the rustup toolchain to build with, like `--toolchain`      |
 | `HEARTH_CLI_HOME`    | where sessions, their logs and cached type registries are kept |
 | `HEARTH_TRACE`       | when set, each BRP request's method, sizes and time go to stderr |
-| `HEARTH_REMOTE_PORT` | set by `hearth run` for the app: the port to answer BRP on  |
+| `HEARTH_REMOTE_PORT` | set by `hearth run` and `hearth editor` for the app: the port to answer BRP on |
+| `HEARTH_PROJECT`     | set by `hearth editor` for the editor: the directory of the project's package |
+| `BEVY_ASSET_ROOT`    | set by `hearth editor` for the editor: the project's directory, which `assets` is in |
+| `HEARTH_EDITOR_PACKAGE` | set by `hearth editor` for the editor: the project's package name   |
+| `HEARTH_EDITOR_SCENE` | set by `hearth editor --scene` for the editor: the full path of the scene to open |
+| `HEARTH_EDITOR_RUN_ARGS` | set by `hearth editor` for the editor: the build flags it was given (profile, features, toolchain, cargo arguments), one per line, which Play passes to `hearth run` |
+| `HEARTH_CLI`         | set by `hearth editor` for the editor: the path of the `hearth` executable |
 | `NO_COLOR`           | disables colors                                             |

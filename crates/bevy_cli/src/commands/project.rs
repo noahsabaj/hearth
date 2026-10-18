@@ -165,6 +165,41 @@ fn on_path(name: &str) -> bool {
         .is_some_and(|path| std::env::split_paths(&path).any(|dir| dir.join(&file).is_file()))
 }
 
+/// The name `hearth new` reports for a template.
+fn template_name(template: Template) -> &'static str {
+    match template {
+        Template::ThreeD => "3d",
+        Template::TwoD => "2d",
+        Template::Minimal => "minimal",
+    }
+}
+
+/// The files of a new project, `name`, that depends on the engine as `bevy`: the game in
+/// `src/lib.rs`, which `src/main.rs` runs and `hearth editor` links.
+fn template_files(template: Template, name: &str, bevy: &str) -> Vec<(&'static str, String)> {
+    let lib = match template {
+        Template::ThreeD => include_str!("../../templates/3d.rs"),
+        Template::TwoD => include_str!("../../templates/2d.rs"),
+        Template::Minimal => include_str!("../../templates/minimal.rs"),
+    };
+    let title = title_of(name);
+    let fill = |text: &str| {
+        text.replace("{{name}}", name)
+            .replace("{{crate}}", &name.replace('-', "_"))
+            .replace("{{title}}", &title)
+            .replace("{{bevy}}", bevy)
+    };
+    vec![
+        (
+            "Cargo.toml",
+            fill(include_str!("../../templates/Cargo.toml.template")),
+        ),
+        ("src/lib.rs", fill(lib)),
+        ("src/main.rs", fill(include_str!("../../templates/main.rs"))),
+        (".gitignore", "/target\n".to_string()),
+    ]
+}
+
 /// `hearth new`.
 pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
     validate_name(&args.name)?;
@@ -184,25 +219,8 @@ pub fn new(ctx: &mut Ctx, args: NewArgs) -> Result<Outcome, CliError> {
         }
     }
     let bevy = bevy_dependency(&args)?;
-    let title = title_of(&args.name);
-    let (main, template) = match args.template {
-        Template::ThreeD => (include_str!("../../templates/3d.rs"), "3d"),
-        Template::TwoD => (include_str!("../../templates/2d.rs"), "2d"),
-        Template::Minimal => (include_str!("../../templates/minimal.rs"), "minimal"),
-    };
-    let fill = |text: &str| {
-        text.replace("{{name}}", &args.name)
-            .replace("{{title}}", &title)
-            .replace("{{bevy}}", &bevy)
-    };
-    let mut files = vec![
-        (
-            "Cargo.toml",
-            fill(include_str!("../../templates/Cargo.toml.template")),
-        ),
-        ("src/main.rs", fill(main)),
-        (".gitignore", "/target\n".to_string()),
-    ];
+    let template = template_name(args.template);
+    let mut files = template_files(args.template, &args.name, &bevy);
     if cfg!(windows) && on_path("rust-lld") {
         files.push((".cargo/config.toml", WINDOWS_LINKER.to_string()));
     }
@@ -379,7 +397,7 @@ fn same_dir(a: &Path, b: &Path) -> bool {
 }
 
 /// The first port from 15702 that nothing listens on and no session uses.
-fn free_port() -> u16 {
+pub(super) fn free_port() -> u16 {
     let taken: Vec<u16> = session::list()
         .into_iter()
         .filter(Session::is_running)
@@ -401,6 +419,7 @@ fn spawn_detached(command: &mut Command) -> std::io::Result<Child> {
     const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
     const CREATE_BREAKAWAY_FROM_JOB: u32 = 0x0100_0000;
     const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    keep_std_handles_from_children();
     // Leave the job this process may run in, so the app isn't ended along with it.
     command.creation_flags(CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW | CREATE_BREAKAWAY_FROM_JOB);
     match command.spawn() {
@@ -410,6 +429,36 @@ fn spawn_detached(command: &mut Command) -> std::io::Result<Child> {
             command.spawn()
         }
         result => result,
+    }
+}
+
+/// Stops children from inheriting this process's own stdin, stdout and stderr.
+///
+/// Windows hands every inheritable handle to a child, not just the ones it is given as its
+/// stdio. A detached app would then hold the caller's pipe open for as long as it runs, and
+/// whoever reads this command's output (an agent, the editor, `| jq`) would wait for it to exit.
+/// Children that inherit stdio still get it: the standard library duplicates the handle for them.
+#[cfg(windows)]
+#[expect(
+    unsafe_code,
+    reason = "The standard library has no way to set a handle's inherit flag."
+)]
+fn keep_std_handles_from_children() {
+    use std::{ffi::c_void, os::windows::io::AsRawHandle};
+    const HANDLE_FLAG_INHERIT: u32 = 1;
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn SetHandleInformation(handle: *mut c_void, mask: u32, flags: u32) -> i32;
+    }
+    let handles = [
+        std::io::stdin().as_raw_handle(),
+        std::io::stdout().as_raw_handle(),
+        std::io::stderr().as_raw_handle(),
+    ];
+    for handle in handles.into_iter().filter(|handle| !handle.is_null()) {
+        // SAFETY: the handle is this process's own standard handle, and only its inherit flag
+        // changes. A failure (a console or detached handle) leaves it as it was.
+        unsafe { SetHandleInformation(handle.cast(), HANDLE_FLAG_INHERIT, 0) };
     }
 }
 
@@ -464,29 +513,96 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
     flags.extend(cargo_flags(cargo, &missing));
     let label = format!("{} {}", chosen.kind(), chosen.name());
 
-    // Session names are unique: starting a session with the name of a running one from this
-    // project replaces it. That's also what rebuilding needs on Windows, where the executable
-    // of a running app can't be replaced.
-    let mut replaced = false;
-    let name = if detach {
-        let base = session::sanitize(args.name.as_deref().unwrap_or(chosen.name()));
-        match session::find(&base).filter(Session::is_running) {
-            Some(running) if args.name.is_some() || same_dir(&running.project, package.dir()) => {
-                ctx.out
-                    .info(format!("Stopping the running session {base} first"));
-                stop_session(&running, false)?;
-                running.forget();
-                replaced = true;
-                base
-            }
-            Some(_) => session::unique_name(&base),
-            None => base,
-        }
+    let (name, replaced) = prepare_session(
+        ctx,
+        detach,
+        args.name.as_deref(),
+        chosen.name(),
+        &label,
+        package.dir(),
+    )?;
+    let port = args.port.unwrap_or_else(free_port);
+
+    let started = Instant::now();
+    let build = project::build(&ctx.out, "build", &flags, toolchain.as_deref())?;
+    if !build.success {
+        return Err(build.failure());
+    }
+    let executable = built_executable(&build, chosen.kind(), chosen.name())?;
+
+    let mut command = Command::new(&executable);
+    command
+        .args(&args.args)
+        .envs(run_env(package.dir(), &executable, toolchain.as_deref()))
+        .env("HEARTH_REMOTE_PORT", port.to_string());
+    let launch = Launch {
+        command,
+        executable,
+        label,
+        port,
+        project: package.dir().to_path_buf(),
+        package: package.name.clone(),
+        args: args.args.clone(),
+        remote: build.libraries.contains("bevy_remote"),
+        engine: build.libraries.contains("bevy_app"),
+        started,
+    };
+    if detach {
+        launch_detached(
+            ctx,
+            launch,
+            &Detached {
+                name,
+                replaced,
+                no_wait: args.no_wait,
+                wait_timeout: args.wait_timeout,
+            },
+        )
     } else {
+        launch_attached(ctx, launch)
+    }
+}
+
+/// The executable of the `kind` target `name` that a build reported.
+pub(super) fn built_executable(
+    build: &project::Build,
+    kind: &str,
+    name: &str,
+) -> Result<PathBuf, CliError> {
+    build
+        .artifacts
+        .iter()
+        .find(|artifact| {
+            artifact.target == name && artifact.kinds.iter().any(|candidate| candidate == kind)
+        })
+        .map(|artifact| artifact.executable.clone())
+        .ok_or_else(|| {
+            CliError::internal(format!(
+                "cargo didn't report an executable for {kind} `{name}`"
+            ))
+        })
+}
+
+/// Chooses the name of the session an app is about to start as, before it's built: `requested`,
+/// else `default`. Session names are unique: starting a session with the name of a running one
+/// from the same project replaces it. That's also what rebuilding needs on Windows, where the
+/// executable of a running app can't be replaced. Returns the name and whether a session was
+/// stopped to free it.
+///
+/// An attached app gets no name, but on Windows a warning when a session runs the same `label`.
+pub(super) fn prepare_session(
+    ctx: &mut Ctx,
+    detach: bool,
+    requested: Option<&str>,
+    default: &str,
+    label: &str,
+    project: &Path,
+) -> Result<(String, bool), CliError> {
+    if !detach {
         if cfg!(windows)
             && let Some(running) = session::list().into_iter().find(|session| {
                 session.target == label
-                    && same_dir(&session.project, package.dir())
+                    && same_dir(&session.project, project)
                     && session.is_running()
             })
         {
@@ -495,65 +611,100 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
                 running.name
             ));
         }
-        String::new()
-    };
-    let port = args.port.unwrap_or_else(free_port);
-
-    let started = Instant::now();
-    let build = project::build(&ctx.out, "build", &flags, toolchain.as_deref())?;
-    if !build.success {
-        return Err(build.failure());
+        return Ok((String::new(), false));
     }
-    let artifact = build
-        .artifacts
-        .iter()
-        .find(|artifact| {
-            artifact.target == chosen.name()
-                && artifact.kinds.iter().any(|kind| kind == chosen.kind())
-        })
-        .ok_or_else(|| {
-            CliError::internal(format!(
-                "cargo didn't report an executable for {} `{}`",
-                chosen.kind(),
-                chosen.name()
-            ))
-        })?;
-    let executable = artifact.executable.clone();
-    let remote = build.libraries.contains("bevy_remote");
-
-    let mut command = Command::new(&executable);
-    command
-        .args(&args.args)
-        .envs(run_env(package.dir(), &executable, toolchain.as_deref()))
-        .env("HEARTH_REMOTE_PORT", port.to_string());
-
-    if !detach {
-        if remote {
+    let base = session::sanitize(requested.unwrap_or(default));
+    Ok(match session::find(&base).filter(Session::is_running) {
+        Some(running) if requested.is_some() || same_dir(&running.project, project) => {
             ctx.out
-                .info(format!("Running {label}, answering BRP on port {port}"));
-        } else if build.libraries.contains("bevy_app") {
-            ctx.out.info(
-                "This build doesn't include `bevy_remote`, so live commands won't reach the app.",
-            );
+                .info(format!("Stopping the running session {base} first"));
+            stop_session(&running, false)?;
+            running.forget();
+            (base, true)
         }
-        let status = command.status().map_err(|error| {
-            CliError::io(format!("could not start {}", executable.display()), error)
-        })?;
-        if status.success() {
-            return Ok(Outcome::new(json!({ "exit_code": 0 }), String::new()));
-        }
-        let code = status.code();
-        return Err(CliError::new(
-            "APP_FAILED",
-            Exit::Error,
-            match code {
-                Some(code) => format!("The app exited with code {code}"),
-                None => "The app was ended by a signal".to_string(),
-            },
-        )
-        .data(json!({ "exit_code": code })));
-    }
+        Some(_) => (session::unique_name(&base), false),
+        None => (base, false),
+    })
+}
 
+/// A built app, ready to start.
+pub(super) struct Launch {
+    /// The command that starts it, with its arguments and environment.
+    pub command: Command,
+    /// Its executable.
+    pub executable: PathBuf,
+    /// What it is, such as `bin my_game`, for messages and the session record.
+    pub label: String,
+    /// The BRP port it was told to answer on.
+    pub port: u16,
+    /// The directory of the package it was built from.
+    pub project: PathBuf,
+    /// The package's name.
+    pub package: String,
+    /// The arguments it's started with.
+    pub args: Vec<String>,
+    /// Whether the build includes `bevy_remote`.
+    pub remote: bool,
+    /// Whether the build includes the engine at all.
+    pub engine: bool,
+    /// When the build started.
+    pub started: Instant,
+}
+
+/// How a detached app starts.
+pub(super) struct Detached {
+    /// The session name, from [`prepare_session`].
+    pub name: String,
+    /// Whether a session was stopped to free the name.
+    pub replaced: bool,
+    /// Whether to return without waiting for the app to answer over BRP.
+    pub no_wait: bool,
+    /// Seconds to wait for the app to answer.
+    pub wait_timeout: f64,
+}
+
+/// Runs the app attached to the terminal, until it exits.
+pub(super) fn launch_attached(ctx: &mut Ctx, mut launch: Launch) -> Result<Outcome, CliError> {
+    if launch.remote {
+        ctx.out.info(format!(
+            "Running {}, answering BRP on port {}",
+            launch.label, launch.port
+        ));
+    } else if launch.engine {
+        ctx.out.info(
+            "This build doesn't include `bevy_remote`, so live commands won't reach the app.",
+        );
+    }
+    let status = launch.command.status().map_err(|error| {
+        CliError::io(
+            format!("could not start {}", launch.executable.display()),
+            error,
+        )
+    })?;
+    if status.success() {
+        return Ok(Outcome::new(json!({ "exit_code": 0 }), String::new()));
+    }
+    let code = status.code();
+    Err(CliError::new(
+        "APP_FAILED",
+        Exit::Error,
+        match code {
+            Some(code) => format!("The app exited with code {code}"),
+            None => "The app was ended by a signal".to_string(),
+        },
+    )
+    .data(json!({ "exit_code": code })))
+}
+
+/// Starts the app in the background as a session that logs to a file, then waits until it
+/// answers over BRP unless told not to.
+pub(super) fn launch_detached(
+    ctx: &mut Ctx,
+    mut launch: Launch,
+    detached: &Detached,
+) -> Result<Outcome, CliError> {
+    let name = &detached.name;
+    let port = launch.port;
     let logs = session::logs_dir();
     std::fs::create_dir_all(&logs).map_err(|error| CliError::io(logs.display(), error))?;
     let log = logs.join(format!("{name}.log"));
@@ -561,23 +712,28 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
     let file_err = file
         .try_clone()
         .map_err(|error| CliError::io(log.display(), error))?;
-    command
+    launch
+        .command
         .stdin(Stdio::null())
         .stdout(file)
         .stderr(file_err)
         .env("NO_COLOR", "1");
-    let mut child = spawn_detached(&mut command).map_err(|error| {
-        CliError::io(format!("could not start {}", executable.display()), error)
+    let mut child = spawn_detached(&mut launch.command).map_err(|error| {
+        CliError::io(
+            format!("could not start {}", launch.executable.display()),
+            error,
+        )
     })?;
+    let label = &launch.label;
     let session = Session {
         name: name.clone(),
         pid: child.id(),
         port,
-        project: package.dir().to_path_buf(),
-        package: package.name.clone(),
+        project: launch.project.clone(),
+        package: launch.package.clone(),
         target: label.clone(),
-        executable: executable.clone(),
-        args: args.args.clone(),
+        executable: launch.executable.clone(),
+        args: launch.args.clone(),
         log: log.clone(),
         started_at: session::now_millis(),
     };
@@ -590,13 +746,13 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
         "port": port,
         "endpoint": endpoint.to_string(),
         "target": label,
-        "executable": display_path(&executable),
+        "executable": display_path(&launch.executable),
         "log": display_path(&log),
-        "replaced": replaced,
+        "replaced": detached.replaced,
         "ready": Value::Null,
     });
     let next = format!("  hearth status --app {name}\n  hearth logs {name}\n  hearth stop {name}");
-    if !remote {
+    if !launch.remote {
         ctx.out.warn(format!(
             "This build doesn't include `bevy_remote`, so live commands won't reach {name}. Enable the feature (`hearth new` projects have it by default) and add `RemotePlugin` and `RemoteHttpPlugin`."
         ));
@@ -609,7 +765,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
             ),
         ));
     }
-    if args.no_wait {
+    if detached.no_wait {
         return Ok(Outcome::new(
             data,
             format!(
@@ -624,7 +780,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
         session.pid
     ));
     let client = Client::new(endpoint.clone(), ctx.timeout);
-    let wait = Duration::from_secs_f64(args.wait_timeout.max(0.0));
+    let wait = Duration::from_secs_f64(detached.wait_timeout.max(0.0));
     let ready = client.wait_until_ready(wait, || matches!(child.try_wait(), Ok(None)));
     match ready {
         Ok(()) => {}
@@ -666,7 +822,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
     let info = client.call("app.info", None).ok();
     data["ready"] = json!(true);
     data["app"] = info.clone().unwrap_or(Value::Null);
-    data["seconds"] = json!((started.elapsed().as_secs_f64() * 10.0).round() / 10.0);
+    data["seconds"] = json!((launch.started.elapsed().as_secs_f64() * 10.0).round() / 10.0);
     let version = info
         .as_ref()
         .and_then(|info| info["bevy_version"].as_str())
@@ -676,7 +832,7 @@ pub fn run(ctx: &mut Ctx, args: RunArgs) -> Result<Outcome, CliError> {
         data,
         format!(
             "Session {} is ready: {label} (pid {}{version}) answers on {}\n{next}",
-            ctx.out.paint(&name, Style::Bold),
+            ctx.out.paint(name, Style::Bold),
             session.pid,
             ctx.out.paint(&endpoint.to_string(), Style::Id)
         ),
@@ -1503,6 +1659,72 @@ mod tests {
         assert_eq!(title_of("my_game"), "My Game");
         assert_eq!(title_of("space-shooter"), "Space Shooter");
         assert_eq!(title_of("x"), "X");
+    }
+
+    #[test]
+    fn fills_templates() {
+        for template in [Template::ThreeD, Template::TwoD, Template::Minimal] {
+            let files = template_files(template, "my-game", "{ path = \"C:/dev/hearth\" }");
+            let file = |path: &str| {
+                files
+                    .iter()
+                    .find(|(candidate, _)| *candidate == path)
+                    .map(|(_, text)| text.as_str())
+                    .unwrap_or_else(|| panic!("no {path}"))
+            };
+            let name = template_name(template);
+            for (path, text) in &files {
+                assert!(!text.contains("{{"), "{name} {path} has a placeholder left");
+            }
+            let manifest = file("Cargo.toml");
+            assert!(manifest.contains("name = \"my-game\""));
+            assert!(manifest.contains("bevy = { path = \"C:/dev/hearth\" }"));
+            assert!(
+                manifest.contains("[package.metadata.hearth]\neditor-hook = \"register_types\"\n")
+            );
+            let main = file("src/main.rs");
+            assert!(main.contains("use my_game::GamePlugin;"), "{name}");
+            assert!(main.contains("title: \"My Game\".into()"));
+            assert!(main.contains("GamePlugin,") && main.contains("RemoteHttpPlugin"));
+            let lib = file("src/lib.rs");
+            assert!(lib.contains("pub struct GamePlugin;"), "{name}");
+            assert!(lib.contains("pub fn register_types(") && lib.contains("register_types(app);"));
+            // Every component is reflected with its default, and registered. (Doc comments may
+            // mention the attributes too, so only lines that start with them count.)
+            let mut rest = lib;
+            let mut components = 0;
+            while let Some(at) = rest.find("\n#[derive(Component") {
+                rest = &rest[at + 1..];
+                assert!(
+                    rest.starts_with(
+                        "#[derive(Component, Reflect)]\n#[reflect(Component, Default)]\n"
+                    ),
+                    "{name}"
+                );
+                components += 1;
+                let struct_at = rest.find("pub struct ").expect("a component struct");
+                let component: String = rest[struct_at + "pub struct ".len()..]
+                    .chars()
+                    .take_while(|c| c.is_alphanumeric() || *c == '_')
+                    .collect();
+                assert!(
+                    lib.contains(&format!("app.register_type::<{component}>();")),
+                    "{name} doesn't register {component}"
+                );
+                assert!(lib.contains(&format!("impl Default for {component}")));
+                rest = &rest[struct_at..];
+            }
+            assert_eq!(components > 0, template != Template::Minimal, "{name}");
+            // The 3D and 2D games start from the scene the editor saves, when there is one.
+            assert_eq!(
+                lib.contains("DynamicWorldRoot(asset_server.load(SCENE))"),
+                template != Template::Minimal,
+                "{name}"
+            );
+        }
+        let files = template_files(Template::ThreeD, "my-game", "\"0.19\"");
+        assert!(files.iter().any(|(path, text)| *path == "src/lib.rs"
+            && text.contains("const SCENE: &str = \"scenes/main.scn.ron\";")));
     }
 
     #[test]

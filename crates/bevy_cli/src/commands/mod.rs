@@ -2,6 +2,7 @@
 
 mod agent;
 mod app;
+mod editor;
 mod input;
 mod project;
 mod resource;
@@ -30,6 +31,7 @@ pub fn dispatch(ctx: &mut Ctx, command: Command) -> Result<Outcome, CliError> {
         Command::Build(args) => project::build(ctx, args, false),
         Command::Check(args) => project::build(ctx, args, true),
         Command::Run(args) => project::run(ctx, args),
+        Command::Editor(args) => editor::editor(ctx, args),
         Command::Ps(args) => project::ps(ctx, args),
         Command::Logs(args) => project::logs(ctx, args),
         Command::Stop(args) => project::stop(ctx, args),

@@ -89,6 +89,12 @@ pub enum Command {
     )]
     Run(RunArgs),
 
+    /// Build and open the Hearth editor for the project, with the game's code linked in.
+    #[command(
+        after_help = "Examples:\n  hearth editor\n  hearth editor --detach                    # returns once the editor answers over BRP\n  hearth editor --scene assets/scenes/level.scn.ron\n  hearth editor -p my_game --release\n\nThe editor is a crate generated in the project's target directory, at `hearth-editor/`. It depends\non the project's engine with the `bevy_editor` feature and on the project's library, so it knows\nthe game's types, and builds into the project's target directory, sharing the engine build. When\n`Cargo.toml` names a function of the library in `[package.metadata.hearth] editor-hook`, such as\n`editor-hook = \"register_types\"`, the editor calls it with its `App` at startup."
+    )]
+    Editor(EditorArgs),
+
     /// List running apps: sessions started with `hearth run --detach` and other apps found on
     /// the usual ports.
     #[command(
@@ -273,9 +279,8 @@ pub enum Command {
 /// The help section a top-level command is listed in.
 pub fn group_of(command: &str) -> &'static str {
     match command {
-        "new" | "build" | "check" | "run" | "ps" | "logs" | "stop" | "examples" | "doctor" => {
-            "Project"
-        }
+        "new" | "build" | "check" | "run" | "editor" | "ps" | "logs" | "stop" | "examples"
+        | "doctor" => "Project",
         "commands" | "skill" | "mcp" | "help" => "Agents and scripting",
         _ => "Live app (over BRP)",
     }
@@ -423,6 +428,65 @@ pub struct RunArgs {
     /// Arguments for the app, after `--`.
     #[arg(last = true, value_name = "ARGS")]
     pub args: Vec<String>,
+}
+
+/// Arguments of `hearth editor`.
+#[derive(Args, Debug)]
+pub struct EditorArgs {
+    /// The package whose project to edit, in a workspace.
+    #[arg(short, long, value_name = "SPEC")]
+    pub package: Option<String>,
+
+    /// Build the editor with the release profile.
+    #[arg(short, long, conflicts_with = "profile")]
+    pub release: bool,
+
+    /// Build the editor with this profile.
+    #[arg(long, value_name = "NAME")]
+    pub profile: Option<String>,
+
+    /// Features of the project's package to enable in the editor, separated by commas or
+    /// repeated.
+    #[arg(short = 'F', long, value_name = "FEATURES", value_delimiter = ',')]
+    pub features: Vec<String>,
+
+    /// The project's `Cargo.toml`, when not in the current directory.
+    #[arg(long, value_name = "PATH")]
+    pub manifest_path: Option<PathBuf>,
+
+    /// The rustup toolchain to build with, such as `nightly`. Also read from `HEARTH_TOOLCHAIN`.
+    #[arg(long, value_name = "NAME")]
+    pub toolchain: Option<String>,
+
+    /// Extra arguments for cargo, repeated for each one, such as `--cargo-arg=--locked`.
+    #[arg(long = "cargo-arg", value_name = "ARG", allow_hyphen_values = true)]
+    pub cargo_args: Vec<String>,
+
+    /// The scene to open, relative to the current directory. The editor gets its full path in
+    /// `HEARTH_EDITOR_SCENE`.
+    #[arg(long, value_name = "PATH")]
+    pub scene: Option<PathBuf>,
+
+    /// Run in the background as a session; logs go to a file you read with `hearth logs`.
+    #[arg(short, long)]
+    pub detach: bool,
+
+    /// The session name. Defaults to `editor`.
+    #[arg(long, value_name = "NAME", requires = "detach")]
+    pub name: Option<String>,
+
+    /// The BRP port, passed to the editor as `HEARTH_REMOTE_PORT`. Defaults to 15702, or the next
+    /// free port when another app uses it.
+    #[arg(long, value_name = "PORT")]
+    pub port: Option<u16>,
+
+    /// Don't wait for the editor to answer over BRP before returning.
+    #[arg(long, requires = "detach")]
+    pub no_wait: bool,
+
+    /// Seconds to wait for the editor to answer over BRP.
+    #[arg(long, value_name = "SECONDS", default_value_t = 120.0)]
+    pub wait_timeout: f64,
 }
 
 /// Arguments of `hearth ps`.

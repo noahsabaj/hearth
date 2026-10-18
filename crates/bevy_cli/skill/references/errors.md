@@ -75,6 +75,8 @@ Branch on `code`, which is stable; `message` and `hint` are for reading.
 | `UNKNOWN_PACKAGE`, `AMBIGUOUS_PACKAGE` | Pass `-p` with a name from `data.candidates`.    |
 | `UNKNOWN_EXAMPLE`, `UNKNOWN_BIN` | Use a name from `data.candidates`; `hearth examples` lists examples. |
 | `NO_BINARY`, `AMBIGUOUS_TARGET` | Pass `--bin` or `--example`.                            |
+| `NO_ENGINE_DEPENDENCY`    | `hearth editor` needs a package that depends on `bevy`; pick the game's with `-p`. |
+| `INVALID_EDITOR_HOOK`     | Set `[package.metadata.hearth] editor-hook` to a function of the library, such as `"register_types"`. |
 | `APP_EXITED`              | The app quit before answering BRP; `data.log_tail` has its last output. |
 | `APP_FAILED`              | The app exited with a failure; `data.exit_code` has the code. |
 | `DIRECTORY_NOT_EMPTY`     | Pick another name or `--path`, or pass `--force`.             |
