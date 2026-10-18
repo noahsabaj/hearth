@@ -7,6 +7,7 @@
 
 extern crate alloc;
 
+mod base64;
 mod cli;
 mod commands;
 mod context;

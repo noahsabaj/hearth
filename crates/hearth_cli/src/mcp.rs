@@ -197,31 +197,12 @@ fn command_line(
     Ok(argv)
 }
 
-/// Base64, for images in tool results.
-fn base64(bytes: &[u8]) -> String {
-    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let mut out = String::with_capacity(bytes.len().div_ceil(3) * 4);
-    for chunk in bytes.chunks(3) {
-        let n = (u32::from(chunk[0]) << 16)
-            | (u32::from(chunk.get(1).copied().unwrap_or(0)) << 8)
-            | u32::from(chunk.get(2).copied().unwrap_or(0));
-        for i in 0..4 {
-            if i <= chunk.len() {
-                out.push(ALPHABET[((n >> (18 - 6 * i)) & 63) as usize] as char);
-            } else {
-                out.push('=');
-            }
-        }
-    }
-    out
-}
-
 fn tool_result(envelope: &Value, attachments: Vec<Attachment>) -> Value {
     let mut content = vec![json!({ "type": "text", "text": envelope.to_string() })];
     for attachment in attachments {
         content.push(json!({
             "type": "image",
-            "data": base64(&attachment.data),
+            "data": crate::base64::encode(&attachment.data),
             "mimeType": attachment.mime,
         }));
     }
@@ -404,15 +385,6 @@ mod tests {
             .into_iter()
             .find(|command| command.name() == name)
             .unwrap()
-    }
-
-    #[test]
-    fn encodes_base64() {
-        assert_eq!(base64(b""), "");
-        assert_eq!(base64(b"f"), "Zg==");
-        assert_eq!(base64(b"fo"), "Zm8=");
-        assert_eq!(base64(b"foo"), "Zm9v");
-        assert_eq!(base64(b"foobar"), "Zm9vYmFy");
     }
 
     #[test]

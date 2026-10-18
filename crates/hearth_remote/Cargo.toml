@@ -27,7 +27,12 @@ client = [
 ]
 hearth_asset = ["dep:hearth_asset"]
 hearth_debug_stepping = ["hearth_ecs/hearth_debug_stepping"]
-hearth_render = ["dep:hearth_render", "hearth_dev_tools/render"]
+hearth_render = [
+  "dep:hearth_render",
+  "dep:hearth_window",
+  "dep:base64",
+  "hearth_dev_tools/render",
+]
 
 [dependencies]
 # hearth
@@ -44,6 +49,7 @@ hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev", features = [
 ] }
 hearth_reflect = { path = "../hearth_reflect", version = "0.20.0-dev" }
 hearth_render = { path = "../hearth_render", version = "0.20.0-dev", optional = true }
+hearth_window = { path = "../hearth_window", version = "0.20.0-dev", optional = true }
 hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
 hearth_utils = { path = "../hearth_utils", version = "0.20.0-dev", features = [
   "debug",
@@ -60,6 +66,7 @@ anyhow = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0.140"
 async-channel = "2"
+base64 = { version = "0.22", optional = true }
 
 # dependencies that will not compile on wasm
 [target.'cfg(not(target_family = "wasm"))'.dependencies]

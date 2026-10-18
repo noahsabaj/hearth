@@ -39,7 +39,8 @@ strings such as `"495v0"`.
 | `world.write_message`          | `hearth send`, `input`, `exit` | `{"message": "<path>", "value": v}`                     |
 | `world.get_components+watch`   | `hearth watch <entity> <C>...` | like `world.get_components`                             |
 | `world.list_components+watch`  | `hearth watch <entity>`        | `{"entity": "495v0"}`                                   |
-| `world.observe+watch`          | `hearth observe`, `screenshot` | `{"event": "<path>", "entity": "495v0"}` (entity optional) |
+| `world.observe+watch`          | `hearth observe`               | `{"event": "<path>", "entity": "495v0"}` (entity optional) |
+| `window.screenshot+watch`      | `hearth screenshot`            | `{"window": "495v0"}`, optional; sends `width`, `height`, `format` and base64 `data` once |
 | `registry.schema`              | `types`, `schema`            | `{"with_crates": [], "without_crates": [], "type_limit": {"with": [], "without": []}}`, all optional |
 | `schedule.list`                | `hearth schedules`             | none                                                    |
 | `schedule.graph`               | `hearth schedules <label>`     | `{"schedule_label": "Update"}`                          |

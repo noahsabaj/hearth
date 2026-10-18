@@ -349,6 +349,19 @@ fn reports_errors_with_codes() {
 }
 
 #[test]
+fn falls_back_to_observing_screenshots() {
+    // This app has no renderer, so it lacks `window.screenshot+watch`. The command then spawns a
+    // `Screenshot` entity the way it captures apps from before that method, which this app
+    // can't do either.
+    let (envelope, _) = hearth(&["screenshot"]);
+    assert_eq!(envelope["success"], false);
+    assert_eq!(
+        envelope["errors"][0]["data"]["method"], "world.spawn_entity",
+        "{envelope:#}"
+    );
+}
+
+#[test]
 fn reports_unreachable_apps() {
     // A port that nothing listens on: bind one, then free it.
     let port = TcpListener::bind("127.0.0.1:0")

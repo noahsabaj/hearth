@@ -1,7 +1,9 @@
 //! `hearth screenshot`: capturing a window to a PNG file.
 //!
-//! The capture spawns a `Screenshot` entity and observes the `ScreenshotCaptured` event on that
-//! entity alone. The app despawns the entity once it delivered the image.
+//! The app captures the window with `window.screenshot+watch`, which sends the pixels as one
+//! base64 string. Apps from before that method spawn a `Screenshot` entity instead, and the
+//! command observes the `ScreenshotCaptured` event on that entity alone, which carries the image
+//! reflected into JSON. The app despawns the entity once it delivered the image.
 
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -19,6 +21,16 @@ use crate::output::{CliError, Exit, Outcome};
 struct Frame {
     result: Option<Vec<Captured>>,
     error: Option<Value>,
+}
+
+/// What `window.screenshot+watch` sends.
+#[derive(Deserialize)]
+struct Sent {
+    width: u32,
+    height: u32,
+    format: String,
+    /// The rows of pixels, top to bottom, in base64.
+    data: String,
 }
 
 #[derive(Deserialize)]
@@ -55,62 +67,21 @@ pub struct Pixels {
     pub rgb: Vec<u8>,
 }
 
+/// The method that captures a window and sends its pixels.
+const SCREENSHOT_METHOD: &str = "window.screenshot+watch";
+
 /// `hearth screenshot`.
 pub fn screenshot(ctx: &mut Ctx, args: ScreenshotArgs) -> Result<Outcome, CliError> {
-    let render_target = match &args.window {
-        Some(window) => json!({ "Window": { "Entity": ctx.entity(window)? } }),
-        None => json!({ "Window": "Primary" }),
-    };
-    let spawned = ctx.call(
-        "world.spawn_entity",
-        json!({ "components": { known::SCREENSHOT: render_target } }),
-    )?;
-    let entity = spawned
-        .get("entity")
-        .cloned()
-        .ok_or_else(|| CliError::internal("Spawning the screenshot returned no entity"))?;
-
+    let window = args
+        .window
+        .as_deref()
+        .map(|window| ctx.entity(window))
+        .transpose()?;
     let wait = ctx.timeout.max(Duration::from_secs(10));
-    let started = Instant::now();
-    let mut watch = ctx.client()?.watch(
-        "world.observe+watch",
-        Some(json!({ "event": known::SCREENSHOT_CAPTURED, "entity": entity })),
-    )?;
-    let image = loop {
-        let left = wait.saturating_sub(started.elapsed());
-        let text = if left.is_zero() {
-            None
-        } else {
-            watch.next_raw(Some(left))?
-        };
-        let Some(text) = text else {
-            if !left.is_zero() && !watch.ended() {
-                continue;
-            }
-            drop(watch);
-            let _ = ctx.call("world.despawn_entity", json!({ "entity": entity }));
-            return Err(CliError::new(
-                "CAPTURE_FAILED",
-                Exit::Timeout,
-                format!("No screenshot arrived within {:.0}s", wait.as_secs_f64()),
-            )
-            .hint("The window must be rendering: a minimized window, or an app without a renderer or window, can't be captured."));
-        };
-        let frame: Frame = serde_json::from_str(&text).map_err(|error| {
-            CliError::new(
-                "CAPTURE_FAILED",
-                Exit::Error,
-                format!("The screenshot event couldn't be read: {error}"),
-            )
-        })?;
-        if let Some(error) = frame.error {
-            return Err(hrp_error("world.observe+watch", &error));
-        }
-        if let Some(captured) = frame.result.and_then(|mut events| events.pop()) {
-            break captured.image;
-        }
+    let image = match capture(ctx, window.as_ref(), wait)? {
+        Some(image) => image,
+        None => capture_by_observing(ctx, window, wait)?,
     };
-    drop(watch);
 
     let format = image
         .texture_descriptor
@@ -165,6 +136,133 @@ pub fn screenshot(ctx: &mut Ctx, args: ScreenshotArgs) -> Result<Outcome, CliErr
             pixels.width, pixels.height
         ),
     ))
+}
+
+/// The image, from `window.screenshot+watch`, or `None` if the app doesn't have that method.
+fn capture(
+    ctx: &mut Ctx,
+    window: Option<&Value>,
+    wait: Duration,
+) -> Result<Option<Image>, CliError> {
+    let started = Instant::now();
+    let params = window.map(|window| json!({ "window": window }));
+    let mut watch = ctx.client()?.watch(SCREENSHOT_METHOD, params)?;
+    loop {
+        let left = wait.saturating_sub(started.elapsed());
+        let text = if left.is_zero() {
+            None
+        } else {
+            watch.next_raw(Some(left))?
+        };
+        let Some(text) = text else {
+            if !left.is_zero() && !watch.ended() {
+                continue;
+            }
+            return Err(no_screenshot(wait));
+        };
+        let frame: Value = serde_json::from_str(&text).map_err(unreadable)?;
+        if let Some(error) = frame.get("error") {
+            return match error.get("code").and_then(Value::as_i64) {
+                Some(-32601) => Ok(None),
+                // The app has no primary window.
+                Some(-23502) => Err(CliError::new(
+                    "NO_WINDOW",
+                    Exit::Rejected,
+                    "The app has no primary window to capture",
+                )
+                .hint("Pass a window with --window, or capture an app that has a window; headless apps have none.")),
+                _ => Err(hrp_error(SCREENSHOT_METHOD, error)),
+            };
+        }
+        let Some(result) = frame.get("result").filter(|result| !result.is_null()) else {
+            continue;
+        };
+        let captured: Sent = serde_json::from_value(result.clone()).map_err(unreadable)?;
+        let data = crate::base64::decode(&captured.data).ok_or_else(|| {
+            CliError::new(
+                "CAPTURE_FAILED",
+                Exit::Error,
+                "The screenshot's pixel data isn't valid base64",
+            )
+        })?;
+        return Ok(Some(Image {
+            data: Some(data),
+            texture_descriptor: Descriptor {
+                format: json!(captured.format),
+                size: Size {
+                    width: captured.width,
+                    height: captured.height,
+                },
+            },
+        }));
+    }
+}
+
+/// The image, from observing `ScreenshotCaptured` on a spawned `Screenshot` entity: how apps from
+/// before `window.screenshot+watch` deliver it.
+fn capture_by_observing(
+    ctx: &mut Ctx,
+    window: Option<Value>,
+    wait: Duration,
+) -> Result<Image, CliError> {
+    let render_target = match window {
+        Some(window) => json!({ "Window": { "Entity": window } }),
+        None => json!({ "Window": "Primary" }),
+    };
+    let spawned = ctx.call(
+        "world.spawn_entity",
+        json!({ "components": { known::SCREENSHOT: render_target } }),
+    )?;
+    let entity = spawned
+        .get("entity")
+        .cloned()
+        .ok_or_else(|| CliError::internal("Spawning the screenshot returned no entity"))?;
+
+    let started = Instant::now();
+    let mut watch = ctx.client()?.watch(
+        "world.observe+watch",
+        Some(json!({ "event": known::SCREENSHOT_CAPTURED, "entity": entity })),
+    )?;
+    loop {
+        let left = wait.saturating_sub(started.elapsed());
+        let text = if left.is_zero() {
+            None
+        } else {
+            watch.next_raw(Some(left))?
+        };
+        let Some(text) = text else {
+            if !left.is_zero() && !watch.ended() {
+                continue;
+            }
+            drop(watch);
+            let _ = ctx.call("world.despawn_entity", json!({ "entity": entity }));
+            return Err(no_screenshot(wait));
+        };
+        let frame: Frame = serde_json::from_str(&text).map_err(unreadable)?;
+        if let Some(error) = frame.error {
+            return Err(hrp_error("world.observe+watch", &error));
+        }
+        if let Some(captured) = frame.result.and_then(|mut events| events.pop()) {
+            return Ok(captured.image);
+        }
+    }
+}
+
+fn no_screenshot(wait: Duration) -> CliError {
+    CliError::new(
+        "CAPTURE_FAILED",
+        Exit::Timeout,
+        format!("No screenshot arrived within {:.0}s", wait.as_secs_f64()),
+    )
+    .hint("The window must be rendering: a minimized window, or an app without a renderer or window, can't be captured.")
+}
+
+fn unreadable(error: serde_json::Error) -> CliError {
+    CliError::new(
+        "CAPTURE_FAILED",
+        Exit::Error,
+        format!("The screenshot couldn't be read: {error}"),
+    )
 }
 
 /// Where a screenshot goes without `--out`: a new file in the temporary directory.

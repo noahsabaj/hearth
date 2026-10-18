@@ -655,6 +655,8 @@ use serde_json::Value;
 use std::sync::RwLock;
 
 pub mod builtin_methods;
+#[cfg(feature = "hearth_render")]
+pub mod capture_methods;
 #[cfg(all(feature = "client", not(target_family = "wasm")))]
 pub mod client;
 #[cfg(feature = "http")]
@@ -911,6 +913,26 @@ impl RemotePlugin {
         )
         .add_stepping_methods(to_main)
         .add_inspection_methods(to_main)
+        .add_capture_methods(to_main)
+    }
+
+    /// Add the methods that capture windows, to the main app.
+    #[cfg(feature = "hearth_render")]
+    fn add_capture_methods(self, to_main: bool) -> Self {
+        if !to_main {
+            return self;
+        }
+        self.with_watching_method(
+            capture_methods::HRP_SCREENSHOT_METHOD,
+            capture_methods::process_remote_screenshot_watching_request,
+            to_main,
+        )
+    }
+
+    /// Leaves the method list untouched without the `hearth_render` feature.
+    #[cfg(not(feature = "hearth_render"))]
+    fn add_capture_methods(self, _to_main: bool) -> Self {
+        self
     }
 
     /// Add the inspection HRP methods.
@@ -1781,6 +1803,9 @@ fn process_single_ongoing_watching_request(
 fn remove_closed_watching_requests(
     mut requests: ResMut<RemoteWatchingRequests>,
     mut event_observers: Option<ResMut<builtin_methods::HrpEventObservers>>,
+    #[cfg(feature = "hearth_render")] mut screenshots: Option<
+        ResMut<capture_methods::HrpScreenshots>,
+    >,
     mut commands: Commands,
 ) {
     for i in (0..requests.requests.len()).rev() {
@@ -1794,6 +1819,10 @@ fn remove_closed_watching_requests(
                 .and_then(|event_observers| event_observers.remove(*request_id))
             {
                 commands.entity(observer).try_despawn();
+            }
+            #[cfg(feature = "hearth_render")]
+            if let Some(screenshots) = screenshots.as_mut() {
+                screenshots.captures.remove(request_id);
             }
             requests.requests.swap_remove(i);
         }
