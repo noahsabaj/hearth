@@ -189,17 +189,12 @@ fn quiet_command(program: &str) -> Command {
 
 /// The name of the process with id `pid`, if one is running.
 pub fn process_name(pid: u32) -> Option<String> {
-    if cfg!(windows) {
-        let output = quiet_command("tasklist")
-            .args(["/FI", &format!("PID eq {pid}"), "/FO", "CSV", "/NH"])
-            .output()
-            .ok()?;
-        let text = String::from_utf8_lossy(&output.stdout);
-        let needle = format!("\"{pid}\"");
-        let line = text.lines().find(|line| line.contains(&needle))?;
-        let name = line.split(',').next()?.trim().trim_matches('"');
-        (!name.is_empty()).then(|| name.to_string())
-    } else {
+    #[cfg(windows)]
+    {
+        windows_process_name(pid)
+    }
+    #[cfg(not(windows))]
+    {
         let output = quiet_command("ps")
             .args(["-p", &pid.to_string(), "-o", "comm="])
             .output()
@@ -207,6 +202,56 @@ pub fn process_name(pid: u32) -> Option<String> {
         let name = String::from_utf8_lossy(&output.stdout).trim().to_string();
         (output.status.success() && !name.is_empty()).then_some(name)
     }
+}
+
+/// The path of the executable of the process with id `pid`, if one is running.
+///
+/// Asking Windows directly takes microseconds, where running `tasklist` takes a fifth of a second,
+/// and every command that finds its app checks the sessions this way.
+#[cfg(windows)]
+#[expect(
+    unsafe_code,
+    reason = "The standard library can't look up another process by its id."
+)]
+fn windows_process_name(pid: u32) -> Option<String> {
+    use std::ffi::c_void;
+    use std::os::windows::ffi::OsStringExt;
+    const PROCESS_QUERY_LIMITED_INFORMATION: u32 = 0x1000;
+    const STILL_ACTIVE: u32 = 259;
+    #[link(name = "kernel32")]
+    unsafe extern "system" {
+        fn OpenProcess(access: u32, inherit: i32, pid: u32) -> *mut c_void;
+        fn GetExitCodeProcess(process: *mut c_void, code: *mut u32) -> i32;
+        fn QueryFullProcessImageNameW(
+            process: *mut c_void,
+            flags: u32,
+            name: *mut u16,
+            size: *mut u32,
+        ) -> i32;
+        fn CloseHandle(handle: *mut c_void) -> i32;
+    }
+
+    // SAFETY: `OpenProcess` takes no pointers, and returns null when there is no such process.
+    let process = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid) };
+    if process.is_null() {
+        return None;
+    }
+    let mut code = 0;
+    let mut name = [0u16; 1024];
+    let mut size = name.len() as u32;
+    // SAFETY: `process` is the handle opened above, and each pointer is to a local that outlives
+    // the call, with `size` holding the length of `name`.
+    let (exited, named) = unsafe {
+        let exited = GetExitCodeProcess(process, &mut code) == 0 || code != STILL_ACTIVE;
+        let named = QueryFullProcessImageNameW(process, 0, name.as_mut_ptr(), &mut size) != 0;
+        CloseHandle(process);
+        (exited, named)
+    };
+    if exited || !named {
+        return None;
+    }
+    let name = std::ffi::OsString::from_wide(&name[..size as usize]);
+    Some(name.to_string_lossy().into_owned())
 }
 
 /// Asks the process to end, or ends it right away when `force` is set.
