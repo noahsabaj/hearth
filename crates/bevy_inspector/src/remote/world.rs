@@ -2,7 +2,9 @@
 //!
 //! Remote entities are spawned at their remote ids, so the entity tree reads the mirror like any
 //! other world. Only their [`Name`] and [`ChildOf`] are inserted. The other components the tree
-//! labels entities with are recorded on the entity's [`RemoteComponents`].
+//! labels entities with are recorded on the entity's [`RemoteComponents`]. The selected entity
+//! also holds every component the remote app reported for it, read back through the local type
+//! registry, in its [`RemoteValues`].
 //!
 //! Spawning at the remote ids keeps every id, such as the selection or a [`ChildOf`] target, the
 //! same in both worlds. [`World::spawn_at`] only accepts the current generation of an index, and a
@@ -11,11 +13,16 @@
 //! reserved, so the allocator never hands them out. A `bevy_ecs` API setting the generation of an
 //! index and reserving it would replace this stepping.
 
-use alloc::{string::String, vec::Vec};
+use alloc::{
+    boxed::Box,
+    format,
+    string::{String, ToString},
+    vec::Vec,
+};
 use core::cmp::Ordering;
 
 use bevy_ecs::{
-    component::{Component, ComponentId},
+    component::{Component, ComponentId, ComponentInfo},
     entity::{Entity, SpawnError},
     hierarchy::{ChildOf, Children},
     name::Name,
@@ -26,6 +33,14 @@ use bevy_ecs::{
 };
 use bevy_log::warn_once;
 use bevy_platform::collections::HashMap;
+use bevy_reflect::{
+    serde::{TypedReflectDeserializer, TypedReflectSerializer},
+    PartialReflect, ReflectFromReflect, ReflectPath, TypeRegistry,
+};
+use serde::de::DeserializeSeed;
+use serde_json::Value;
+
+use crate::details_panel::{holds_value, write_field_value, FieldEdit, FieldValue, FieldWrite};
 
 /// The most generations [`spawn_at_remote_id`] steps through for one entity in one call.
 const MAX_GENERATION_STEPS: u32 = 4096;
@@ -181,15 +196,7 @@ impl RemoteWorld {
         let registry = registry.read();
         let mut ids = Vec::new();
         for type_path in components.labels.iter().chain(&detected) {
-            let id = *self.types.entry(type_path.clone()).or_insert_with(|| {
-                Some(
-                    registry
-                        .get_with_type_path(type_path)?
-                        .data::<ReflectComponent>()?
-                        .register_component(world),
-                )
-            });
-            ids.extend(id);
+            ids.extend(component_id(&mut self.types, world, &registry, type_path));
         }
         world.entity_mut(remote).insert(RemoteComponents {
             labels: components.labels,
@@ -198,6 +205,317 @@ impl RemoteWorld {
         });
         true
     }
+
+    /// Reads the components `world.get_components` reported for `remote` back through the local
+    /// type registry into its [`RemoteValues`]. Returns whether anything the details panel shows
+    /// changed.
+    ///
+    /// A value whose serialized form did not change is kept as it is. Components the local
+    /// registry does not know or cannot read back, and those the remote app could not serialize,
+    /// are recorded as [`UnknownComponent`]s.
+    pub(crate) fn write_values(&mut self, remote: Entity, fetched: FetchedComponents) -> bool {
+        if !self.contains(remote) {
+            return false;
+        }
+        let previous = self
+            .world
+            .get_mut::<RemoteValues>(remote)
+            .map(|mut values| core::mem::take(&mut *values));
+        let mut changed = previous.is_none();
+        let mut previous = previous.unwrap_or_default();
+        let registry = self.world.resource::<AppTypeRegistry>().clone();
+        let registry = registry.read();
+
+        let mut reported: Vec<(String, Value)> = fetched.components.into_iter().collect();
+        reported.sort_unstable_by(|left, right| left.0.cmp(&right.0));
+        let mut values = RemoteValues::default();
+        for (type_path, json) in reported {
+            if let Some(kept) = previous
+                .components
+                .iter()
+                .position(|value| value.type_path == type_path && value.json == json)
+            {
+                values
+                    .components
+                    .push(previous.components.swap_remove(kept));
+                continue;
+            }
+            match self.read_value(&registry, &type_path, &json) {
+                Ok((id, value)) => {
+                    changed = true;
+                    values.components.push(RemoteValue {
+                        id,
+                        type_path,
+                        json,
+                        value,
+                    });
+                }
+                Err(reason) => values.unknown.push(UnknownComponent { type_path, reason }),
+            }
+        }
+        values
+            .unknown
+            .extend(
+                fetched
+                    .errors
+                    .into_iter()
+                    .map(|(type_path, error)| UnknownComponent {
+                        type_path,
+                        reason: error_message(&error),
+                    }),
+            );
+        values
+            .unknown
+            .sort_unstable_by(|left, right| left.type_path.cmp(&right.type_path));
+        changed |= !previous.components.is_empty() || previous.unknown != values.unknown;
+        self.world.entity_mut(remote).insert(values);
+        changed
+    }
+
+    /// Reads the reported `json` value of the component `type_path` back through `registry`,
+    /// returning its id in the remote world and its value, or why it cannot be read.
+    fn read_value(
+        &mut self,
+        registry: &TypeRegistry,
+        type_path: &str,
+        json: &Value,
+    ) -> Result<(ComponentId, Box<dyn PartialReflect>), String> {
+        let registration = registry
+            .get_with_type_path(type_path)
+            .ok_or_else(|| "the type is not registered in this app".to_string())?;
+        let id = component_id(&mut self.types, &mut self.world, registry, type_path)
+            .ok_or_else(|| "the type is not a reflected component in this app".to_string())?;
+        let value = TypedReflectDeserializer::new(registration, registry)
+            .deserialize(json)
+            .map_err(|error| format!("the value cannot be read: {error}"))?;
+        let value = registration
+            .data::<ReflectFromReflect>()
+            .and_then(|from_reflect| from_reflect.from_reflect(value.as_ref()))
+            .map(PartialReflect::into_partial_reflect)
+            .unwrap_or(value);
+        Ok((id, value))
+    }
+
+    /// Drops the [`RemoteValues`] of `remote`, if it has any.
+    pub(crate) fn clear_values(&mut self, remote: Entity) {
+        if let Ok(mut entity) = self.world.get_entity_mut(remote) {
+            entity.remove::<RemoteValues>();
+        }
+    }
+
+    /// The value the remote app last reported for the component `type_path` of `remote`, read
+    /// back through the local type registry.
+    ///
+    /// Only the selected remote entity has its components fetched, see
+    /// [`RemoteDetails`](super::RemoteDetails).
+    pub fn reflected(&self, remote: Entity, type_path: &str) -> Option<&dyn PartialReflect> {
+        Some(
+            self.world
+                .get::<RemoteValues>(remote)?
+                .get(type_path)?
+                .value(),
+        )
+    }
+
+    /// Writes `edit` into the [`RemoteValues`] of its entity, so that the details panel shows it
+    /// before the remote app reports it back, and serializes the edited field for the remote app.
+    ///
+    /// The serialized form of an edited component is forgotten, so that the next report of the
+    /// remote app is always read back, reverting the edit if the remote app rejected it.
+    pub(crate) fn edit_value(&mut self, edit: &FieldEdit) -> ValueEdit {
+        let Some(id) = self
+            .world
+            .get::<RemoteValues>(edit.entity)
+            .and_then(|values| values.get(&edit.component))
+            .map(RemoteValue::id)
+        else {
+            return ValueEdit::rejected("the remote app has not reported the component");
+        };
+        if self
+            .world
+            .components()
+            .get_info(id)
+            .is_some_and(|info| !ComponentInfo::mutable(info))
+        {
+            return ValueEdit::rejected("the component is immutable");
+        }
+        let registry = self.world.resource::<AppTypeRegistry>().clone();
+        let registry = registry.read();
+        let Some(mut values) = self.world.get_mut::<RemoteValues>(edit.entity) else {
+            return ValueEdit::rejected("the remote app has not reported the component");
+        };
+        let Some(RemoteValue { json, value, .. }) = values
+            .components
+            .iter_mut()
+            .find(|value| value.type_path == edit.component)
+        else {
+            return ValueEdit::rejected("the remote app has not reported the component");
+        };
+        let value: &mut dyn PartialReflect = value.as_mut();
+        let field = if edit.path.is_empty() {
+            Ok(value)
+        } else {
+            edit.path.as_str().reflect_element_mut(value)
+        };
+        let Ok(field) = field else {
+            return ValueEdit::rejected("the component has no such field");
+        };
+
+        let write = write_field_value(field, &edit.value, &registry);
+        let held = write != FieldWrite::Rejected && holds_value(field, &edit.value);
+        match write {
+            FieldWrite::Unchanged => ValueEdit {
+                held,
+                ..ValueEdit::default()
+            },
+            FieldWrite::Rejected => {
+                let typing_a_char = matches!(edit.value, FieldValue::Text(_))
+                    && field.try_downcast_ref::<char>().is_some();
+                ValueEdit {
+                    warning: (!typing_a_char)
+                        .then(|| "the value does not fit the field".to_string()),
+                    held,
+                    ..ValueEdit::default()
+                }
+            }
+            FieldWrite::Written => {
+                *json = Value::Null;
+                match serde_json::to_value(TypedReflectSerializer::new(&*field, &registry)) {
+                    Ok(serialized) => ValueEdit {
+                        send: Some(serialized),
+                        held,
+                        ..ValueEdit::default()
+                    },
+                    Err(error) => ValueEdit::rejected(format!(
+                        "the edited value cannot be serialized: {error}"
+                    )),
+                }
+            }
+        }
+    }
+}
+
+/// The id in `world` of the reflected component `type_path`, registering it on first use, or
+/// `None` if `registry` does not know it as a component. Lookups are cached in `types`.
+fn component_id(
+    types: &mut HashMap<String, Option<ComponentId>>,
+    world: &mut World,
+    registry: &TypeRegistry,
+    type_path: &str,
+) -> Option<ComponentId> {
+    if let Some(id) = types.get(type_path) {
+        return *id;
+    }
+    let id = registry
+        .get_with_type_path(type_path)
+        .and_then(|registration| registration.data::<ReflectComponent>())
+        .map(|reflect_component| reflect_component.register_component(world));
+    types.insert(type_path.to_string(), id);
+    id
+}
+
+/// The message of a serialized `BrpError`, or the whole error if it has none.
+fn error_message(error: &Value) -> String {
+    error
+        .get("message")
+        .and_then(Value::as_str)
+        .map(ToString::to_string)
+        .unwrap_or_else(|| error.to_string())
+}
+
+/// The components `world.get_components` reported for one remote entity.
+#[derive(Debug, Default, Clone, PartialEq)]
+pub(crate) struct FetchedComponents {
+    /// The serialized value of each component the remote app could serialize, by type path.
+    pub(crate) components: HashMap<String, Value>,
+    /// The error the remote app reported for each other component, by type path.
+    pub(crate) errors: HashMap<String, Value>,
+}
+
+/// What [`RemoteWorld::edit_value`] did.
+#[derive(Debug, Default, Clone, PartialEq)]
+pub(crate) struct ValueEdit {
+    /// The serialized field to send to the remote app, if the edit changed it.
+    pub(crate) send: Option<Value>,
+    /// Why the edit was not applied, if it should be reported.
+    pub(crate) warning: Option<String>,
+    /// Whether the field holds the edited value, so that its widget is up to date.
+    pub(crate) held: bool,
+}
+
+impl ValueEdit {
+    fn rejected(warning: impl Into<String>) -> Self {
+        Self {
+            warning: Some(warning.into()),
+            ..Self::default()
+        }
+    }
+}
+
+/// The components the remote app last reported for the selected remote entity, read back through
+/// the local type registry.
+///
+/// The values are held here instead of being inserted as components, so that no hook, observer
+/// or required component of the local app ever runs on remote data.
+#[derive(Component, Debug, Default)]
+pub struct RemoteValues {
+    components: Vec<RemoteValue>,
+    unknown: Vec<UnknownComponent>,
+}
+
+impl RemoteValues {
+    /// The components that were read back, sorted by type path.
+    pub fn components(&self) -> &[RemoteValue] {
+        &self.components
+    }
+
+    /// The components that could not be read back, sorted by type path.
+    pub fn unknown(&self) -> &[UnknownComponent] {
+        &self.unknown
+    }
+
+    /// The component `type_path`, if it was read back.
+    pub fn get(&self, type_path: &str) -> Option<&RemoteValue> {
+        self.components
+            .iter()
+            .find(|value| value.type_path == type_path)
+    }
+}
+
+/// One component of a [`RemoteValues`].
+#[derive(Debug)]
+pub struct RemoteValue {
+    id: ComponentId,
+    type_path: String,
+    /// The serialized value the remote app reported, or `Null` once edited locally.
+    json: Value,
+    value: Box<dyn PartialReflect>,
+}
+
+impl RemoteValue {
+    /// The id of the component in the [`RemoteWorld`].
+    pub fn id(&self) -> ComponentId {
+        self.id
+    }
+
+    /// The type path of the component.
+    pub fn type_path(&self) -> &str {
+        &self.type_path
+    }
+
+    /// The value of the component.
+    pub fn value(&self) -> &dyn PartialReflect {
+        self.value.as_ref()
+    }
+}
+
+/// A component the remote app reported that the inspector cannot show, and why.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UnknownComponent {
+    /// The type path the remote app reported.
+    pub type_path: String,
+    /// Why the component cannot be shown.
+    pub reason: String,
 }
 
 /// Spawns an empty entity at exactly `remote`, an id the remote app allocated.

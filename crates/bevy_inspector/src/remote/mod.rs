@@ -10,6 +10,10 @@
 //! entities hold a reflected component, since the others, such as observers and systems, are not
 //! mirrored. Answers are parsed off the main thread, and only what changed is written.
 //!
+//! Every component of the selected entity is fetched for the details panel at the same pace, and
+//! the fields of the components the local type registry knows can be edited, see
+//! [`RemoteDetails`].
+//!
 //! Remote entities with the [`Disabled`] component are not shown, since `world.query` skips them.
 //!
 //! [`Name`]: bevy_ecs::name::Name
@@ -17,9 +21,12 @@
 //! [`Disabled`]: bevy_ecs::entity_disabling::Disabled
 //! [`World`]: bevy_ecs::world::World
 
+mod details;
 mod source;
 pub mod world;
 
+pub(crate) use details::send_field_edit;
+pub use details::{poll_remote_details, RemoteDetails};
 pub(crate) use source::is_remote;
 #[cfg(test)]
 pub(crate) use source::tests;
@@ -27,4 +34,4 @@ pub use source::{
     poll_remote_connection, sync_remote_source, sync_remote_world, RemoteConnection,
     RemoteConnectionState, RemoteSnapshot, RemoteSource,
 };
-pub use world::{RemoteComponents, RemoteWorld};
+pub use world::{RemoteComponents, RemoteValue, RemoteValues, RemoteWorld, UnknownComponent};

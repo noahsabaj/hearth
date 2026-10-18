@@ -64,6 +64,8 @@ use bevy_ui::{
     PositionType, UiRect, Val,
 };
 use bevy_ui_widgets::{ControlOrientation, NumericRange, NumericValue, ScrollArea, ValueChange};
+#[cfg(feature = "remote")]
+use bevy_utils::memory_size::MemorySize;
 use bevy_utils::prelude::ShortName;
 
 use crate::{
@@ -161,9 +163,12 @@ impl FieldValue {
 
 /// A request to write a new value into one field of a component on an inspected entity.
 ///
-/// The edit is applied through commands, and only when the [`InspectorSource`] is
-/// [`InspectorSource::Local`]; it is ignored otherwise. [`FieldValue::Label`] values are not
-/// supported. An edit that cannot be applied logs a warning and leaves the component unchanged.
+/// The edit is applied through commands. While the [`InspectorSource`] is
+/// [`InspectorSource::Local`], it is written into the component. While the inspector reads from a
+/// remote app, it is written into the value the details panel shows and sent to the remote app
+/// with `world.mutate_components`, see `remote::RemoteDetails`. It is ignored without a source.
+/// [`FieldValue::Label`] values are not supported. An edit that cannot be applied logs a warning
+/// and leaves the component unchanged.
 #[derive(EntityEvent, Debug, Clone)]
 pub struct FieldEdit {
     /// The inspected entity holding the component.
@@ -354,7 +359,11 @@ impl Default for DetailsPanelSync {
 impl DetailsPanelSync {
     /// Forces a synchronization pass on the next tick.
     pub fn set_dirty(&mut self) {
-        self.timer.almost_finish();
+        // A timer with no time remaining finishes on the next tick already, and ticking it here
+        // would use that up.
+        if !self.timer.remaining().is_zero() {
+            self.timer.almost_finish();
+        }
     }
 }
 
@@ -691,11 +700,17 @@ pub(crate) fn apply_field_edit(edit: On<FieldEdit>, mut commands: Commands) {
     commands.queue(move |world: &mut World| write_field_edit(world, &edit));
 }
 
-/// Writes `edit` into its component, marking the component changed only if its value changes.
+/// Writes `edit` into its component, marking the component changed only if its value changes, or
+/// sends it to the remote app the inspector reads from.
 ///
 /// The details panel is refreshed on the next tick whenever the field does not end up holding the
 /// edited value, so that its widget is reverted.
 fn write_field_edit(world: &mut World, edit: &FieldEdit) {
+    #[cfg(feature = "remote")]
+    if crate::remote::is_remote(world) {
+        crate::remote::send_field_edit(world, edit);
+        return;
+    }
     if world.get_resource::<InspectorSource>() != Some(&InspectorSource::Local) {
         return;
     }
@@ -769,7 +784,7 @@ fn refresh_details_panel(world: &mut World) {
 }
 
 /// Whether `field` holds `value`, so that a widget showing `value` is up to date.
-fn holds_value(field: &dyn PartialReflect, value: &FieldValue) -> bool {
+pub(crate) fn holds_value(field: &dyn PartialReflect, value: &FieldValue) -> bool {
     scalar_value(field).is_some_and(|current| same_value(&current, value))
 }
 
@@ -791,7 +806,7 @@ fn same_value(left: &FieldValue, right: &FieldValue) -> bool {
 
 /// Describes the outcome of a field write attempt.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum FieldWrite {
+pub(crate) enum FieldWrite {
     /// The field now holds a new value.
     Written,
     /// The field already held the value, so nothing was written.
@@ -810,7 +825,8 @@ fn assign<T: PartialEq>(target: &mut T, value: T) -> FieldWrite {
     }
 }
 
-fn write_field_value(
+/// Writes `value` into `field`, converting it to the type of the field.
+pub(crate) fn write_field_value(
     field: &mut dyn PartialReflect,
     value: &FieldValue,
     registry: &TypeRegistry,
@@ -1107,6 +1123,10 @@ pub(crate) fn inspect_components(
     let Some(entity) = selection else {
         return Vec::new();
     };
+    #[cfg(feature = "remote")]
+    if let Some(values) = world.get::<crate::remote::RemoteValues>(entity) {
+        return remote_components(world, values);
+    }
 
     let settings = EntityInspectionSettings {
         include_components: true,
@@ -1141,14 +1161,7 @@ pub(crate) fn inspect_components(
                 .get_info(component.component_id)
                 .is_some_and(ComponentInfo::mutable);
             if !(local && mutable) {
-                fields = fields
-                    .into_iter()
-                    .map(|entry| FieldEntry {
-                        value: read_only(entry.value),
-                        limit: None,
-                        ..entry
-                    })
-                    .collect();
+                fields = read_only_fields(fields);
             }
             ComponentDetails {
                 id: component.component_id,
@@ -1168,7 +1181,84 @@ pub(crate) fn inspect_components(
     if let Some(record) = world.component_id::<crate::remote::RemoteComponents>() {
         components.retain(|component| component.id != record);
     }
+    sort_components(&mut components);
+    components
+}
+
+/// Sorts component groups in display order: by name, then by id.
+fn sort_components(components: &mut [ComponentDetails]) {
     components.sort_by(|left, right| (&left.name, left.id).cmp(&(&right.name, right.id)));
+}
+
+/// `fields` rendered read-only.
+fn read_only_fields(fields: Vec<FieldEntry>) -> Vec<FieldEntry> {
+    fields
+        .into_iter()
+        .map(|entry| FieldEntry {
+            value: read_only(entry.value),
+            limit: None,
+            ..entry
+        })
+        .collect()
+}
+
+/// The name of the group listing the components a remote app reported that cannot be shown.
+#[cfg(feature = "remote")]
+const UNKNOWN_COMPONENTS: &str = "Unknown components";
+
+/// The component groups of a remote entity, built from the `values` the remote app reported, in
+/// display order.
+///
+/// Fields of mutable components are editable. The components that could not be read back are
+/// listed last in one read-only group, with the reason for each.
+#[cfg(feature = "remote")]
+fn remote_components(world: &World, values: &crate::remote::RemoteValues) -> Vec<ComponentDetails> {
+    let Some(registry) = world.get_resource::<AppTypeRegistry>() else {
+        return Vec::new();
+    };
+    let registry = registry.read();
+    let mut components: Vec<ComponentDetails> = values
+        .components()
+        .iter()
+        .map(|value| {
+            let info = world.components().get_info(value.id());
+            let fields = field_entries(value.value(), &registry);
+            ComponentDetails {
+                id: value.id(),
+                name: crate::component_short_name(world, value.id()),
+                type_path: value.type_path().to_string(),
+                memory: info
+                    .map(|info| MemorySize::new(info.layout().size()).to_string())
+                    .unwrap_or_default(),
+                fields: match info.is_some_and(ComponentInfo::mutable) {
+                    true => fields,
+                    false => read_only_fields(fields),
+                },
+            }
+        })
+        .collect();
+    sort_components(&mut components);
+    if let Some(id) = world.component_id::<crate::remote::RemoteValues>()
+        && !values.unknown().is_empty()
+    {
+        components.push(ComponentDetails {
+            id,
+            name: UNKNOWN_COMPONENTS.to_string(),
+            type_path: String::new(),
+            memory: values.unknown().len().to_string(),
+            fields: values
+                .unknown()
+                .iter()
+                .map(|unknown| FieldEntry {
+                    path: unknown.type_path.clone(),
+                    label: ShortName(&unknown.type_path).to_string(),
+                    depth: 0,
+                    value: FieldValue::Label(unknown.reason.clone()),
+                    limit: None,
+                })
+                .collect(),
+        });
+    }
     components
 }
 

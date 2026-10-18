@@ -40,7 +40,10 @@ use crate::details_panel::{
     apply_field_edit, store_column_splits, sync_details_panel, DetailsCollapsed,
     DetailsColumnSplits, DetailsIndex, DetailsPanelSync,
 };
-use crate::entity_tree::{sync_entity_tree, EntityTreeSync, TreeRowIndex};
+use crate::entity_tree::{
+    resync_on_tree_root_change, reveal_tree_selection, sync_entity_tree, EntityTreeSync,
+    TreeReveal, TreeRowIndex,
+};
 
 /// Where the inspector reads its data from.
 #[derive(Resource, Debug, Default, Clone, PartialEq, Eq, Reflect)]
@@ -67,9 +70,25 @@ pub(crate) fn world_to_inspect(world: &World) -> &World {
 }
 
 /// The entity currently being inspected, as an id in the inspected world.
+///
+/// The entity tree shows a selection set from outside the tree, such as by a click in a viewport,
+/// by expanding the rows above it and selecting its row, see
+/// [`entity_tree::reveal_tree_selection`].
 #[derive(Resource, Debug, Default, Clone, Copy, PartialEq, Eq, Reflect)]
 #[reflect(Resource, Debug, Default, Clone, PartialEq)]
 pub struct InspectorSelection(pub Option<Entity>);
+
+/// The entity whose subtree the entity tree shows, or `None` to show every root entity.
+///
+/// While it is `Some(root)` and the [`InspectorSource`] is [`InspectorSource::Local`], the
+/// top-level rows of the tree are the visible children of `root`, in their [`Children`] order,
+/// and nothing outside the subtree of `root` shows. `root` itself has no row. The resource is
+/// ignored while the inspector reads from a remote app.
+///
+/// [`Children`]: bevy_ecs::hierarchy::Children
+#[derive(Resource, Debug, Default, Clone, Copy, PartialEq, Eq, Reflect)]
+#[reflect(Resource, Debug, Default, Clone, PartialEq)]
+pub struct InspectorTreeRoot(pub Option<Entity>);
 
 /// The [`ShortName`] of a component type, taken from the type registry where possible.
 ///
@@ -114,8 +133,10 @@ impl Plugin for InspectorPlugin {
 
         app.init_resource::<InspectorSource>()
             .init_resource::<InspectorSelection>()
+            .init_resource::<InspectorTreeRoot>()
             .init_resource::<TreeRowIndex>()
             .init_resource::<EntityTreeSync>()
+            .init_resource::<TreeReveal>()
             .init_resource::<DetailsIndex>()
             .init_resource::<DetailsCollapsed>()
             .init_resource::<DetailsColumnSplits>()
@@ -124,7 +145,12 @@ impl Plugin for InspectorPlugin {
             .add_systems(
                 PostUpdate,
                 (
-                    sync_entity_tree,
+                    (
+                        resync_on_tree_root_change,
+                        sync_entity_tree,
+                        reveal_tree_selection,
+                    )
+                        .chain(),
                     (store_column_splits, sync_details_panel).chain(),
                 )
                     .before(UiSystems::Prepare),
@@ -134,12 +160,14 @@ impl Plugin for InspectorPlugin {
         app.init_resource::<remote::RemoteConnection>()
             .init_resource::<remote::RemoteSnapshot>()
             .init_resource::<remote::RemoteWorld>()
+            .init_resource::<remote::RemoteDetails>()
             .add_systems(
                 PostUpdate,
                 (
                     remote::sync_remote_source,
                     remote::poll_remote_connection,
                     remote::sync_remote_world,
+                    remote::poll_remote_details,
                 )
                     .chain()
                     .before(sync_entity_tree)

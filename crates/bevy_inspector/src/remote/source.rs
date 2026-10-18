@@ -35,7 +35,10 @@ use bevy_time::{Real, Time};
 use serde::Deserialize;
 use serde_json::Value;
 
-use super::world::{RemoteWorld, SpawnRemoteError, TreeComponents};
+use super::{
+    details::RemoteDetails,
+    world::{RemoteWorld, SpawnRemoteError, TreeComponents},
+};
 use crate::{
     details_panel::{DetailsCollapsed, DetailsColumnSplits, DetailsPanelSync},
     entity_tree::{clear_rows, EntityTreeSync},
@@ -47,11 +50,11 @@ const CHILD_OF: &str = "bevy_ecs::hierarchy::ChildOf";
 const IS_RESOURCE: &str = "bevy_ecs::resource::IsResource";
 
 /// The shortest time between two `world.query` polls.
-const POLL_INTERVAL: Duration = Duration::from_millis(500);
+pub(super) const POLL_INTERVAL: Duration = Duration::from_millis(500);
 /// The time to wait before reconnecting after a failed request.
-const RETRY_INTERVAL: Duration = Duration::from_secs(2);
+pub(super) const RETRY_INTERVAL: Duration = Duration::from_secs(2);
 /// The time after which a request without an answer is dropped and the connection marked failed.
-const REQUEST_TIMEOUT: Duration = Duration::from_secs(10);
+pub(super) const REQUEST_TIMEOUT: Duration = Duration::from_secs(10);
 /// The longest time between two full polls.
 ///
 /// Full polls otherwise only run when unseen entities appear, so this bounds how long a change
@@ -357,13 +360,17 @@ pub fn sync_remote_source(world: &mut World) {
 }
 
 /// Rebuilds the [`RemoteWorld`] empty, and clears what refers to its entities or component ids:
-/// the selection, the tree rows, and the collapsed and column split state of the details panel.
+/// the selection, the fetches and edits of the details panel, the tree rows, and the collapsed
+/// and column split state of the details panel.
 fn reset_inspected_world(world: &mut World) {
     let registry = world
         .get_resource::<AppTypeRegistry>()
         .cloned()
         .unwrap_or_default();
     world.resource_mut::<RemoteWorld>().reset(registry);
+    if let Some(mut details) = world.get_resource_mut::<RemoteDetails>() {
+        *details = RemoteDetails::default();
+    }
     world.resource_mut::<InspectorSelection>().0 = None;
     if let Some(mut collapsed) = world.get_resource_mut::<DetailsCollapsed>() {
         collapsed.0.clear();
@@ -427,7 +434,9 @@ pub fn poll_remote_connection(
     });
 }
 
-fn spawn<T: Send + 'static>(future: impl Future<Output = T> + Send + 'static) -> Task<T> {
+pub(super) fn spawn<T: Send + 'static>(
+    future: impl Future<Output = T> + Send + 'static,
+) -> Task<T> {
     IoTaskPool::get_or_init(TaskPool::default).spawn(future)
 }
 
