@@ -10,7 +10,10 @@
 use hearth_image::ImageFilterMode;
 use hearth_math::{Affine2, Mat3, Vec2, Vec3, Vec3A};
 
-use crate::{color::Tables, texture::Texture};
+use crate::{
+    color::{Tables, OPAQUE},
+    texture::Texture,
+};
 
 /// How a quad's alpha is used.
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -260,15 +263,22 @@ impl<'a> Quad<'a> {
     }
 
     /// Fills the quad's pixels in a band of rows of a framebuffer `width` pixels wide whose first
-    /// row is `first_row`.
-    pub(crate) fn fill(&self, tables: &Tables, band: &mut [u32], width: u32, first_row: u32) {
+    /// row is `first_row`. With `ALPHA`, the pixels keep alpha in their top byte, as an image a
+    /// camera draws to does.
+    pub(crate) fn fill<const ALPHA: bool>(
+        &self,
+        tables: &Tables,
+        band: &mut [u32],
+        width: u32,
+        first_row: u32,
+    ) {
         let band_rows = band.len() as u32 / width;
         let rows = self.bounds[1].max(first_row)..self.bounds[3].min(first_row + band_rows);
         if rows.is_empty() {
             return;
         }
         let [x0, _, x1, _] = self.bounds;
-        if self.fill_exact(tables, band, width, first_row, rows.clone()) {
+        if self.fill_exact::<ALPHA>(tables, band, width, first_row, rows.clone()) {
             return;
         }
         let [r, g, b, a] = self.color;
@@ -305,7 +315,7 @@ impl<'a> Quad<'a> {
                     Alpha::Mask(cutoff) if rgba[3] >= cutoff => 1.0,
                     Alpha::Mask(_) => continue,
                 };
-                tables.blend(pixel, [rgba[0], rgba[1], rgba[2]], alpha);
+                tables.blend::<ALPHA>(pixel, [rgba[0], rgba[1], rgba[2]], alpha);
             }
         }
     }
@@ -313,7 +323,7 @@ impl<'a> Quad<'a> {
     /// Fills the quad by copying texels, when each pixel's center lands on a texel's center and
     /// nothing tints them: an image drawn at its own size, like a canvas the size of the window.
     /// Returns whether it could.
-    fn fill_exact(
+    fn fill_exact<const ALPHA: bool>(
         &self,
         tables: &Tables,
         band: &mut [u32],
@@ -332,7 +342,7 @@ impl<'a> Quad<'a> {
         if !self.affine
             || self.color != [1.0; 4]
             || matches!(self.alpha, Alpha::Mask(_))
-            || !texture.is_srgb_rgba()
+            || !texture.is_srgb()
         {
             return false;
         }
@@ -379,9 +389,12 @@ impl<'a> Quad<'a> {
                 let [r, g, b, a] = texture.rgba8(texel_x as u32, texel_y as u32);
                 let pixel = &mut row[x as usize];
                 if a == 255 || opaque {
-                    *pixel = (u32::from(r) << 16) | (u32::from(g) << 8) | u32::from(b);
+                    *pixel = (u32::from(r) << 16)
+                        | (u32::from(g) << 8)
+                        | u32::from(b)
+                        | if ALPHA { OPAQUE } else { 0 };
                 } else if a != 0 {
-                    tables.blend(
+                    tables.blend::<ALPHA>(
                         pixel,
                         [
                             tables.decode(u32::from(r)),
@@ -403,7 +416,7 @@ mod tests {
 
     fn fill(quad: &Quad, width: u32, height: u32) -> Vec<u32> {
         let mut pixels = vec![0; (width * height) as usize];
-        quad.fill(&Tables::get(), &mut pixels, width, 0);
+        quad.fill::<false>(&Tables::get(), &mut pixels, width, 0);
         pixels
     }
 

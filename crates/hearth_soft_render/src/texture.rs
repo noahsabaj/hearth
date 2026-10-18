@@ -9,7 +9,7 @@ use hearth_image::{
 use hearth_platform::collections::{HashMap, HashSet};
 use tracing::warn;
 
-use crate::color::Tables;
+use crate::{color::Tables, target::ImageTarget};
 
 /// The sampler for images whose [`ImageSampler`] is `Default`, from the `ImagePlugin`.
 #[derive(Resource, Clone)]
@@ -90,15 +90,15 @@ impl ConvertedImages {
 
 /// How an image's texels are laid out, for the formats the renderer reads directly.
 #[derive(Clone, Copy, PartialEq, Eq)]
-struct Layout {
+pub(crate) struct Layout {
     /// Blue first, as in `Bgra8Unorm`.
-    bgra: bool,
+    pub bgra: bool,
     /// The texels are sRGB-encoded.
-    srgb: bool,
+    pub srgb: bool,
 }
 
 impl Layout {
-    fn of(format: TextureFormat) -> Option<Self> {
+    pub(crate) fn of(format: TextureFormat) -> Option<Self> {
         let (bgra, srgb) = match format {
             TextureFormat::Rgba8UnormSrgb => (false, true),
             TextureFormat::Rgba8Unorm => (false, false),
@@ -107,6 +107,15 @@ impl Layout {
             _ => return None,
         };
         Some(Self { bgra, srgb })
+    }
+
+    /// A texel's bytes as R, G, B, A, or the other way, R, G, B, A as a texel's bytes.
+    #[inline(always)]
+    pub(crate) fn rgba(self, mut bytes: [u8; 4]) -> [u8; 4] {
+        if self.bgra {
+            bytes.swap(0, 2);
+        }
+        bytes
     }
 }
 
@@ -142,7 +151,41 @@ impl<'a> Texture<'a> {
             ),
         };
         let size = image.size();
-        if size.x == 0 || size.y == 0 || texels.len() < size.element_product() as usize * 4 {
+        Self::with_texels(size.x, size.y, texels, layout, image, default_sampler)
+    }
+
+    /// An image a camera drew to this frame, from the pixels it drew, or `None` while a camera
+    /// draws to it.
+    pub(crate) fn from_target(
+        target: &'a ImageTarget,
+        image: &'a Image,
+        default_sampler: &'a ImageSamplerDescriptor,
+    ) -> Option<Self> {
+        // `0xAARRGGBB`, little-endian: blue, green, red and alpha bytes.
+        let layout = Layout {
+            bgra: true,
+            srgb: true,
+        };
+        let texels = bytemuck::cast_slice(&target.pixels);
+        Self::with_texels(
+            target.width,
+            target.height,
+            texels,
+            layout,
+            image,
+            default_sampler,
+        )
+    }
+
+    fn with_texels(
+        width: u32,
+        height: u32,
+        texels: &'a [u8],
+        layout: Layout,
+        image: &'a Image,
+        default_sampler: &'a ImageSamplerDescriptor,
+    ) -> Option<Self> {
+        if width == 0 || height == 0 || texels.len() < width as usize * height as usize * 4 {
             return None;
         }
         let sampler = match &image.sampler {
@@ -150,8 +193,8 @@ impl<'a> Texture<'a> {
             ImageSampler::Descriptor(descriptor) => descriptor,
         };
         Some(Self {
-            width: size.x,
-            height: size.y,
+            width,
+            height,
             texels,
             layout,
             mag_filter: sampler.mag_filter,
@@ -165,11 +208,8 @@ impl<'a> Texture<'a> {
     #[inline(always)]
     fn bytes(&self, x: u32, y: u32) -> [u8; 4] {
         let at = (y as usize * self.width as usize + x as usize) * 4;
-        let mut bytes: [u8; 4] = self.texels[at..at + 4].try_into().unwrap();
-        if self.layout.bgra {
-            bytes.swap(0, 2);
-        }
-        bytes
+        self.layout
+            .rgba(self.texels[at..at + 4].try_into().unwrap())
     }
 
     /// The texel at a column and row inside the image, in linear color.
@@ -194,12 +234,12 @@ impl<'a> Texture<'a> {
         }
     }
 
-    /// Whether the texels are sRGB R, G, B, A bytes, which [`Texture::rgba8`] reads.
-    pub(crate) fn is_srgb_rgba(&self) -> bool {
-        self.layout.srgb && !self.layout.bgra
+    /// Whether the texels are sRGB bytes, which [`Texture::rgba8`] reads.
+    pub(crate) fn is_srgb(&self) -> bool {
+        self.layout.srgb
     }
 
-    /// The bytes of a texel, without filtering, for [`Texture::is_srgb_rgba`] images.
+    /// The bytes of a texel, as R, G, B, A, without filtering, for [`Texture::is_srgb`] images.
     #[inline(always)]
     pub(crate) fn rgba8(&self, x: u32, y: u32) -> [u8; 4] {
         self.bytes(x, y)

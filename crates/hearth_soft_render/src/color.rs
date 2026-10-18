@@ -1,4 +1,7 @@
 //! Converting between the framebuffer's sRGB bytes and the linear values colors are mixed in.
+//!
+//! A pixel is `0x00RRGGBB` in sRGB. An image a camera draws to keeps its alpha in the top byte,
+//! linear, as `0xAARRGGBB`: the alpha `ALPHA` speaks of.
 
 use std::sync::LazyLock;
 
@@ -78,26 +81,47 @@ impl Tables {
         ]
     }
 
-    /// Mixes linear `rgb` over `pixel` by `alpha`, as a GPU blends into an sRGB target.
+    /// Mixes linear `rgb` over `pixel` by `alpha`, as a GPU blends into an sRGB target. With
+    /// `ALPHA`, the pixel's alpha mixes as the GPU's does, to `alpha + under * (1 - alpha)`;
+    /// without, its top byte stays 0.
     #[inline(always)]
-    pub(crate) fn blend(&self, pixel: &mut u32, rgb: [f32; 3], alpha: f32) {
+    pub(crate) fn blend<const ALPHA: bool>(&self, pixel: &mut u32, rgb: [f32; 3], alpha: f32) {
         if alpha >= 1.0 {
-            *pixel = self.pack(rgb);
+            *pixel = self.pack(rgb) | if ALPHA { OPAQUE } else { 0 };
         } else if alpha > 0.0 {
             let under = self.unpack(*pixel);
             let keep = 1.0 - alpha;
-            *pixel = self.pack([
+            let mut mixed = self.pack([
                 rgb[0] * alpha + under[0] * keep,
                 rgb[1] * alpha + under[1] * keep,
                 rgb[2] * alpha + under[2] * keep,
             ]);
+            if ALPHA {
+                let under_alpha = (*pixel >> 24) as f32 / 255.0;
+                mixed |= alpha_byte(alpha + under_alpha * keep) << 24;
+            }
+            *pixel = mixed;
         }
     }
+}
+
+/// An opaque pixel's alpha, in the top byte.
+pub(crate) const OPAQUE: u32 = 0xFF00_0000;
+
+/// An alpha from 0 to 1 as a byte.
+#[inline(always)]
+pub(crate) fn alpha_byte(alpha: f32) -> u32 {
+    (alpha.clamp(0.0, 1.0) * 255.0 + 0.5) as u32
 }
 
 /// A color as a framebuffer pixel, ignoring its alpha.
 pub(crate) fn pixel(color: LinearRgba) -> u32 {
     Tables::get().pack([color.red, color.green, color.blue])
+}
+
+/// A color as a pixel with its alpha in the top byte.
+pub(crate) fn pixel_with_alpha(color: LinearRgba) -> u32 {
+    pixel(color) | alpha_byte(color.alpha) << 24
 }
 
 #[cfg(test)]
@@ -116,8 +140,20 @@ mod tests {
     fn half_coverage_mixes_in_linear() {
         let tables = Tables::get();
         let mut pixel = 0;
-        tables.blend(&mut pixel, [1.0; 3], 0.5);
+        tables.blend::<false>(&mut pixel, [1.0; 3], 0.5);
         // Linear 0.5 is sRGB 188, not 128.
         assert_eq!(pixel, 0xBC_BC_BC);
+    }
+
+    #[test]
+    fn alpha_mixes_as_on_the_gpu() {
+        let tables = Tables::get();
+        // Half white over transparent black: half alpha, and color mixed with the black.
+        let mut pixel = 0;
+        tables.blend::<true>(&mut pixel, [1.0; 3], 0.5);
+        assert_eq!(pixel, 0x80_BC_BC_BC);
+        // Half again: three quarters.
+        tables.blend::<true>(&mut pixel, [1.0; 3], 0.5);
+        assert!((pixel >> 24).abs_diff(191) <= 1);
     }
 }

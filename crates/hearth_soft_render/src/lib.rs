@@ -8,7 +8,9 @@
 //!
 //! [`SoftRenderPlugin`] draws what each [`Camera`](hearth_camera::Camera) sees into the
 //! [`Framebuffer`] of its window: rows of blue, green, red and an unused byte, the layout desktop
-//! windowing systems and Axiom take. It needs no GPU, and gives the same pixels wherever it runs.
+//! windowing systems and Axiom take. A camera can also draw to an [`Image`](hearth_image::Image),
+//! with alpha, which later cameras can show the same frame. It needs no GPU, and gives the same
+//! pixels wherever it runs.
 //!
 //! It draws [`Sprite`](hearth_sprite::Sprite)s, with their atlases, rects, flips, tints, anchors,
 //! scaling, tiling and nine-slicing, and with the `hearth_text` feature
@@ -28,6 +30,7 @@ mod framebuffer;
 mod present;
 mod raster;
 mod sprite;
+mod target;
 #[cfg(feature = "hearth_text")]
 mod text;
 mod texture;
@@ -43,13 +46,14 @@ use hearth_image::{CompressedImageFormats, ImageLoader, ImagePlugin};
 /// The soft renderer's systems, in the `Last` schedule.
 #[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum SoftRenderSystems {
-    /// Drawing into the [`Framebuffer`]s.
+    /// Drawing into the [`Framebuffer`]s, and into images cameras draw to.
     Draw,
     /// Showing them, with the `desktop` feature.
     Present,
 }
 
-/// Draws 2D scenes on the CPU into each window's [`Framebuffer`]; see the [crate docs](crate).
+/// Draws 2D scenes on the CPU into each window's [`Framebuffer`], and into images cameras draw
+/// to; see the [crate docs](crate).
 #[derive(Default)]
 pub struct SoftRenderPlugin;
 

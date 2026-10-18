@@ -11,8 +11,8 @@ use hearth_ecs::{
     system::{Local, Query, Res, ResMut},
 };
 use hearth_image::{Image, ImageFilterMode, TextureAtlasLayout};
-use hearth_math::{Affine3A, Mat3, Mat4, URect, Vec3, Vec4};
-use hearth_platform::collections::HashMap;
+use hearth_math::{Affine3A, Mat3, Mat4, URect, UVec2, Vec3, Vec4};
+use hearth_platform::collections::{HashMap, HashSet};
 use hearth_tasks::{ComputeTaskPool, ParallelSliceMut, TaskPool};
 use hearth_transform::components::GlobalTransform;
 use hearth_window::{PrimaryWindow, Window};
@@ -22,6 +22,7 @@ use crate::{
     color::{self, Tables},
     raster::{Alpha, Paint, Quad, TexelMap},
     sprite::{self, SpriteQuery},
+    target::ImageTarget,
     texture::{ConvertedImages, DefaultSampler, Texture},
     Framebuffer,
 };
@@ -79,7 +80,11 @@ pub(crate) fn fit_framebuffers(
 /// The rows of a framebuffer each task fills at once.
 const BAND_ROWS: u32 = 16;
 
-/// Draws what each camera sees into the framebuffer of its window.
+/// Draws what each camera sees into the framebuffer of its window, or into the image it draws
+/// to.
+///
+/// Cameras draw in their order. One that samples an image an earlier camera drew to this frame
+/// sees what it drew, as on the GPU; the images get their pixels once all have drawn.
 pub(crate) fn draw(
     cameras: Query<(
         Entity,
@@ -91,14 +96,15 @@ pub(crate) fn draw(
     primary_window: Query<Entity, With<PrimaryWindow>>,
     mut framebuffers: Query<(Entity, &mut Framebuffer), With<Window>>,
     clear_color: Res<ClearColor>,
-    images: Res<Assets<Image>>,
+    mut images: ResMut<Assets<Image>>,
     atlases: Res<Assets<TextureAtlasLayout>>,
     default_sampler: Res<DefaultSampler>,
     mut converted: ResMut<ConvertedImages>,
     sprites: SpriteQuery,
     #[cfg(feature = "hearth_text")] texts: crate::text::Texts,
     mut drawn: Local<Vec<Entity>>,
-    mut warned_about_images: Local<bool>,
+    mut warned: Local<HashSet<AssetId<Image>>>,
+    mut warned_about_views: Local<bool>,
 ) {
     let mut items = Vec::new();
     sprite::collect(&sprites, &images, &atlases, &mut items);
@@ -107,22 +113,17 @@ pub(crate) fn draw(
     // A stable sort keeps the items of one entity, like a text's shadow and glyphs, in order.
     items.sort_by(|a, b| a.z.total_cmp(&b.z));
 
-    converted.convert(
-        items.iter().filter_map(|item| match item.paint {
+    let mut texture_ids: Vec<AssetId<Image>> = items
+        .iter()
+        .filter_map(|item| match item.paint {
             ItemPaint::Texture { image, .. } => Some(image),
             ItemPaint::Solid => None,
-        }),
-        &images,
-    );
+        })
+        .collect();
+    texture_ids.sort_unstable();
+    texture_ids.dedup();
+    converted.convert(texture_ids.iter().copied(), &images);
     let converted = &*converted;
-    let mut textures = HashMap::<AssetId<Image>, Option<Texture>>::default();
-    for item in &items {
-        if let ItemPaint::Texture { image, .. } = item.paint {
-            textures
-                .entry(image)
-                .or_insert_with(|| Texture::new(image, &images, converted, &default_sampler.0));
-        }
-    }
 
     let mut cameras: Vec<_> = cameras
         .iter()
@@ -134,23 +135,32 @@ pub(crate) fn draw(
     let default_layers = RenderLayers::default();
     let tables = Tables::get();
     let pool = ComputeTaskPool::get_or_init(TaskPool::default);
+    let mut targets: Vec<ImageTarget> = Vec::new();
     drawn.clear();
     for (_, camera, target, camera_transform, camera_layers) in cameras {
+        let images = &*images;
         let target = match target.normalize(primary_window) {
-            Some(NormalizedRenderTarget::Window(window)) => window.entity(),
-            Some(NormalizedRenderTarget::Image(_) | NormalizedRenderTarget::TextureView(_)) => {
-                if !core::mem::replace(&mut *warned_about_images, true) {
-                    warn!("The soft renderer draws only to windows, so it skips cameras that draw to images");
+            Some(NormalizedRenderTarget::Window(window)) => Target::Window(window.entity()),
+            Some(NormalizedRenderTarget::Image(image)) => Target::Image(image.handle.id()),
+            Some(NormalizedRenderTarget::TextureView(_)) => {
+                if !core::mem::replace(&mut *warned_about_views, true) {
+                    warn!("The soft renderer has no texture views, so it skips cameras that draw to them");
                 }
                 continue;
             }
             _ => continue,
         };
-        let Ok((_, mut framebuffer)) = framebuffers.get_mut(target) else {
+        let size = match target {
+            Target::Window(window) => framebuffers
+                .get(window)
+                .ok()
+                .map(|(_, framebuffer)| UVec2::new(framebuffer.width(), framebuffer.height())),
+            Target::Image(id) => images.get(id).map(Image::size),
+        };
+        let Some(size) = size else {
             continue;
         };
-        let (width, height) = (framebuffer.width(), framebuffer.height());
-        let Some(viewport) = viewport(camera, width, height) else {
+        let Some(viewport) = viewport(camera, size.x, size.y) else {
             continue;
         };
         let clear = match &camera.clear_color {
@@ -158,9 +168,43 @@ pub(crate) fn draw(
             ClearColorConfig::Custom(color) => Some(*color),
             ClearColorConfig::None => None,
         }
-        .map(|color| color::pixel(color.to_linear()));
-        if !drawn.contains(&target) {
-            drawn.push(target);
+        .map(|color| color.to_linear());
+
+        // An image's pixels leave `targets` while the camera draws to them, so that the
+        // camera can sample the other images there.
+        let mut image_pixels = None;
+        if let Target::Image(id) = target {
+            let index = match targets.iter().position(|target| target.id == id) {
+                Some(index) => index,
+                None => {
+                    // A camera that clears all of the image needn't read what's there.
+                    let load =
+                        clear.is_none() || viewport != URect::from_corners(UVec2::ZERO, size);
+                    let Some(target) = images
+                        .get(id)
+                        .and_then(|image| ImageTarget::new(id, image, load, &tables))
+                    else {
+                        if warned.insert(id) {
+                            warn!("The soft renderer can't draw to {id}: it can't read its format, or it has layers");
+                        }
+                        continue;
+                    };
+                    targets.push(target);
+                    targets.len() - 1
+                }
+            };
+            image_pixels = Some((index, core::mem::take(&mut targets[index].pixels)));
+        }
+
+        let mut textures = HashMap::<AssetId<Image>, Option<Texture>>::default();
+        for &id in &texture_ids {
+            let texture = match targets.iter().find(|target| target.id == id) {
+                Some(target) => images
+                    .get(id)
+                    .and_then(|image| Texture::from_target(target, image, &default_sampler.0)),
+                None => Texture::new(id, images, converted, &default_sampler.0),
+            };
+            textures.insert(id, texture);
         }
 
         let clip_from_world =
@@ -192,24 +236,40 @@ pub(crate) fn draw(
             })
             .collect();
 
-        framebuffer.pixels_mut().par_chunk_map_mut(
-            pool,
-            (BAND_ROWS * width) as usize,
-            |band_index, band| {
-                let first_row = band_index as u32 * BAND_ROWS;
-                if let Some(clear) = clear {
-                    let rows = viewport.min.y.max(first_row)
-                        ..viewport.max.y.min(first_row + band.len() as u32 / width);
-                    for y in rows {
-                        let row = &mut band[((y - first_row) * width) as usize..][..width as usize];
-                        row[viewport.min.x as usize..viewport.max.x as usize].fill(clear);
+        match (target, &mut image_pixels) {
+            (Target::Image(_), Some((_, pixels))) => {
+                let clear = clear.map(color::pixel_with_alpha);
+                fill::<true>(pool, &tables, pixels, size.x, viewport, clear, &quads);
+            }
+            (Target::Window(window), _) => {
+                if let Ok((_, mut framebuffer)) = framebuffers.get_mut(window) {
+                    let clear = clear.map(color::pixel);
+                    let pixels = framebuffer.pixels_mut();
+                    fill::<false>(pool, &tables, pixels, size.x, viewport, clear, &quads);
+                    if !drawn.contains(&window) {
+                        drawn.push(window);
                     }
                 }
-                for quad in &quads {
-                    quad.fill(&tables, band, width, first_row);
-                }
-            },
-        );
+            }
+            (Target::Image(_), None) => {}
+        }
+        drop(quads);
+        drop(textures);
+        if let Some((index, pixels)) = image_pixels {
+            targets[index].pixels = pixels;
+        }
+    }
+
+    for target in &targets {
+        if !target.write(&mut images, &tables) && warned.insert(target.id) {
+            let format = images
+                .get(target.id)
+                .map(|image| image.texture_descriptor.format);
+            warn!(
+                "The soft renderer can't write {format:?} images, so {} doesn't get what cameras drew to it",
+                target.id
+            );
+        }
     }
 
     // A window no camera draws to shows black, as with `hearth_render`.
@@ -220,14 +280,50 @@ pub(crate) fn draw(
     }
 }
 
+/// What a camera draws to.
+#[derive(Clone, Copy)]
+enum Target {
+    /// A window's [`Framebuffer`].
+    Window(Entity),
+    /// An image.
+    Image(AssetId<Image>),
+}
+
+/// Clears a camera's viewport of `pixels`, rows `width` long, and fills its quads, a band of
+/// rows on each task. With `ALPHA`, the pixels keep alpha in their top byte.
+fn fill<const ALPHA: bool>(
+    pool: &TaskPool,
+    tables: &Tables,
+    mut pixels: &mut [u32],
+    width: u32,
+    viewport: URect,
+    clear: Option<u32>,
+    quads: &[Quad],
+) {
+    pixels.par_chunk_map_mut(pool, (BAND_ROWS * width) as usize, |band_index, band| {
+        let first_row = band_index as u32 * BAND_ROWS;
+        if let Some(clear) = clear {
+            let rows = viewport.min.y.max(first_row)
+                ..viewport.max.y.min(first_row + band.len() as u32 / width);
+            for y in rows {
+                let row = &mut band[((y - first_row) * width) as usize..][..width as usize];
+                row[viewport.min.x as usize..viewport.max.x as usize].fill(clear);
+            }
+        }
+        for quad in quads {
+            quad.fill::<ALPHA>(tables, band, width, first_row);
+        }
+    });
+}
+
 /// The part of a framebuffer a camera draws to, in pixels.
 fn viewport(camera: &Camera, width: u32, height: u32) -> Option<URect> {
     let rect = camera
         .physical_viewport_rect()
         .unwrap_or(URect::new(0, 0, width, height));
     let rect = URect {
-        min: rect.min.min(hearth_math::UVec2::new(width, height)),
-        max: rect.max.min(hearth_math::UVec2::new(width, height)),
+        min: rect.min.min(UVec2::new(width, height)),
+        max: rect.max.min(UVec2::new(width, height)),
     };
     (!rect.is_empty()).then_some(rect)
 }
