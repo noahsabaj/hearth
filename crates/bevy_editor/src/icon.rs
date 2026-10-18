@@ -2,6 +2,7 @@
 
 use bevy_app::{App, Startup};
 use bevy_ecs::prelude::*;
+use bevy_math::ops::{self, FloatPow};
 use bevy_window::{PrimaryWindow, WindowIcon};
 
 /// The icon's width and height in pixels. Platforms scale it to the sizes they show.
@@ -86,8 +87,12 @@ fn color_at(x: f32, y: f32) -> Option<[f32; 3]> {
     }
     let mut color = mix(TILE_TOP, TILE_BOTTOM, y);
     // A warm glow behind the flame.
-    let distance = (x - 0.5).hypot((y - 0.66) * 1.2);
-    color = mix(color, GLOW, (1.0 - distance / 0.45).max(0.0).powi(2) * 0.8);
+    let distance = ops::hypot(x - 0.5, (y - 0.66) * 1.2);
+    color = mix(
+        color,
+        GLOW,
+        (1.0 - distance / 0.45).max(0.0).squared() * 0.8,
+    );
     for layer in &LAYERS {
         if in_layer(layer, x, y) {
             color = layer.color;
@@ -108,15 +113,15 @@ fn in_tile(x: f32, y: f32) -> bool {
 
 fn in_layer(layer: &Layer, x: f32, y: f32) -> bool {
     if y >= layer.base {
-        return (x - 0.5).powi(2) + (y - layer.base).powi(2) <= layer.radius * layer.radius;
+        return (x - 0.5).squared() + (y - layer.base).squared() <= layer.radius.squared();
     }
     if y < layer.tip {
         return false;
     }
     // 0 at the tip, 1 level with the base's centre.
     let along = (y - layer.tip) / (layer.base - layer.tip);
-    let center = 0.5 + layer.lean * (1.0 - along).powi(2);
-    (x - center).abs() <= layer.radius * along.powf(1.6)
+    let center = 0.5 + layer.lean * (1.0 - along).squared();
+    (x - center).abs() <= layer.radius * ops::powf(along, 1.6)
 }
 
 fn mix(from: [f32; 3], to: [f32; 3], amount: f32) -> [f32; 3] {

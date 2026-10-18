@@ -901,15 +901,15 @@ impl WinitAppRunnerState {
         }
     }
 
-    #[expect(
-        clippy::drain_collect,
-        reason = "draining preserves the capacity of the event buffers, which are refilled every frame"
-    )]
     fn forward_bevy_events(&mut self) {
         self.reconcile_pending_modifiers();
 
-        let raw_winit_events = self.raw_winit_events.drain(..).collect::<Vec<_>>();
-        let window_events = self.bevy_window_events.drain(..).collect::<Vec<_>>();
+        // Moving the events out with `append` keeps the capacity of the buffers, which are refilled
+        // every frame.
+        let mut raw_winit_events = Vec::new();
+        raw_winit_events.append(&mut self.raw_winit_events);
+        let mut window_events = Vec::new();
+        window_events.append(&mut self.bevy_window_events);
         let world = self.world_mut();
 
         if !raw_winit_events.is_empty() {
