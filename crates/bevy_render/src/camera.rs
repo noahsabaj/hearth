@@ -30,19 +30,17 @@ use bevy_camera::{
 };
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
-    change_detection::DetectChanges,
+    change_detection::{DetectChanges, Ref},
     component::Component,
     entity::{ContainsEntity, Entity, EntityHashMap, EntityHashSet},
     error::BevyError,
-    lifecycle::HookContext,
     message::MessageReader,
     prelude::With,
-    query::{Has, QueryItem},
+    query::{Added, Has, QueryItem, Without},
     reflect::ReflectComponent,
     resource::Resource,
     schedule::{InternedScheduleLabel, IntoScheduleConfigs, ScheduleLabel, SystemSet},
     system::{Commands, Local, Query, Res, ResMut},
-    world::DeferredWorld,
 };
 use bevy_image::Image;
 use bevy_log::warn;
@@ -79,10 +77,8 @@ impl Plugin for CameraPlugin {
                     .in_set(CameraUpdateSystems)
                     .before(AssetEventSystems)
                     .before(visibility::update_frusta),
-            );
-        app.world_mut()
-            .register_component_hooks::<Camera>()
-            .on_add(warn_on_no_render_graph);
+            )
+            .add_systems(PostUpdate, warn_on_no_render_graph);
 
         if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
             render_app
@@ -118,8 +114,15 @@ impl Plugin for CameraPlugin {
     }
 }
 
-fn warn_on_no_render_graph(world: DeferredWorld, HookContext { entity, caller, .. }: HookContext) {
-    if !world.entity(entity).contains::<CameraRenderGraph>() {
+/// Warns about new cameras that have no render graph.
+///
+/// This is a system rather than a hook on `Camera`: a scene or a reflected insert adds a camera's
+/// components one at a time, and `Camera3d` brings the graph after `Camera` is already there.
+fn warn_on_no_render_graph(
+    cameras: Query<(Entity, Ref<Camera>), (Added<Camera>, Without<CameraRenderGraph>)>,
+) {
+    for (entity, camera) in &cameras {
+        let caller = camera.changed_by().into_option();
         warn!("{}Entity {entity} has a `Camera` component, but it doesn't have a render graph configured. Usually, adding a `Camera2d` or `Camera3d` component will work.
         However, you may instead need to enable `bevy_core_pipeline`, or may want to manually add a `CameraRenderGraph` component to create a custom render graph.", caller.map(|location|format!("{location}: ")).unwrap_or_default());
     }

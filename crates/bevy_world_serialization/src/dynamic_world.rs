@@ -3,6 +3,7 @@ use bevy_asset::Asset;
 use bevy_ecs::reflect::ReflectResource;
 use bevy_ecs::{
     entity::{Entity, EntityHashMap, SceneEntityMapper},
+    hierarchy::{ChildOf, Children},
     reflect::{AppTypeRegistry, ReflectComponent},
     world::World,
 };
@@ -157,6 +158,25 @@ impl DynamicWorld {
             }
         }
 
+        // `ChildOf` was written without its hooks, on the understanding that `Children` comes
+        // with it. A dynamic world may leave `Children` out, since `ChildOf` implies it, so give
+        // each parent the children it doesn't list yet, in the order the entities were written.
+        for dynamic_entity in &self.entities {
+            let Some(&entity) = entity_map.get(&dynamic_entity.entity) else {
+                continue;
+            };
+            let Some(parent) = world.get::<ChildOf>(entity).map(ChildOf::parent) else {
+                continue;
+            };
+            let listed = world
+                .get::<Children>(parent)
+                .is_some_and(|children| children.contains(&entity));
+            if !listed && world.get_entity(parent).is_ok() {
+                // Inserting it again runs the hooks that add it to the parent's `Children`.
+                world.entity_mut(entity).insert(ChildOf(parent));
+            }
+        }
+
         // Insert resources after all entities have been added to the world.
         // This ensures the entities are available for the resources to reference during mapping.
         for resource in &self.resources {
@@ -248,7 +268,7 @@ mod tests {
     use bevy_ecs::{
         component::Component,
         entity::{Entity, EntityHashMap, EntityMapper, MapEntities},
-        hierarchy::ChildOf,
+        hierarchy::{ChildOf, Children},
         reflect::{AppTypeRegistry, ReflectComponent, ReflectMapEntities, ReflectResource},
         resource::Resource,
         world::World,
@@ -307,6 +327,46 @@ mod tests {
         let test_resource = destination_world.get_resource::<TestResource>().unwrap();
         assert_eq!(from_entity_a, test_resource.entity_a);
         assert_eq!(from_entity_b, test_resource.entity_b);
+    }
+
+    #[test]
+    fn parents_get_back_children_left_out_of_the_dynamic_world() {
+        let app_type_registry = AppTypeRegistry::default();
+        app_type_registry.write().register::<ChildOf>();
+
+        let mut source_world = World::new();
+        let parent = source_world.spawn_empty().id();
+        let first = source_world.spawn(ChildOf(parent)).id();
+        let second = source_world.spawn(ChildOf(parent)).id();
+
+        // `Children` is left out; `ChildOf` alone says who the children are.
+        let dynamic_world = {
+            let type_registry = app_type_registry.read();
+            DynamicWorldBuilder::from_world(&source_world, &type_registry)
+                .with_component_filter(crate::WorldFilter::default().deny::<Children>())
+                .extract_entities([parent, first, second].into_iter())
+                .build()
+        };
+
+        let mut entity_map = EntityHashMap::default();
+        let mut destination_world = World::new();
+        destination_world.insert_resource(app_type_registry);
+        dynamic_world
+            .write_to_world(&mut destination_world, &mut entity_map)
+            .unwrap();
+
+        // The children come back in the order the dynamic world lists them.
+        let expected: Vec<Entity> = dynamic_world
+            .entities
+            .iter()
+            .filter(|entity| [first, second].contains(&entity.entity))
+            .map(|entity| entity_map[&entity.entity])
+            .collect();
+        let children: Vec<Entity> = destination_world
+            .get::<Children>(entity_map[&parent])
+            .expect("the parent has its children")
+            .to_vec();
+        assert_eq!(children, expected);
     }
 
     #[test]
