@@ -132,7 +132,7 @@ installed skill points at `hearth skill show`, so it stays current as the CLI up
 | `HEARTH_FORMAT`      | the output format, like `--format`                          |
 | `HEARTH_TIMEOUT`     | seconds to wait for the app, like `--timeout`               |
 | `HEARTH_TOOLCHAIN`   | the rustup toolchain to build with, like `--toolchain`      |
-| `HEARTH_CLI_HOME`    | where sessions and their logs are kept                      |
+| `HEARTH_CLI_HOME`    | where sessions, their logs and cached type registries are kept |
 | `HEARTH_TRACE`       | when set, each BRP request's method, sizes and time go to stderr |
 | `HEARTH_REMOTE_PORT` | set by `hearth run` for the app: the port to answer BRP on  |
 | `NO_COLOR`           | disables colors                                             |

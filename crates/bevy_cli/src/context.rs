@@ -8,6 +8,7 @@ use crate::brp::Client;
 use crate::known;
 use crate::output::{CliError, Exit, Output};
 use crate::registry::{Registry, Want};
+use crate::registry_cache::{self, Cached, Stamp};
 use crate::target::{self, Target};
 
 /// Limits that apply when commands run as tools of the MCP server.
@@ -97,10 +98,30 @@ impl Ctx {
         self.client()?.call(method, params)
     }
 
-    /// The app's type registry, fetched once.
+    /// The app's type registry, fetched once. While the app runs, its schema is kept on disk,
+    /// so later commands only ask whether it still holds.
     pub fn registry(&mut self) -> Result<&Registry, CliError> {
         if self.registry.is_none() {
-            let registry = Registry::fetch(self.client()?)?;
+            let client = self.client()?;
+            let registry = match registry_cache::load(&registry_cache::dir(), &client.endpoint) {
+                Some(cached) => {
+                    let info = client.call("app.info", None).ok();
+                    registry_with_info(client, Some(cached), info)?
+                }
+                None => {
+                    let calls = [("registry.schema", None), ("app.info", None)];
+                    let mut answers = client
+                        .batch(&calls, Registry::fetch_timeout(client))?
+                        .into_iter();
+                    let schema = answers.next().unwrap_or_else(|| {
+                        Err(CliError::internal("no answer to registry.schema"))
+                    })?;
+                    if let Some(Ok(info)) = answers.next() {
+                        keep_schema(client, &info, &schema);
+                    }
+                    Registry::from_schema(schema)
+                }
+            };
             self.registry = Some(registry);
         }
         Ok(self.registry.as_ref().expect("fetched above"))
@@ -172,8 +193,14 @@ impl Ctx {
             calls.push(names_call());
         }
         let registry = want.registry && self.registry.is_none();
+        // With a copy on disk, `app.info` says whether it holds; without, fetch both.
+        let cached =
+            registry && registry_cache::exists(&registry_cache::dir(), &self.client()?.endpoint);
         if registry {
-            calls.push(("registry.schema", Value::Null));
+            if !cached {
+                calls.push(("registry.schema", Value::Null));
+            }
+            calls.push(("app.info", Value::Null));
         }
         let methods = want.methods && !self.client()?.knows_methods();
         if methods {
@@ -188,20 +215,38 @@ impl Ctx {
             .map(|(method, params)| (method, (!params.is_null()).then_some(params)))
             .collect();
         let client = self.client()?;
-        let timeout = if registry {
-            client.timeout.max(Duration::from_secs(30))
+        let timeout = if registry && !cached {
+            Registry::fetch_timeout(client)
         } else {
             client.timeout
         };
         let mut answers = client.batch(&calls, timeout)?.into_iter();
-        if names && let Some(Ok(rows)) = answers.next() {
+        let rows = names.then(|| answers.next()).flatten().and_then(Result::ok);
+        let fetched = if registry {
+            let schema = if cached { None } else { answers.next() };
+            let info = answers.next().and_then(Result::ok);
+            if cached {
+                let cached = registry_cache::load(&registry_cache::dir(), &client.endpoint);
+                registry_with_info(client, cached, info).ok()
+            } else if let Some(Ok(schema)) = schema {
+                if let Some(info) = &info {
+                    keep_schema(client, info, &schema);
+                }
+                Some(Registry::from_schema(schema))
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        if methods && let Some(Ok(discovered)) = answers.next() {
+            client.remember_methods(&discovered);
+        }
+        if let Some(rows) = rows {
             self.names = Some(parse_names(&rows));
         }
-        if registry && let Some(Ok(schema)) = answers.next() {
-            self.registry = Some(Registry::from_schema(schema));
-        }
-        if methods && let Some(Ok(discovered)) = answers.next() {
-            self.client()?.remember_methods(&discovered);
+        if fetched.is_some() {
+            self.registry = fetched;
         }
         Ok(())
     }
@@ -334,6 +379,34 @@ impl Prefetch {
 }
 
 /// The query for every entity with a `Name`.
+/// The registry from the copy on disk when `info` shows the app is the run it came from, and
+/// from a fresh `registry.schema` otherwise.
+fn registry_with_info(
+    client: &Client,
+    cached: Option<Cached>,
+    info: Option<Value>,
+) -> Result<Registry, CliError> {
+    let stamp = info.as_ref().and_then(Stamp::from_info);
+    if let Some(cached) = cached
+        && stamp.as_ref() == Some(&cached.stamp)
+    {
+        return Ok(Registry::from_schema(cached.schema));
+    }
+    let schema =
+        client.call_with_timeout("registry.schema", None, Registry::fetch_timeout(client))?;
+    if let Some(stamp) = stamp {
+        registry_cache::store(&registry_cache::dir(), &client.endpoint, &stamp, &schema);
+    }
+    Ok(Registry::from_schema(schema))
+}
+
+/// Keeps `schema` on disk if the app's `app.info` says which run it came from.
+fn keep_schema(client: &Client, info: &Value, schema: &Value) {
+    if let Some(stamp) = Stamp::from_info(info) {
+        registry_cache::store(&registry_cache::dir(), &client.endpoint, &stamp, schema);
+    }
+}
+
 fn names_call() -> (&'static str, Value) {
     (
         "world.query",

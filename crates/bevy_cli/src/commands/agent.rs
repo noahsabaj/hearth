@@ -200,7 +200,10 @@ pub const ENVIRONMENT: &[(&str, &str)] = &[
         "HEARTH_TOOLCHAIN",
         "The rustup toolchain to build with, like --toolchain",
     ),
-    ("HEARTH_CLI_HOME", "Where sessions and their logs are kept"),
+    (
+        "HEARTH_CLI_HOME",
+        "Where sessions, their logs and cached type registries are kept",
+    ),
     (
         "HEARTH_TRACE",
         "When set, each BRP request's method, sizes and time go to stderr",

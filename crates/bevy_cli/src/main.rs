@@ -17,6 +17,7 @@ mod mcp;
 mod output;
 mod project;
 mod registry;
+mod registry_cache;
 mod session;
 mod skill;
 mod target;

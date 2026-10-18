@@ -92,11 +92,9 @@ pub struct Registry {
 }
 
 impl Registry {
-    /// Fetches the registry from the app.
-    pub fn fetch(client: &Client) -> Result<Self, CliError> {
-        let timeout = client.timeout.max(core::time::Duration::from_secs(30));
-        let schema = client.call_with_timeout("registry.schema", None, timeout)?;
-        Ok(Self::from_schema(schema))
+    /// How long to wait for `registry.schema`, which takes a large app a while to answer.
+    pub fn fetch_timeout(client: &Client) -> core::time::Duration {
+        client.timeout.max(core::time::Duration::from_secs(30))
     }
 
     /// Builds the registry from a `registry.schema` result.

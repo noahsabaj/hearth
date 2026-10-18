@@ -620,6 +620,25 @@ pub struct BrpAppInfoResponse {
     pub bevy_version: String,
     /// Which `SubApp` handled the request: `"main"` or `"render"`.
     pub sub_app: String,
+    /// Identifies this run of the application: it changes every time the application starts.
+    /// Clients can use it with `registered_types` to tell whether what they cached from an
+    /// earlier request, such as `registry.schema`, still holds.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub instance: String,
+    /// How many types the application has registered for reflection.
+    #[serde(default)]
+    pub registered_types: usize,
+}
+
+/// The identifier of this run of the application that `app.info` reports.
+fn instance_id() -> &'static str {
+    static INSTANCE: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    INSTANCE.get_or_init(|| {
+        let started = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default();
+        format!("{}-{}", std::process::id(), started.as_nanos())
+    })
 }
 
 /// One query match result: a single entity paired with the requested components.
@@ -1831,10 +1850,16 @@ fn process_remote_app_info_request(
         .get_resource::<RemoteAppName>()
         .map_or_else(|| "bevy".to_owned(), |name| name.0.clone());
 
+    let registered_types = world
+        .get_resource::<AppTypeRegistry>()
+        .map_or(0, |registry| registry.read().iter().count());
+
     let response = BrpAppInfoResponse {
         app_name,
         bevy_version: env!("CARGO_PKG_VERSION").to_owned(),
         sub_app: sub_app.to_owned(),
+        instance: instance_id().to_owned(),
+        registered_types,
     };
 
     serde_json::to_value(response).map_err(BrpError::internal)
@@ -2736,6 +2761,24 @@ mod tests {
         assert_eq!(response.app_name, "Demo");
         assert_eq!(response.bevy_version, env!("CARGO_PKG_VERSION"));
         assert_eq!(response.sub_app, "main");
+    }
+
+    #[test]
+    fn app_info_identifies_the_run_and_counts_types() {
+        let mut world = World::default();
+        let first = process_remote_app_info_request_main(In(None), &world).unwrap();
+        let first = serde_json::from_value::<BrpAppInfoResponse>(first).unwrap();
+        assert!(!first.instance.is_empty());
+        assert_eq!(first.registered_types, 0);
+
+        let registry = AppTypeRegistry::default();
+        registry.write().register::<i32>();
+        let count = registry.read().iter().count();
+        world.insert_resource(registry);
+        let second = process_remote_app_info_request_main(In(None), &world).unwrap();
+        let second = serde_json::from_value::<BrpAppInfoResponse>(second).unwrap();
+        assert_eq!(second.instance, first.instance);
+        assert_eq!(second.registered_types, count);
     }
 
     #[test]
