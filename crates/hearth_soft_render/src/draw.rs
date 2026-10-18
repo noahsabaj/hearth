@@ -2,7 +2,7 @@
 
 use hearth_asset::{AssetId, Assets};
 use hearth_camera::{
-    visibility::RenderLayers, Camera, ClearColor, ClearColorConfig, NormalizedRenderTarget,
+    visibility::RenderLayers, Camera, ClearColor, ClearColorConfig, Msaa, NormalizedRenderTarget,
     RenderTarget,
 };
 use hearth_ecs::{
@@ -11,7 +11,7 @@ use hearth_ecs::{
     system::{Local, Query, Res, ResMut},
 };
 use hearth_image::{Image, ImageFilterMode, TextureAtlasLayout};
-use hearth_math::{Affine3A, Mat3, Mat4, URect, UVec2, Vec3, Vec4};
+use hearth_math::{Affine3A, Mat3, Mat4, URect, UVec2, Vec2, Vec3, Vec4};
 use hearth_platform::collections::{HashMap, HashSet};
 use hearth_tasks::{ComputeTaskPool, ParallelSliceMut, TaskPool};
 use hearth_transform::components::GlobalTransform;
@@ -20,7 +20,7 @@ use tracing::warn;
 
 use crate::{
     color::{self, Tables},
-    raster::{Alpha, Paint, Quad, TexelMap},
+    raster::{self, Alpha, Paint, Quad, Samples, TexelMap},
     sprite::{self, SpriteQuery},
     target::ImageTarget,
     texture::{ConvertedImages, DefaultSampler, Texture},
@@ -92,6 +92,7 @@ pub(crate) fn draw(
         &RenderTarget,
         &GlobalTransform,
         Option<&RenderLayers>,
+        Option<&Msaa>,
     )>,
     primary_window: Query<Entity, With<PrimaryWindow>>,
     mut framebuffers: Query<(Entity, &mut Framebuffer), With<Window>>,
@@ -137,7 +138,7 @@ pub(crate) fn draw(
     let pool = ComputeTaskPool::get_or_init(TaskPool::default);
     let mut targets: Vec<ImageTarget> = Vec::new();
     drawn.clear();
-    for (_, camera, target, camera_transform, camera_layers) in cameras {
+    for (_, camera, target, camera_transform, camera_layers, msaa) in cameras {
         let images = &*images;
         let target = match target.normalize(primary_window) {
             Some(NormalizedRenderTarget::Window(window)) => Target::Window(window.entity()),
@@ -163,6 +164,8 @@ pub(crate) fn draw(
         let Some(viewport) = viewport(camera, size.x, size.y) else {
             continue;
         };
+        // As on the GPU, a camera without `Msaa` takes 4 samples.
+        let sample_offsets = raster::sample_offsets(msaa.copied().unwrap_or_default().samples());
         let clear = match &camera.clear_color {
             ClearColorConfig::Default => Some(clear_color.0),
             ClearColorConfig::Custom(color) => Some(*color),
@@ -230,7 +233,14 @@ pub(crate) fn draw(
                     viewport.max.x,
                     viewport.max.y,
                 ];
-                let mut quad = Quad::new(pixel_from_unit, clip, paint, item.color, item.alpha)?;
+                let mut quad = Quad::new(
+                    pixel_from_unit,
+                    clip,
+                    paint,
+                    item.color,
+                    item.alpha,
+                    sample_offsets,
+                )?;
                 quad.pick_filter();
                 Some(quad)
             })
@@ -239,13 +249,31 @@ pub(crate) fn draw(
         match (target, &mut image_pixels) {
             (Target::Image(_), Some((_, pixels))) => {
                 let clear = clear.map(color::pixel_with_alpha);
-                fill::<true>(pool, &tables, pixels, size.x, viewport, clear, &quads);
+                fill::<true>(
+                    pool,
+                    &tables,
+                    pixels,
+                    size.x,
+                    viewport,
+                    clear,
+                    &quads,
+                    sample_offsets,
+                );
             }
             (Target::Window(window), _) => {
                 if let Ok((_, mut framebuffer)) = framebuffers.get_mut(window) {
                     let clear = clear.map(color::pixel);
                     let pixels = framebuffer.pixels_mut();
-                    fill::<false>(pool, &tables, pixels, size.x, viewport, clear, &quads);
+                    fill::<false>(
+                        pool,
+                        &tables,
+                        pixels,
+                        size.x,
+                        viewport,
+                        clear,
+                        &quads,
+                        sample_offsets,
+                    );
                     if !drawn.contains(&window) {
                         drawn.push(window);
                     }
@@ -290,7 +318,8 @@ enum Target {
 }
 
 /// Clears a camera's viewport of `pixels`, rows `width` long, and fills its quads, a band of
-/// rows on each task. With `ALPHA`, the pixels keep alpha in their top byte.
+/// rows on each task, sampling each pixel at `sample_offsets` from its center if there are any.
+/// With `ALPHA`, the pixels keep alpha in their top byte.
 fn fill<const ALPHA: bool>(
     pool: &TaskPool,
     tables: &Tables,
@@ -299,6 +328,7 @@ fn fill<const ALPHA: bool>(
     viewport: URect,
     clear: Option<u32>,
     quads: &[Quad],
+    sample_offsets: &'static [Vec2],
 ) {
     pixels.par_chunk_map_mut(pool, (BAND_ROWS * width) as usize, |band_index, band| {
         let first_row = band_index as u32 * BAND_ROWS;
@@ -310,9 +340,17 @@ fn fill<const ALPHA: bool>(
                 row[viewport.min.x as usize..viewport.max.x as usize].fill(clear);
             }
         }
-        for quad in quads {
-            quad.fill::<ALPHA>(tables, band, width, first_row);
+        if sample_offsets.is_empty() {
+            for quad in quads {
+                quad.fill::<ALPHA>(tables, band, width, first_row, None);
+            }
+            return;
         }
+        let mut samples = Samples::new(sample_offsets, band.len());
+        for quad in quads {
+            quad.fill::<ALPHA>(tables, band, width, first_row, Some(&mut samples));
+        }
+        samples.resolve::<ALPHA>(tables, band);
     });
 }
 

@@ -15,7 +15,8 @@
 //! It draws [`Sprite`](hearth_sprite::Sprite)s, with their atlases, rects, flips, tints, anchors,
 //! scaling, tiling and nine-slicing, and with the `hearth_text` feature
 //! [`Text2d`](hearth_sprite::Text2d). Colors mix in linear light, as on the GPU, and images are
-//! filtered by their samplers. With the `desktop` feature, it shows the framebuffers in their
+//! filtered by their samplers. Edges are antialiased by a camera's [`Msaa`], sampled where a GPU
+//! samples them. With the `desktop` feature, it shows the framebuffers in their
 //! windows through `softbuffer`.
 //!
 //! Use it instead of `hearth_render`, not beside it: both would draw to the same windows.
@@ -39,7 +40,7 @@ pub use framebuffer::Framebuffer;
 
 use hearth_app::{App, Last, Plugin, PostStartup, PostUpdate};
 use hearth_asset::{AssetApp, AssetEventSystems};
-use hearth_camera::CameraUpdateSystems;
+use hearth_camera::{Camera, CameraUpdateSystems, Msaa};
 use hearth_ecs::schedule::{IntoScheduleConfigs, SystemSet};
 use hearth_image::{CompressedImageFormats, ImageLoader, ImagePlugin};
 
@@ -59,6 +60,8 @@ pub struct SoftRenderPlugin;
 
 impl Plugin for SoftRenderPlugin {
     fn build(&self, app: &mut App) {
+        // As with `hearth_render`, cameras multisample unless told not to.
+        let _ = app.try_register_required_components::<Camera, Msaa>();
         app.init_resource::<texture::DefaultSampler>()
             .init_resource::<texture::ConvertedImages>()
             .configure_sets(
