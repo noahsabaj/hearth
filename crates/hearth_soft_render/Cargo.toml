@@ -13,6 +13,8 @@ keywords = ["hearth"]
 desktop = ["dep:softbuffer"]
 ## Draws `Text2d`.
 hearth_text = ["dep:hearth_text", "hearth_sprite/hearth_text"]
+## Draws each camera's UI.
+hearth_ui = ["dep:hearth_ui", "dep:hearth_input_focus", "hearth_text"]
 
 [dependencies]
 # hearth
@@ -22,12 +24,14 @@ hearth_camera = { path = "../hearth_camera", version = "0.20.0-dev" }
 hearth_color = { path = "../hearth_color", version = "0.20.0-dev" }
 hearth_ecs = { path = "../hearth_ecs", version = "0.20.0-dev" }
 hearth_image = { path = "../hearth_image", version = "0.20.0-dev" }
+hearth_input_focus = { path = "../hearth_input_focus", version = "0.20.0-dev", optional = true }
 hearth_math = { path = "../hearth_math", version = "0.20.0-dev" }
 hearth_platform = { path = "../hearth_platform", version = "0.20.0-dev" }
 hearth_sprite = { path = "../hearth_sprite", version = "0.20.0-dev" }
 hearth_tasks = { path = "../hearth_tasks", version = "0.20.0-dev" }
 hearth_text = { path = "../hearth_text", version = "0.20.0-dev", optional = true }
 hearth_transform = { path = "../hearth_transform", version = "0.20.0-dev" }
+hearth_ui = { path = "../hearth_ui", version = "0.20.0-dev", optional = true }
 hearth_window = { path = "../hearth_window", version = "0.20.0-dev" }
 
 # other

@@ -240,7 +240,7 @@ common_api = [
   "hearth_gizmos_render",
 ]
 
-# COLLECTION: Hearth's CPU 2D renderer, `hearth_soft_render`: sprites and 2D text drawn into a framebuffer for each window, with no GPU.
+# COLLECTION: Hearth's CPU 2D renderer, `hearth_soft_render`: sprites, 2D text and, with `ui_api`, UI drawn into a framebuffer for each window, with no GPU.
 2d_soft_render = ["2d_api", "hearth_soft_render"]
 
 # COLLECTION: Features used to build 3D Hearth apps (does not include a render backend). You generally don't need to worry about this unless you are using a custom renderer.

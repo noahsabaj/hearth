@@ -14,7 +14,10 @@
 //!
 //! It draws [`Sprite`](hearth_sprite::Sprite)s, with their atlases, rects, flips, tints, anchors,
 //! scaling, tiling and nine-slicing, and with the `hearth_text` feature
-//! [`Text2d`](hearth_sprite::Text2d). Colors mix in linear light, as on the GPU, and images are
+//! [`Text2d`](hearth_sprite::Text2d). With the `hearth_ui` feature it draws each camera's UI over
+//! what it sees: backgrounds and borders with their rounded corners and styles, outlines, images,
+//! sliced and tiled too, other cameras' views, and text with its shadows, decorations, selection
+//! and cursor, all clipped as their ancestors ask. Box shadows and gradients aren't drawn yet. Colors mix in linear light, as on the GPU, and images are
 //! filtered by their samplers. Edges are antialiased by a camera's [`Msaa`], sampled where a GPU
 //! samples them. With the `desktop` feature, it shows the framebuffers in their
 //! windows through `softbuffer`.
@@ -30,11 +33,14 @@ mod framebuffer;
 #[cfg(feature = "desktop")]
 mod present;
 mod raster;
+mod rounded;
 mod sprite;
 mod target;
 #[cfg(feature = "hearth_text")]
 mod text;
 mod texture;
+#[cfg(feature = "hearth_ui")]
+mod ui;
 
 pub use framebuffer::Framebuffer;
 

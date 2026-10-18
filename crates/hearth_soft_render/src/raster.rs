@@ -11,12 +11,16 @@
 //! pixel sample by sample instead, at the points a GPU samples, and colors each covered sample
 //! with what's at the pixel's center. A pixel's samples are its color until an edge crosses it;
 //! then they're kept apart, in [`Samples`], until they're averaged into it.
+//!
+//! A UI node's quad also has a [`RoundedBox`], which fades it at its edges and rounds its
+//! corners, and the rectangles its ancestors clip it to.
 
 use hearth_image::ImageFilterMode;
-use hearth_math::{Affine2, Mat3, Vec2, Vec3, Vec3A};
+use hearth_math::{Affine2, Mat3, Rect, Vec2, Vec3, Vec3A};
 
 use crate::{
     color::{alpha_byte, Tables, OPAQUE},
+    rounded::RoundedBox,
     texture::Texture,
 };
 
@@ -38,6 +42,12 @@ pub(crate) enum TexelMap {
     Affine(Affine2),
     /// A sprite's UV steps: flipping, tiling and nine-slicing.
     Sprite(SpriteUv),
+    /// A UI image's nine-slicing or tiling.
+    #[cfg_attr(
+        not(feature = "hearth_ui"),
+        expect(dead_code, reason = "Only UI images slice this way.")
+    )]
+    UiSlice(UiSliceUv),
 }
 
 impl TexelMap {
@@ -46,7 +56,87 @@ impl TexelMap {
         match self {
             TexelMap::Affine(map) => map.transform_point2(unit),
             TexelMap::Sprite(uv) => uv.texel(unit),
+            TexelMap::UiSlice(uv) => uv.texel(unit),
         }
+    }
+}
+
+/// A sliced or tiled UI image's mapping from its quad to its texture, as `hearth_ui_render`'s
+/// slicing shader does it.
+#[derive(Clone, Debug)]
+pub(crate) struct UiSliceUv {
+    /// Where the slices divide the texture's rect, as fractions of it: left, top, right, bottom.
+    pub texture: [f32; 4],
+    /// Where they divide the quad, in the same order.
+    pub target: [f32; 4],
+    /// How many times the sides repeat across and down, then the center.
+    pub repeat: [f32; 4],
+    /// The texture's rect, in texels: its left, top, right and bottom, swapped to flip.
+    pub rect: [f32; 4],
+}
+
+impl UiSliceUv {
+    fn texel(&self, uv: Vec2) -> Vec2 {
+        let [left, top, right, bottom] = self.target;
+        let inside = (left..=right).contains(&uv.x) && (top..=bottom).contains(&uv.y);
+        let [x_repeat, y_repeat] = if inside {
+            [self.repeat[2], self.repeat[3]]
+        } else {
+            [self.repeat[0], self.repeat[1]]
+        };
+        let axis =
+            |p: f32, low: f32, high: f32, texture_low: f32, texture_high: f32, repeat: f32| {
+                if p < low {
+                    p / low * texture_low
+                } else if high < p {
+                    texture_high + (p - high) / (1.0 - high) * (1.0 - texture_high)
+                } else {
+                    let tiled = repeat * (p - low) / (high - low);
+                    texture_low + (tiled - tiled.floor()) * (texture_high - texture_low)
+                }
+            };
+        let x = axis(
+            uv.x,
+            left,
+            right,
+            self.texture[0],
+            self.texture[2],
+            x_repeat,
+        );
+        let y = axis(
+            uv.y,
+            top,
+            bottom,
+            self.texture[1],
+            self.texture[3],
+            y_repeat,
+        );
+        let [rect_left, rect_top, rect_right, rect_bottom] = self.rect;
+        Vec2::new(
+            rect_left + x * (rect_right - rect_left),
+            rect_top + y * (rect_bottom - rect_top),
+        )
+    }
+}
+
+/// A rectangle a UI node is clipped to, in the space of the node that clips it.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ClipRect {
+    /// Takes a pixel position into the clipping node's space.
+    pub clip_from_pixel: Affine2,
+    /// Its edges there; any may be infinite.
+    pub rect: Rect,
+}
+
+impl ClipRect {
+    /// Whether a pixel whose center is at `point` is inside.
+    #[inline]
+    fn contains(&self, point: Vec2) -> bool {
+        let point = self.clip_from_pixel.transform_point2(point);
+        self.rect.min.x <= point.x
+            && point.x <= self.rect.max.x
+            && self.rect.min.y <= point.y
+            && point.y <= self.rect.max.y
     }
 }
 
@@ -276,6 +366,10 @@ pub(crate) struct Quad<'a> {
     sample_reach: Vec2,
     /// Its corners are on pixel corners, so its samples cover a pixel all or not at all.
     on_pixels: bool,
+    /// A UI node's shape, which fades the quad at its edges.
+    rounded: Option<RoundedBox>,
+    /// Rectangles it's clipped to that `bounds` can't hold: turned ones.
+    clip: Vec<ClipRect>,
 }
 
 impl<'a> Quad<'a> {
@@ -355,7 +449,49 @@ impl<'a> Quad<'a> {
             samples: sample_offsets.len().min(8),
             sample_reach,
             on_pixels,
+            rounded: None,
+            clip: Vec::new(),
         })
+    }
+
+    /// Makes the quad a UI node's: faded at the edges of `rounded`, and clipped to `clip`, or
+    /// `None` if that leaves nothing.
+    #[cfg_attr(
+        all(not(feature = "hearth_ui"), not(test)),
+        expect(dead_code, reason = "Only UI nodes are rounded and clipped.")
+    )]
+    pub(crate) fn with_ui(
+        mut self,
+        rounded: Option<RoundedBox>,
+        clip: impl IntoIterator<Item = ClipRect>,
+    ) -> Option<Self> {
+        self.rounded = rounded;
+        for clip in clip {
+            let m = clip.clip_from_pixel.matrix2;
+            if m.x_axis.y != 0.0 || m.y_axis.x != 0.0 || m.x_axis.x == 0.0 || m.y_axis.y == 0.0 {
+                self.clip.push(clip);
+                continue;
+            }
+            // Upright: the pixels whose centers are inside, as bounds. Each axis maps alone, as
+            // an edge may be infinite.
+            let pixel_from_clip = clip.clip_from_pixel.inverse();
+            let (scale, offset) = (
+                Vec2::new(
+                    pixel_from_clip.matrix2.x_axis.x,
+                    pixel_from_clip.matrix2.y_axis.y,
+                ),
+                pixel_from_clip.translation,
+            );
+            let a = clip.rect.min * scale + offset;
+            let b = clip.rect.max * scale + offset;
+            let (min, max) = (a.min(b), a.max(b));
+            let [x0, y0, x1, y1] = &mut self.bounds;
+            *x0 = (*x0 as f32).max((min.x - 0.5).ceil()) as u32;
+            *y0 = (*y0 as f32).max((min.y - 0.5).ceil()) as u32;
+            *x1 = (*x1 as f32).min((max.x - 0.5).floor() + 1.0).max(0.0) as u32;
+            *y1 = (*y1 as f32).min((max.y - 0.5).floor() + 1.0).max(0.0) as u32;
+        }
+        (self.bounds[0] < self.bounds[2] && self.bounds[1] < self.bounds[3]).then_some(self)
     }
 
     /// Which of a pixel's samples are inside the quad, a bit each, from `p`, which is
@@ -479,6 +615,12 @@ impl<'a> Quad<'a> {
                 if covered == 0 {
                     continue;
                 }
+                if !self.clip.is_empty() {
+                    let center = Vec2::new((x0 as usize + i) as f32 + 0.5, y as f32 + 0.5);
+                    if !self.clip.iter().all(|clip| clip.contains(center)) {
+                        continue;
+                    }
+                }
                 let rgba = match &self.paint {
                     Paint::Solid => self.color,
                     Paint::Texture {
@@ -497,6 +639,13 @@ impl<'a> Quad<'a> {
                     Alpha::Mask(cutoff) if rgba[3] >= cutoff => 1.0,
                     Alpha::Mask(_) => continue,
                 };
+                let alpha = match &self.rounded {
+                    Some(rounded) => alpha * rounded.coverage(unit),
+                    None => alpha,
+                };
+                if alpha <= 0.0 {
+                    continue;
+                }
                 let rgb = [rgba[0], rgba[1], rgba[2]];
                 let Some(samples) = samples.as_deref_mut() else {
                     tables.blend::<ALPHA>(pixel, rgb, alpha);
@@ -544,6 +693,8 @@ impl<'a> Quad<'a> {
             || matches!(self.alpha, Alpha::Mask(_))
             || !texture.is_srgb()
             || (samples.is_some() && !self.on_pixels)
+            || self.rounded.is_some()
+            || !self.clip.is_empty()
         {
             return false;
         }
@@ -728,6 +879,42 @@ mod tests {
             &[],
         );
         assert!(outside.is_none());
+    }
+
+    #[test]
+    fn clips_to_upright_rects_by_bounds() {
+        let pixel_from_unit = Mat3::from_cols(Vec3::X * 4.0, Vec3::Y * 4.0, Vec3::Z);
+        let solid = || {
+            Quad::new(
+                pixel_from_unit,
+                [0, 0, 4, 4],
+                Paint::Solid,
+                [1.0; 4],
+                Alpha::Blend,
+                &[],
+            )
+            .unwrap()
+        };
+        // Clip space is pixels shifted by 1: its rect from 0.5 to 1 holds column 1's centers only.
+        let clip = ClipRect {
+            clip_from_pixel: Affine2::from_translation(Vec2::splat(-1.0)),
+            rect: Rect::new(0.5, -f32::INFINITY, 1.0, f32::INFINITY),
+        };
+        let quad = solid().with_ui(None, [clip]).unwrap();
+        assert_eq!(quad.bounds, [1, 0, 2, 4]);
+        assert!(quad.clip.is_empty());
+
+        // Turned a quarter, it's checked pixel by pixel, and covers the same.
+        let turned = ClipRect {
+            clip_from_pixel: Affine2::from_angle(core::f32::consts::FRAC_PI_2)
+                * Affine2::from_translation(Vec2::splat(-1.0)),
+            rect: Rect::new(-f32::INFINITY, 0.5, f32::INFINITY, 1.0),
+        };
+        let quad = solid().with_ui(None, [turned]).unwrap();
+        assert_eq!(quad.clip.len(), 1);
+        let pixels = fill(&quad, 4, 4);
+        let white = 0xFF_FF_FF;
+        assert_eq!(&pixels[..4], &[0, white, 0, 0]);
     }
 
     #[test]

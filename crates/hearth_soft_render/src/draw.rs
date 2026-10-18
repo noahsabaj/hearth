@@ -1,5 +1,7 @@
 //! Drawing what each camera sees into the framebuffers.
 
+#[cfg(feature = "hearth_ui")]
+use hearth_asset::Handle;
 use hearth_asset::{AssetId, Assets};
 use hearth_camera::{
     visibility::RenderLayers, Camera, ClearColor, ClearColorConfig, Msaa, NormalizedRenderTarget,
@@ -11,6 +13,8 @@ use hearth_ecs::{
     system::{Local, Query, Res, ResMut},
 };
 use hearth_image::{Image, ImageFilterMode, TextureAtlasLayout};
+#[cfg(feature = "hearth_ui")]
+use hearth_math::Affine2;
 use hearth_math::{Affine3A, Mat3, Mat4, URect, UVec2, Vec2, Vec3, Vec4};
 use hearth_platform::collections::{HashMap, HashSet};
 use hearth_tasks::{ComputeTaskPool, ParallelSliceMut, TaskPool};
@@ -45,7 +49,7 @@ pub(crate) enum ItemPaint {
     /// Its color.
     #[cfg_attr(
         not(feature = "hearth_text"),
-        expect(dead_code, reason = "Only text draws plain rectangles so far.")
+        expect(dead_code, reason = "Only text and UI draw plain rectangles so far.")
     )]
     Solid,
     /// An image, sampled where `map` takes each `(s, t)`.
@@ -103,6 +107,7 @@ pub(crate) fn draw(
     mut converted: ResMut<ConvertedImages>,
     sprites: SpriteQuery,
     #[cfg(feature = "hearth_text")] texts: crate::text::Texts,
+    #[cfg(feature = "hearth_ui")] mut uis: crate::ui::Uis,
     mut drawn: Local<Vec<Entity>>,
     mut warned: Local<HashSet<AssetId<Image>>>,
     mut warned_about_views: Local<bool>,
@@ -114,10 +119,26 @@ pub(crate) fn draw(
     // A stable sort keeps the items of one entity, like a text's shadow and glyphs, in order.
     items.sort_by(|a, b| a.z.total_cmp(&b.z));
 
+    #[cfg(feature = "hearth_ui")]
+    let ui_items = {
+        let mut ui_items = Vec::new();
+        let camera_image = |entity| {
+            let (_, _, target, ..) = cameras.get(entity).ok()?;
+            target.as_image().map(Handle::id)
+        };
+        uis.collect(&images, &atlases, camera_image, &mut ui_items);
+        ui_items.sort_by(|a, b| a.z.total_cmp(&b.z));
+        ui_items
+    };
+    #[cfg(not(feature = "hearth_ui"))]
+    let ui_items: Vec<Item> = Vec::new();
+
     let mut texture_ids: Vec<AssetId<Image>> = items
         .iter()
-        .filter_map(|item| match item.paint {
-            ItemPaint::Texture { image, .. } => Some(image),
+        .map(|item| &item.paint)
+        .chain(ui_items.iter().map(|item| &item.paint))
+        .filter_map(|paint| match paint {
+            ItemPaint::Texture { image, .. } => Some(*image),
             ItemPaint::Solid => None,
         })
         .collect();
@@ -138,7 +159,7 @@ pub(crate) fn draw(
     let pool = ComputeTaskPool::get_or_init(TaskPool::default);
     let mut targets: Vec<ImageTarget> = Vec::new();
     drawn.clear();
-    for (_, camera, target, camera_transform, camera_layers, msaa) in cameras {
+    for (camera_entity, camera, target, camera_transform, camera_layers, msaa) in cameras {
         let images = &*images;
         let target = match target.normalize(primary_window) {
             Some(NormalizedRenderTarget::Window(window)) => Target::Window(window.entity()),
@@ -213,26 +234,19 @@ pub(crate) fn draw(
         let clip_from_world =
             camera.clip_from_view() * Mat4::from(camera_transform.affine().inverse());
         let camera_layers = camera_layers.unwrap_or(&default_layers);
+        let clip = [
+            viewport.min.x,
+            viewport.min.y,
+            viewport.max.x,
+            viewport.max.y,
+        ];
         let quads: Vec<Quad> = items
             .iter()
             .filter(|item| camera_layers.intersects(item.layers.unwrap_or(&default_layers)))
             .filter_map(|item| {
-                let paint = match &item.paint {
-                    ItemPaint::Solid => Paint::Solid,
-                    ItemPaint::Texture { image, map } => Paint::Texture {
-                        texture: textures.get(image)?.as_ref()?,
-                        map,
-                        filter: ImageFilterMode::Nearest,
-                    },
-                };
+                let paint = paint(&item.paint, &textures)?;
                 let pixel_from_unit =
                     pixel_from_unit(clip_from_world * Mat4::from(item.world_from_unit), viewport)?;
-                let clip = [
-                    viewport.min.x,
-                    viewport.min.y,
-                    viewport.max.x,
-                    viewport.max.y,
-                ];
                 let mut quad = Quad::new(
                     pixel_from_unit,
                     clip,
@@ -246,34 +260,51 @@ pub(crate) fn draw(
             })
             .collect();
 
+        // The camera's UI, over what it sees; its space starts at the viewport's top left.
+        #[cfg(feature = "hearth_ui")]
+        let ui: Vec<Quad> = {
+            let pixel_from_ui = Affine2::from_translation(viewport.min.as_vec2());
+            ui_items
+                .iter()
+                .filter(|item| item.camera == camera_entity)
+                .filter_map(|item| {
+                    let paint = paint(&item.paint, &textures)?;
+                    let mut quad = Quad::new(
+                        Mat3::from(pixel_from_ui * item.ui_from_unit),
+                        clip,
+                        paint,
+                        item.color,
+                        Alpha::Blend,
+                        &[],
+                    )?
+                    .with_ui(item.rounded, item.clip_rects(pixel_from_ui))?;
+                    quad.pick_filter();
+                    Some(quad)
+                })
+                .collect()
+        };
+        #[cfg(not(feature = "hearth_ui"))]
+        let ui: Vec<Quad> = {
+            let _ = camera_entity;
+            Vec::new()
+        };
+
+        let mut pass = Pass {
+            viewport,
+            clear: None,
+            quads,
+            sample_offsets,
+            ui,
+        };
         match (target, &mut image_pixels) {
             (Target::Image(_), Some((_, pixels))) => {
-                let clear = clear.map(color::pixel_with_alpha);
-                fill::<true>(
-                    pool,
-                    &tables,
-                    pixels,
-                    size.x,
-                    viewport,
-                    clear,
-                    &quads,
-                    sample_offsets,
-                );
+                pass.clear = clear.map(color::pixel_with_alpha);
+                fill::<true>(pool, &tables, pixels, size.x, &pass);
             }
             (Target::Window(window), _) => {
                 if let Ok((_, mut framebuffer)) = framebuffers.get_mut(window) {
-                    let clear = clear.map(color::pixel);
-                    let pixels = framebuffer.pixels_mut();
-                    fill::<false>(
-                        pool,
-                        &tables,
-                        pixels,
-                        size.x,
-                        viewport,
-                        clear,
-                        &quads,
-                        sample_offsets,
-                    );
+                    pass.clear = clear.map(color::pixel);
+                    fill::<false>(pool, &tables, framebuffer.pixels_mut(), size.x, &pass);
                     if !drawn.contains(&window) {
                         drawn.push(window);
                     }
@@ -281,7 +312,7 @@ pub(crate) fn draw(
             }
             (Target::Image(_), None) => {}
         }
-        drop(quads);
+        drop(pass);
         drop(textures);
         if let Some((index, pixels)) = image_pixels {
             targets[index].pixels = pixels;
@@ -317,22 +348,32 @@ enum Target {
     Image(AssetId<Image>),
 }
 
-/// Clears a camera's viewport of `pixels`, rows `width` long, and fills its quads, a band of
-/// rows on each task, sampling each pixel at `sample_offsets` from its center if there are any.
-/// With `ALPHA`, the pixels keep alpha in their top byte.
+/// What a camera draws.
+struct Pass<'a> {
+    /// The pixels it draws to.
+    viewport: URect,
+    /// What it clears them to first, if anything.
+    clear: Option<u32>,
+    /// What it sees, each pixel sampled at `sample_offsets` from its center if there are any.
+    quads: Vec<Quad<'a>>,
+    sample_offsets: &'static [Vec2],
+    /// Its UI, drawn over what it sees once that's resolved, as on the GPU.
+    ui: Vec<Quad<'a>>,
+}
+
+/// Draws a camera's pass into `pixels`, rows `width` long, a band of rows on each task. With
+/// `ALPHA`, the pixels keep alpha in their top byte.
 fn fill<const ALPHA: bool>(
     pool: &TaskPool,
     tables: &Tables,
     mut pixels: &mut [u32],
     width: u32,
-    viewport: URect,
-    clear: Option<u32>,
-    quads: &[Quad],
-    sample_offsets: &'static [Vec2],
+    pass: &Pass,
 ) {
+    let viewport = pass.viewport;
     pixels.par_chunk_map_mut(pool, (BAND_ROWS * width) as usize, |band_index, band| {
         let first_row = band_index as u32 * BAND_ROWS;
-        if let Some(clear) = clear {
+        if let Some(clear) = pass.clear {
             let rows = viewport.min.y.max(first_row)
                 ..viewport.max.y.min(first_row + band.len() as u32 / width);
             for y in rows {
@@ -340,18 +381,36 @@ fn fill<const ALPHA: bool>(
                 row[viewport.min.x as usize..viewport.max.x as usize].fill(clear);
             }
         }
-        if sample_offsets.is_empty() {
-            for quad in quads {
+        if pass.sample_offsets.is_empty() {
+            for quad in &pass.quads {
                 quad.fill::<ALPHA>(tables, band, width, first_row, None);
             }
-            return;
+        } else {
+            let mut samples = Samples::new(pass.sample_offsets, band.len());
+            for quad in &pass.quads {
+                quad.fill::<ALPHA>(tables, band, width, first_row, Some(&mut samples));
+            }
+            samples.resolve::<ALPHA>(tables, band);
         }
-        let mut samples = Samples::new(sample_offsets, band.len());
-        for quad in quads {
-            quad.fill::<ALPHA>(tables, band, width, first_row, Some(&mut samples));
+        for quad in &pass.ui {
+            quad.fill::<ALPHA>(tables, band, width, first_row, None);
         }
-        samples.resolve::<ALPHA>(tables, band);
     });
+}
+
+/// What covers an item's quad, with the camera's textures.
+fn paint<'a>(
+    paint: &'a ItemPaint,
+    textures: &'a HashMap<AssetId<Image>, Option<Texture<'a>>>,
+) -> Option<Paint<'a>> {
+    Some(match paint {
+        ItemPaint::Solid => Paint::Solid,
+        ItemPaint::Texture { image, map } => Paint::Texture {
+            texture: textures.get(image)?.as_ref()?,
+            map,
+            filter: ImageFilterMode::Nearest,
+        },
+    })
 }
 
 /// The part of a framebuffer a camera draws to, in pixels.

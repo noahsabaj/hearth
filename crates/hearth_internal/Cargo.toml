@@ -250,7 +250,12 @@ hearth_text = [
   "hearth_sprite_render?/hearth_text",
   "hearth_soft_render?/hearth_text",
 ]
-hearth_ui = ["dep:hearth_ui", "hearth_text", "hearth_sprite"]
+hearth_ui = [
+  "dep:hearth_ui",
+  "hearth_text",
+  "hearth_sprite",
+  "hearth_soft_render?/hearth_ui",
+]
 hearth_mesh = ["dep:hearth_mesh", "hearth_image", "hearth_gizmos?/hearth_mesh"]
 hearth_animation = ["dep:hearth_animation", "hearth_mesh"]
 hearth_mikktspace = ["hearth_mesh?/hearth_mikktspace"]
