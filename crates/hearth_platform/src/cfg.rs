@@ -253,6 +253,10 @@ define_alias! {
         /// Indicates that this target has access to browser APIs.
         web
     }
+    #[cfg(all(target_os = "zkvm", target_vendor = "axiom"))] => {
+        /// Indicates that this target is the Axiom operating system.
+        axiom
+    }
     #[cfg(all(feature = "alloc", target_has_atomic = "ptr"))] => {
         /// Indicates that this target has access to a native implementation of `Arc`.
         arc

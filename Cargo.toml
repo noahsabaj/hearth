@@ -85,7 +85,10 @@ allow_attributes_without_reason = "warn"
 
 [workspace.lints.rust]
 missing_docs = "warn"
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(docsrs_dep)'] }
+unexpected_cfgs = { level = "warn", check-cfg = [
+  'cfg(docsrs_dep)',
+  'cfg(target_vendor, values("axiom"))',
+] }
 unsafe_code = "deny"
 unsafe_op_in_unsafe_fn = "warn"
 unused_qualifications = "warn"
@@ -130,7 +133,10 @@ allow_attributes_without_reason = "warn"
 
 [lints.rust]
 missing_docs = "warn"
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(docsrs_dep)'] }
+unexpected_cfgs = { level = "warn", check-cfg = [
+  'cfg(docsrs_dep)',
+  'cfg(target_vendor, values("axiom"))',
+] }
 unsafe_code = "deny"
 unsafe_op_in_unsafe_fn = "warn"
 unused_qualifications = "warn"
